@@ -1,0 +1,89 @@
+@import (reference) "./main.less";
+@import (reference) "./Icons.less";
+
+.eye-filter-menu {
+  margin-left: 0.5em;
+  position: relative;
+}
+
+.eye-filter-menu.menu-open::after {
+  content: "";
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #fff;
+  position: absolute;
+  top: 30px;
+  right: 10px;
+  transition: all 100ms ease-in-out;
+}
+
+.eye-filter-menu-button {
+  height: 34px;
+  width: 40px;
+  padding: 0px;
+}
+
+.eye-filter-menu-button-icon {
+  background-position: 6px 5px;
+  background-repeat: no-repeat;
+  background-size: 13px 10px;
+  width: 40px;
+  height: 20px;
+  border-radius: 4px;
+  padding: 0px;
+  background-image: @contextbutton-eye-default-icon;
+  background-color: @disabled-color;
+}
+
+.eye-filter-menu-button-icon::after {
+  content: "";
+  border-color: #fff transparent transparent;
+  border-style: solid;
+  border-width: 5px 5px 2.5px;
+  height: 0;
+  width: 0;
+  top: 11px;
+  left: 10px;
+  position: relative;
+}
+
+.eye-filter-menu-button-icon:hover {
+  background-color: @enabled-color;
+}
+
+.eye-filter-menu-button-icon:disabled {
+  background-image: @contextbutton-eye-disabled-icon;
+}
+
+.sort-by .eye-filter-menu-button-icon {
+  background-image: @sort-by-icon;
+}
+
+.eye-filter-menu-items {
+  background-color: #fff;
+  position: absolute;
+  right: 0px;
+  padding: 8px 0px;
+  width: 168px;
+  color: #132f4b;
+  text-align: left;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 5px;
+  user-select: none;
+
+  .context-menu-item {
+    font-size: 13px;
+    line-height: 2em;
+    min-width: 10em;
+    padding-left: 28px;
+
+    &:hover {
+      background-color: #e9f8ff;
+    }
+  }
+
+  .context-menu-item.selected::before {
+    content: "✓";
+    position: absolute;
+    margin-left: -14px;
+  }
+}

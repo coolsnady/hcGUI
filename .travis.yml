@@ -1,0 +1,19 @@
+sudo: required
+
+language: node_js
+node_js:
+- "9"
+
+cache:
+  yarn: true
+  directories:
+    - node_modules
+    - app/node_modules
+
+install:
+  - yarn
+
+script:
+  - yarn lint
+  - yarn test
+  - travis_wait yarn package-dev-linux

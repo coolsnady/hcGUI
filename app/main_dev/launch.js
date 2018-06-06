@@ -1,0 +1,324 @@
+import { dcrwalletCfg, getWalletPath, getExecutablePath, hxdCfg, getHxdRpcCert } from "./paths";
+import { getWalletCfg, readHxdConfig } from "../config";
+import { createLogger, AddToHxdLog, AddToDcrwalletLog, GetHxdLogs, GetDcrwalletLogs, lastErrorLine } from "./logging";
+import parseArgs from "minimist";
+import { OPTIONS } from "./constants";
+import os from "os";
+import fs from "fs-extra";
+import stringArgv from "string-argv";
+import { concat, isString } from "lodash";
+
+const argv = parseArgs(process.argv.slice(1), OPTIONS);
+const debug = argv.debug || process.env.NODE_ENV === "development";
+const logger = createLogger(debug);
+
+let hxdPID;
+let dcrwPID;
+
+let dcrwPort;
+
+function closeClis() {
+  // shutdown daemon and wallet.
+  // Don't try to close if not running.
+  if(hxdPID && hxdPID !== -1)
+    closeHXD(hxdPID);
+  if(dcrwPID && dcrwPID !== -1)
+    closeDCRW(dcrwPID);
+}
+
+function closeHXD() {
+  if (require("is-running")(hxdPID) && os.platform() != "win32") {
+    logger.log("info", "Sending SIGINT to hxd at pid:" + hxdPID);
+    process.kill(hxdPID, "SIGINT");
+  }
+}
+
+export const closeDCRW = () => {
+  try {
+    if (require("is-running")(dcrwPID) && os.platform() != "win32") {
+      logger.log("info", "Sending SIGINT to dcrwallet at pid:" + dcrwPID);
+      process.kill(dcrwPID, "SIGINT");
+    }
+    dcrwPID = null;
+    return true;
+  } catch (e) {
+    logger.log("error", "error closing wallet: " + e);
+    return false;
+  }
+};
+
+export async function cleanShutdown(mainWindow, app) {
+  // Attempt a clean shutdown.
+  return new Promise(resolve => {
+    const cliShutDownPause = 2; // in seconds.
+    const shutDownPause = 3; // in seconds.
+    closeClis();
+    // Sent shutdown message again as we have seen it missed in the past if they
+    // are still running.
+    setTimeout(function () { closeClis(); }, cliShutDownPause * 1000);
+    logger.log("info", "Closing decrediton.");
+
+    let shutdownTimer = setInterval(function () {
+      const stillRunning = (require("is-running")(hxdPID) && os.platform() != "win32");
+
+      if (!stillRunning) {
+        logger.log("info", "Final shutdown pause. Quitting app.");
+        clearInterval(shutdownTimer);
+        if (mainWindow) {
+          mainWindow.webContents.send("daemon-stopped");
+          setTimeout(() => { mainWindow.close(); app.quit(); }, 1000);
+        } else {
+          app.quit();
+        }
+        resolve(true);
+      }
+      logger.log("info", "Daemon still running in final shutdown pause. Waiting.");
+
+    }, shutDownPause * 1000);
+  });
+}
+
+export const launchHXD = (mainWindow, daemonIsAdvanced, daemonPath, appdata, testnet, reactIPC) => {
+  const spawn = require("child_process").spawn;
+  let args = [ "--nolisten" ];
+  let newConfig = {};
+  if (appdata) {
+    args.push(`--appdata=${appdata}`);
+    newConfig = readHxdConfig(appdata, testnet);
+    newConfig.rpc_cert = getHxdRpcCert(appdata);
+  } else {
+    args.push(`--configfile=${hxdCfg(daemonPath)}`);
+    newConfig = readHxdConfig(daemonPath, testnet);
+    newConfig.rpc_cert = getHxdRpcCert();
+  }
+  if (testnet) {
+    args.push("--testnet");
+  }
+
+  const hxdExe = getExecutablePath("hxd", argv.customBinPath);
+  if (!fs.existsSync(hxdExe)) {
+    logger.log("error", "The hxd file does not exists");
+    return;
+  }
+
+  if (os.platform() == "win32") {
+    try {
+      const util = require("util");
+      const win32ipc = require("./node_modules/win32ipc/build/Release/win32ipc.node");
+      var pipe = win32ipc.createPipe("out");
+      args.push(util.format("--piperx=%d", pipe.readEnd));
+    } catch (e) {
+      logger.log("error", "can't find proper module to launch hxd: " + e);
+    }
+  }
+
+  logger.log("info", `Starting ${hxdExe} with ${args}`);
+
+  const hxd = spawn(hxdExe, args, {
+    detached: os.platform() == "win32",
+    stdio: [ "ignore", "pipe", "pipe" ]
+  });
+
+  hxd.on("error", function (err) {
+    logger.log("error", "Error running hxd.  Check logs and restart! " + err);
+    mainWindow.webContents.executeJavaScript("alert(\"Error running hxd.  Check logs and restart! " + err + "\");");
+    mainWindow.webContents.executeJavaScript("window.close();");
+  });
+
+  hxd.on("close", (code) => {
+    if (daemonIsAdvanced)
+      return;
+    if (code !== 0) {
+      const lastHxdErr = lastErrorLine(GetHxdLogs());
+      logger.log("error", "hxd closed due to an error: ", lastHxdErr);
+      reactIPC.send("error-received", true, lastHxdErr);
+    } else {
+      logger.log("info", `hxd exited with code ${code}`);
+    }
+  });
+
+  hxd.stdout.on("data", (data) => AddToHxdLog(process.stdout, data, debug));
+  hxd.stderr.on("data", (data) => AddToHxdLog(process.stderr, data, debug));
+
+  newConfig.pid = hxd.pid;
+  hxdPID = hxd.pid;
+  logger.log("info", "hxd started with pid:" + newConfig.pid);
+
+  hxd.unref();
+  return newConfig;
+};
+
+// DecodeDaemonIPCData decodes messages from an IPC message received from hxd/
+// dcrwallet using their internal IPC protocol.
+// NOTE: very simple impl for the moment, will break if messages get split
+// between data calls.
+const DecodeDaemonIPCData = (logger, data, cb) => {
+  let i = 0;
+  while (i < data.length) {
+    if (data[i++] !== 0x01) throw "Wrong protocol version when decoding IPC data";
+    const mtypelen = data[i++];
+    const mtype = data.slice(i, i+mtypelen).toString("utf-8");
+    i += mtypelen;
+    const psize = data.readUInt32LE(i);
+    i += 4;
+    const payload = data.slice(i, i+psize);
+    i += psize;
+    cb(mtype, payload);
+  }
+};
+
+export const launchDCRWallet = (mainWindow, daemonIsAdvanced, walletPath, testnet, reactIPC) => {
+  const spawn = require("child_process").spawn;
+  let args = [ "--configfile=" + dcrwalletCfg(getWalletPath(testnet, walletPath)) ];
+
+  const cfg = getWalletCfg(testnet, walletPath);
+
+  args.push("--ticketbuyer.nospreadticketpurchases");
+  args.push("--ticketbuyer.balancetomaintainabsolute=" + cfg.get("balancetomaintain"));
+  args.push("--ticketbuyer.maxfee=" + cfg.get("maxfee"));
+  args.push("--ticketbuyer.maxpricerelative=" + cfg.get("maxpricerelative"));
+  args.push("--ticketbuyer.maxpriceabsolute=" + cfg.get("maxpriceabsolute"));
+  args.push("--ticketbuyer.maxperblock=" + cfg.get("maxperblock"));
+  args.push("--addridxscanlen=" + cfg.get("gaplimit"));
+
+  const dcrwExe = getExecutablePath("dcrwallet", argv.customBinPath);
+  if (!fs.existsSync(dcrwExe)) {
+    logger.log("error", "The dcrwallet file does not exists");
+    return;
+  }
+
+  if (os.platform() == "win32") {
+    try {
+      const util = require("util");
+      const win32ipc = require("../../node_modules/win32ipc/build/Release/win32ipc.node");
+      const pipe = win32ipc.createPipe("out");
+      args.push(util.format("--piperx=%d", pipe.readEnd));
+    } catch (e) {
+      logger.log("error", "can't find proper module to launch dcrwallet: " + e);
+    }
+  } else {
+    args.push("--rpclistenerevents");
+    args.push("--pipetx=4");
+  }
+
+  // Add any extra args if defined.
+  if (argv.extrawalletargs !== undefined && isString(argv.extrawalletargs)) {
+    args = concat(args, stringArgv(argv.extrawalletargs));
+  }
+
+  logger.log("info", `Starting ${dcrwExe} with ${args}`);
+
+  const dcrwallet = spawn(dcrwExe, args, {
+    detached: os.platform() == "win32",
+    stdio: [ "ignore", "pipe", "pipe", "ignore", "pipe" ]
+  });
+
+  const notifyGrpcPort = (port) => {
+    dcrwPort = port;
+    logger.log("info", "wallet grpc running on port", port);
+    mainWindow.webContents.send("dcrwallet-port", port);
+  };
+
+  dcrwallet.stdio[4].on("data", (data) => DecodeDaemonIPCData(logger, data, (mtype, payload) => {
+    if (mtype === "grpclistener") {
+      const intf = payload.toString("utf-8");
+      const matches = intf.match(/^.+:(\d+)$/);
+      if (matches) {
+        notifyGrpcPort(matches[1]);
+      } else {
+        logger.log("error", "GRPC port not found on IPC channel to dcrwallet: " + intf);
+      }
+    }
+  }));
+
+  dcrwallet.on("error", function (err) {
+    logger.log("error", "Error running dcrwallet.  Check logs and restart! " + err);
+    mainWindow.webContents.executeJavaScript("alert(\"Error running dcrwallet.  Check logs and restart! " + err + "\");");
+    mainWindow.webContents.executeJavaScript("window.close();");
+  });
+
+  dcrwallet.on("close", (code) => {
+    if (daemonIsAdvanced)
+      return;
+    if (code !== 0) {
+      const lastDcrwalletErr = lastErrorLine(GetDcrwalletLogs());
+      logger.log("error", "dcrwallet closed due to an error: ", lastDcrwalletErr);
+      reactIPC.sendSync("error-received", false, lastDcrwalletErr);
+    } else {
+      logger.log("info", `dcrwallet exited with code ${code}`);
+    }
+  });
+
+  const addStdoutToLogListener = (data) => AddToDcrwalletLog(process.stdout, data, debug);
+
+  // waitForGrpcPortListener is added as a stdout on("data") listener only on
+  // win32 because so far that's the only way we found to get back the grpc port
+  // on that platform. For linux/macOS users, the --pipetx argument is used to
+  // provide a pipe back to decrediton, which reads the grpc port in a secure and
+  // reliable way.
+  const waitForGrpcPortListener = (data) => {
+    const matches = /DCRW: gRPC server listening on [^ ]+:(\d+)/.exec(data);
+    if (matches) {
+      notifyGrpcPort(matches[1]);
+      // swap the listener since we don't need to keep looking for the port
+      dcrwallet.stdout.removeListener("data", waitForGrpcPortListener);
+      dcrwallet.stdout.on("data", addStdoutToLogListener);
+    }
+    AddToDcrwalletLog(process.stdout, data, debug);
+  };
+
+  dcrwallet.stdout.on("data", os.platform() == "win32" ? waitForGrpcPortListener : addStdoutToLogListener);
+  dcrwallet.stderr.on("data", (data) => {
+    AddToDcrwalletLog(process.stderr, data, debug);
+  });
+
+  dcrwPID = dcrwallet.pid;
+  logger.log("info", "dcrwallet started with pid:" + dcrwPID);
+
+  dcrwallet.unref();
+  return dcrwPID;
+};
+
+export const GetDcrwPort = () => dcrwPort;
+
+export const GetHxdPID = () => hxdPID;
+
+export const GetDcrwPID = () => dcrwPID;
+
+export const readExesVersion = (app, grpcVersions) => {
+  let spawn = require("child_process").spawnSync;
+  let args = [ "--version" ];
+  let exes = [ "hxd", "dcrwallet", "dcrctl" ];
+  let versions = {
+    grpc: grpcVersions,
+    decrediton: app.getVersion()
+  };
+
+  for (let exe of exes) {
+    let exePath = getExecutablePath("hxd", argv.customBinPath);
+    if (!fs.existsSync(exePath)) {
+      logger.log("error", "The hxd file does not exists");
+    }
+
+    let proc = spawn(exePath, args, { encoding: "utf8" });
+    if (proc.error) {
+      logger.log("error", `Error trying to read version of ${exe}: ${proc.error}`);
+      continue;
+    }
+
+    let versionLine = proc.stdout.toString();
+    if (!versionLine) {
+      logger.log("error", `Empty version line when reading version of ${exe}`);
+      continue;
+    }
+
+    let decodedLine = versionLine.match(/\w+ version ([^\s]+)/);
+    if (decodedLine !== null) {
+      versions[exe] = decodedLine[1];
+    } else {
+      logger.log("error", `Unable to decode version line ${versionLine}`);
+    }
+  }
+
+  return versions;
+};

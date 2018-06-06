@@ -1,0 +1,205 @@
+@import (reference) "./main.less";
+@import (reference) "./Icons.less";
+
+/** GetStarted tutorial classes **/
+.getstarted-tutorial {
+  .tutorial-side {
+    position: fixed;
+    height: 100%;
+  }
+
+  .tutorial-side.step-0 {
+    background-color: rgba(72, 86, 110, 1);
+  }
+
+  .tutorial-side.step-1 {
+    background-color: rgba(72, 86, 110, 0.9);
+  }
+
+  .tutorial-side.step-2 {
+    background-color: rgba(72, 86, 110, 0.8);
+  }
+
+  .tutorial-side.step-3 {
+    background-color: rgba(72, 86, 110, 0.7);
+  }
+
+  .tutorial-side.step-4 {
+    background-color: rgba(72, 86, 110, 0.6);
+  }
+
+  .tutorial-side-image {
+    margin: 212px 56px 0px 56px;
+    height: 342px;
+    width: 255px;
+    background-position: 50% 0px;
+    background-repeat: no-repeat;
+  }
+
+  .tutorial-side-image.step-0 {
+    margin: 29vh 56px 0px 56px;
+    background-image: @onboarding-blockchain;
+  }
+
+  .tutorial-side-image.step-1 {
+    margin: 232px 62px 0px 62px;
+    height: 302px;
+    width: 243px;
+    background-image: @onboarding-wallet;
+  }
+
+  .tutorial-side-image.step-2 {
+    margin: 287px 57px 0px 60px;
+    height: 192px;
+    width: 250px;
+    background-image: @onboarding-seed;
+  }
+
+  .tutorial-side-image.step-3 {
+    margin: 160px 72px 0px 65px;
+    height: 504px;
+    width: 230px;
+    background-image: @onboarding-stakingandgov;
+  }
+
+  .tutorial-side-image.step-4 {
+    margin: 217px 84px 0px 83px;
+    height: 336px;
+    width: 200px;
+    background-image: @onboarding-safetytips;
+  }
+
+  .tutorial-main {
+    position: fixed;
+    left: 431px;
+    top: 25vh;
+    right: 60px;
+  }
+
+  .tutorial-main-toolbar {
+    display: flex;
+
+    .next-button {
+      margin-right: 52px;
+      margin-top: 5px;
+      height: 16px;
+      padding: 5px 20px 6px 20px;
+    }
+
+    .skip-button {
+      margin-left: 52px;
+      margin-top: 5px;
+      height: 16px;
+      padding: 5px 20px 6px 20px;
+    }
+  }
+
+  .tutorial-main-text {
+    color: #48566e;
+    font-size: 13px;
+    column-count: 2;
+    margin-bottom: 2em;
+    min-height: 33em;
+
+    h1 {
+      color: #091440;
+      font-size: 35px;
+      line-height: 35px;
+      column-span: all;
+      font-weight: 400;
+    }
+
+    strong {
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0em 5em 2em 0em;
+      break-inside: avoid-column;
+    }
+  }
+}
+
+/** Wallet Tutorial Classes */
+.wallet-tutorial {
+  background-color: #fff;
+  padding: 60px;
+  color: #48566e;
+
+  .tutorial-title {
+    font-size: 27px;
+    margin-bottom: 10px;
+  }
+
+  .tutorial-subtitle {
+    font-size: 11px;
+    margin-bottom: 20px;
+  }
+
+  .tutorial-close-button {
+    height: 12px;
+    width: 12px;
+    background-repeat: no-repeat;
+    background-size: 12px;
+    background-image: @x-grey;
+    float: right;
+  }
+
+  .tutorial-standard-page {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .tutorial-text {
+    width: 40%;
+    margin-right: 30px;
+    white-space: pre-line;
+  }
+
+  .tutorial-page-indicator a {
+    cursor: pointer;
+  }
+
+  .tutorial-image-and-indicator {
+    text-align: center;
+    height: 35vw;
+    width: 35vw;
+  }
+
+  .tutorial-image {
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .tutorial-image-lifecycle-01 {
+    background-image: @lifecycle-01;
+  }
+
+  .tutorial-image-lifecycle-02 {
+    background-image: @lifecycle-02;
+  }
+
+  .tutorial-image-lifecycle-03 {
+    background-image: @lifecycle-03;
+  }
+
+  .tutorial-image-lifecycle-04 {
+    background-image: @lifecycle-04;
+  }
+
+  .tutorial-image-lifecycle-05 {
+    background-image: @lifecycle-05;
+  }
+
+  .tutorial-image-lifecycle-06 {
+    background-image: @lifecycle-06;
+  }
+
+  .tutorial-image-staking-01 {
+    background-image: @staking-01;
+  }
+}
