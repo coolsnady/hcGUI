@@ -4,7 +4,7 @@ import { injectIntl, defineMessages } from "react-intl";
 const messages = defineMessages({
   copyConfirmationPhrase: {
     id: "seedCopyConfirmModal.copyConfirmationPhrase",
-    defaultMessage: "I understand the risks"
+    defaultMessage: "I understand"
   },
 });
 
@@ -20,17 +20,17 @@ class SeedCopyConfirmModal extends React.Component {
   }
 
   onTypedConfirmationPhraseChanged(typedConfirmationPhrase) {
-    this.setState({ typedConfirmationPhrase });
+    this.setState({typedConfirmationPhrase});
   }
 
   onSubmit() {
     this.props.onSubmit();
-    this.setState({ typedConfirmationPhrase: "" });
+    this.setState({typedConfirmationPhrase: ""});
   }
 
   onCancelModal() {
     this.props.onCancelModal();
-    this.setState({ typedConfirmationPhrase: "" });
+    this.setState({typedConfirmationPhrase: ""});
   }
 
   render() {

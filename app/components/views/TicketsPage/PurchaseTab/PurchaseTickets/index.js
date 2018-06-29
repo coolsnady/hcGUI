@@ -7,7 +7,6 @@ import purchaseTickets from "connectors/purchaseTickets";
 import PurchaseTicketsAdvanced from "./PurchaseTicketsAdvanced";
 import PurchaseTicketsQuickBar from "./PurchaseTicketsQuickBar";
 import { injectIntl } from "react-intl";
-import { isNullOrUndefined } from "util";
 
 const MAX_POSSIBLE_FEE_INPUT = 0.1;
 
@@ -21,8 +20,8 @@ class PurchaseTickets extends React.Component {
       expiryError: false,
       isShowingAdvanced: false,
       numTicketsToBuy: 1,
-      ticketFee: 0.001, // DCR/kB
-      txFee: 0.001, // DCR/kB
+      ticketFee: 0.001, // Hc/kB
+      txFee: 0.001, // Hc/kB
       conf: 0,
       expiry: 16
     };
@@ -31,7 +30,7 @@ class PurchaseTickets extends React.Component {
   getQuickBarComponent () {
     const { getStakePool } = this;
     const { ticketFee, txFee, expiry } = this.state;
-    return [ {
+    return [{
       data: <PurchaseTicketsQuickBar {...{
         stakePool: getStakePool(),
         ticketFee,
@@ -40,10 +39,10 @@ class PurchaseTickets extends React.Component {
       }}/>,
       key: "output_0",
       style: {
-        height: spring(73),
+        height: spring(92),
         opacity: 1,
       }
-    } ];
+    }];
   }
 
   getAdvancedComponent () {
@@ -58,7 +57,7 @@ class PurchaseTickets extends React.Component {
     } = this.props;
     const { ticketFee, txFee, expiry,
       ticketFeeError, txFeeError, expiryError } = this.state;
-    return [ {
+    return [{
       data: <PurchaseTicketsAdvanced {...{
         configuredStakePools,
         stakePool: this.getStakePool(),
@@ -78,10 +77,10 @@ class PurchaseTickets extends React.Component {
       />,
       key: "output_1",
       style: {
-        height: spring(258, { stiffness: 170, damping: 17 }),
-        opacity: spring(1, { stiffness: 120, damping: 17 }),
+        height: spring(270, {stiffness: 170, damping: 17}),
+        opacity: spring(1, {stiffness: 120, damping: 17}),
       }
-    } ];
+    }];
   }
 
   willEnter(height) {
@@ -110,7 +109,6 @@ class PurchaseTickets extends React.Component {
             onToggleShowAdvanced: null,
             onIncrementNumTickets: null,
             onDecrementNumTickets: null,
-            onChangeNumTickets: null,
             onChangeAccount: null,
             onPurchaseTickets: null,
             getQuickBarComponent: null,
@@ -161,10 +159,6 @@ class PurchaseTickets extends React.Component {
     this.setState({ numTicketsToBuy: this.state.numTicketsToBuy + 1 });
   }
 
-  onChangeNumTickets(numTicketsToBuy) {
-    this.setState({ numTicketsToBuy });
-  }
-
   onDecrementNumTickets() {
     const { numTicketsToBuy } = this.state;
     this.setState({
@@ -212,7 +206,7 @@ class PurchaseTickets extends React.Component {
   }
 
   onChangeExpiry(expiry) {
-    const expiryError = (isNaN(expiry) || expiry < 0 || isNullOrUndefined(expiry) || expiry === "");
+    const expiryError = (isNaN(expiry) || expiry < 0);
     this.setState({
       expiry: expiry.replace(/[^\d.]/g, ""),
       expiryError: expiryError

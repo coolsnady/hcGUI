@@ -1,7 +1,6 @@
 import Modal from "../Modal";
 import ButtonsToolbar from "./ButtonsToolbar";
 import PassphraseInputRow from "./PassphraseInputRow";
-import { FormattedMessage as T } from "react-intl";
 
 const propTypes = {
   modalTitle: PropTypes.object.isRequired,
@@ -13,10 +12,10 @@ const propTypes = {
 const StandardPassphraseModal = (props) => {
   const {
     show,
+    modalTitle,
     modalDescription,
     children,
-    prependPassphraseRow,
-    onCancelModal,
+    prependPassphraseRow
   } = props;
 
   const inputRow =
@@ -28,10 +27,10 @@ const StandardPassphraseModal = (props) => {
     />;
 
   return (
-    <Modal className="passphrase-modal" {...{ show, onCancelModal }}>
+    <Modal className="passphrase-modal" {...{show}}>
       <div className="passphrase-modal-header">
         <div className="passphrase-modal-header-title">
-          <T id="passphraseModal.confirmationRequired" m="Confirmation Required" />
+          {modalTitle}
         </div>
         <div className="passphrase-modal-header-description">
           {modalDescription}
@@ -41,8 +40,8 @@ const StandardPassphraseModal = (props) => {
         {prependPassphraseRow ? inputRow : null}
         {children}
         {prependPassphraseRow ? null : inputRow}
+        <ButtonsToolbar {...props} />
       </div>
-      <ButtonsToolbar {...props} />
     </Modal>
   );
 };

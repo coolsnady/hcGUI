@@ -30,13 +30,6 @@ import {
   SEEDCOPIEDTOCLIPBOARD,
 } from "../actions/ClientActions";
 import { SNACKBAR_DISMISS_MESSAGES } from "../actions/SnackbarActions";
-import {
-  EXPORT_ERROR,
-  EXPORT_COMPLETED,
-  GETSTARTUPSTATS_FAILED,
-  GETMYTICKETSSTATS_FAILED,
-} from "actions/StatisticsActions";
-import { WALLETREMOVED_FAILED } from "actions/DaemonActions";
 
 const messages = defineMessages({
   defaultSuccessMessage: {
@@ -47,10 +40,7 @@ const messages = defineMessages({
     id: "snackbar.defaults.error",
     defaultMessage: "{originalError}"
   },
-  WALLETREMOVED_FAILED: {
-    id: "createwallet.errors.walletRemoveFailed",
-    defaultMessage: "{originalError}"
-  },
+
   PUBLISHTX_SUCCESS: {
     id: "send.publishedTxHeader",
     defaultMessage: "Published tx: {hash}"
@@ -169,12 +159,8 @@ const messages = defineMessages({
   },
   PUBLISHUNMINEDTRANSACTIONS_SUCCESS: {
     id: "send.publishUnminedTransactions.success",
-    defaultMessage: "Republished unmined transactions to the decred network."
-  },
-  EXPORT_COMPLETED: {
-    id: "export.completed",
-    defaultMessage: "Export of file '{filename}' completed!"
-  },
+    defaultMessage: "Republished unmined transactions to the Hc network."
+  }
 });
 
 export default function snackbar(state = {}, action) {
@@ -200,8 +186,6 @@ export default function snackbar(state = {}, action) {
   // all simple success notifications. Just add the type below and the message
   // on the messages variable above if you need a simple message, without extra
   // data.
-  case EXPORT_COMPLETED:
-    values = { filename: action.filename };
   case RENAMEACCOUNT_SUCCESS:
   case GETNEXTACCOUNT_SUCCESS:
   case CHANGEPASSPHRASE_SUCCESS:
@@ -222,7 +206,6 @@ export default function snackbar(state = {}, action) {
 
   // all simple error messages. Note that the action *must* have an action.error
   // attribute.
-  case WALLETREMOVED_FAILED:
   case RENAMEACCOUNT_FAILED:
   case GETNEXTACCOUNT_FAILED:
   case CHANGEPASSPHRASE_FAILED:
@@ -240,9 +223,6 @@ export default function snackbar(state = {}, action) {
   case VERIFYMESSAGE_FAILED:
   case GETSTARTUPWALLETINFO_FAILED:
   case PUBLISHUNMINEDTRANSACTIONS_FAILED:
-  case EXPORT_ERROR:
-  case GETSTARTUPSTATS_FAILED:
-  case GETMYTICKETSSTATS_FAILED:
     type = "Error";
     message = messages[action.type] || messages.defaultErrorMessage;
     values = { originalError: String(action.error) };
@@ -257,9 +237,9 @@ export default function snackbar(state = {}, action) {
   }
 
   if (message && type) {
-    const newMessage = { type, message, values };
-    return { ...state, messages: [ ...state.messages, newMessage ] };
+    const newMessage = {type, message, values};
+    return {...state, messages: [...state.messages, newMessage]};
   }
 
-  return { ...state };
+  return {...state};
 }

@@ -12,7 +12,6 @@ import daemon from "./daemon";
 import locales from "./locales";
 import sidebar from "./sidebar";
 import snackbar from "./snackbar";
-import statistics from "./statistics";
 
 const rootReducer = combineReducers({
   grpc,
@@ -27,7 +26,6 @@ const rootReducer = combineReducers({
   routing,
   sidebar,
   snackbar,
-  statistics,
 });
 
 export default rootReducer;

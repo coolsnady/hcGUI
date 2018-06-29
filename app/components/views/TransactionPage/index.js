@@ -3,10 +3,10 @@ import TransactionPage from "./Page";
 import { transactionPage } from "connectors";
 
 const Transaction = ({ walletService, viewedTransaction, viewedDecodedTransaction,
-  decodeRawTransactions }) => {
+  routes, router, decodeRawTransactions }) => {
 
   if (!viewedDecodedTransaction) {
-    decodeRawTransactions([ viewedTransaction.rawTx ]);
+    decodeRawTransactions([viewedTransaction.rawTx]);
   }
 
   return !walletService
@@ -15,6 +15,7 @@ const Transaction = ({ walletService, viewedTransaction, viewedDecodedTransactio
       {...{
         transactionDetails: viewedTransaction,
         decodedTransaction: viewedDecodedTransaction,
+        routes, router,
       }}
     />;
 };

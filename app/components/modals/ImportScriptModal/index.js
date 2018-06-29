@@ -22,7 +22,7 @@ class ImportScriptModal extends React.Component {
   }
 
   validationFailed() {
-    this.setState({ hasFailedAttempt: true });
+    this.setState({hasFailedAttempt: true});
   }
 
   getInitialState() {
@@ -33,7 +33,6 @@ class ImportScriptModal extends React.Component {
   }
 
   setScript(script) {
-    if (script == "") this.setState({ hasFailedAttempt: true });
     this.setState({ script });
   }
 
@@ -59,7 +58,7 @@ class ImportScriptModal extends React.Component {
 
     return (
       <Modal
-        {...{ ...this.props, ...this.state }}
+        {...{...this.props, ...this.state}}
         {...{
           setScript,
           onSubmit,

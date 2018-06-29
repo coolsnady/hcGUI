@@ -9,7 +9,7 @@
 
 .Select {
   position: relative;
-  font-size: 13px;
+  font-size: 16px;
 }
 
 .Select,
@@ -23,12 +23,10 @@
 
 .Select.is-disabled > .Select-control {
   background-color: @disabled-background-color;
-  color: @disabled-color;
 }
 
 .Select.is-disabled > .Select-control:hover {
   box-shadow: none;
-  color: @disabled-color;
 }
 
 .Select.is-disabled .Select-arrow-zone {
@@ -38,10 +36,10 @@
 }
 
 .Select-control {
-  border: 0px;
-  border-radius: 0px;
+  border: 1px solid #862ee0;
+  padding: 5px;
+  border-radius: 6px;
   background-color: inherit;
-  border-bottom: 1px solid @stroke-color-default;
   box-shadow: none;
   color: @input-color-default;
   cursor: default;
@@ -55,14 +53,20 @@
   transition: all @input-transition-time @input-timing-function;
 }
 
+.Select-control:hover:not(:disabled) {
+  color: @white;
+}
+
 .is-open .Select-control .Select-input:focus {
   outline: none;
-  color: @input-color-focused;
+  color: @white;
+  border-bottom: 1px solid @stroke-color-focused;
 }
 
 .is-searchable.is-open > .Select-control {
   cursor: text;
-  color: @input-color-focused;
+  color: @white;
+  border-bottom: 1px solid @stroke-color-hovered;
 }
 
 .is-open {
@@ -83,7 +87,7 @@
 .Select--single > .Select-control .Select-value {
   bottom: 0;
   left: 0;
-  padding: 0px 14px 0px 10px;
+  padding: 5px 14px 0px 10px;
   position: absolute;
   right: 0;
   top: 0;
@@ -104,7 +108,6 @@
 .has-value.Select--single > .Select-control .Select-value a.Select-value-label:focus,
 .has-value.is-pseudo-focused.Select--single > .Select-control .Select-value a.Select-value-label:focus {
   outline: none;
-  text-decoration: underline;
 }
 
 .Select-input {
@@ -211,12 +214,6 @@
   transition: all @input-transition-time @input-timing-function;
 }
 
-.Select-control:hover:not(:disabled) {
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
-  color: @input-color-hovered;
-  border-bottom: 1px solid @stroke-color-hovered;
-}
-
 .Select-control:hover:not(:disabled) .Select-arrow {
   border-top-color: @stroke-color-hovered;
 }
@@ -299,8 +296,20 @@
   border-bottom-left-radius: 4px;
 }
 
+.Select-option.is-selected {
+  //background-color: #f5faff;
+
+  /* Fallback color for IE 8 */
+  //background-color: rgba(0, 126, 255, 0.04);
+  //color: #333;
+}
+
 .Select-option.is-focused {
   background-color: @background-hovered;
+
+  /* Fallback color for IE 8 */
+  //background-color: rgba(0, 126, 255, 0.08);
+  //color: #333;
 }
 
 .Select-option.is-disabled {
@@ -326,22 +335,21 @@
 }
 
 .Select--multi .Select-value {
-  background-color: #ebf5ff;
+  background-color: @purple;
 
-  /* Fallback color for IE 8 */
-  background-color: rgba(0, 126, 255, 0.08);
   border-radius: 2px;
-  border: 1px solid #c2e0ff;
-
-  /* Fallback color for IE 8 */
-  border: 1px solid rgba(0, 126, 255, 0.24);
-  color: #007eff;
+  border: 1px solid @purple;
+  color: #ffffff;
   display: inline-block;
-  font-size: 0.9em;
-  line-height: 1.4;
+  font-size: 13px;
+  line-height: 16px;
   margin-left: 5px;
   margin-top: 5px;
   vertical-align: top;
+
+  &:hover {
+    background-color: @lightPurple;
+  }
 }
 
 .Select--multi .Select-value-icon,
@@ -354,7 +362,7 @@
   border-bottom-right-radius: 2px;
   border-top-right-radius: 2px;
   cursor: default;
-  padding: 2px 5px;
+  padding: 0px 10px 0 5px;
 }
 
 .Select--multi a.Select-value-label {
@@ -363,28 +371,18 @@
   text-decoration: none;
 }
 
-.Select--multi a.Select-value-label:hover {
-  text-decoration: underline;
-}
 
 .Select--multi .Select-value-icon {
   cursor: pointer;
   border-bottom-left-radius: 2px;
   border-top-left-radius: 2px;
-  border-right: 1px solid #c2e0ff;
-
-  /* Fallback color for IE 8 */
-  border-right: 1px solid rgba(0, 126, 255, 0.24);
-  padding: 1px 5px 3px;
+  padding: 4px 5px 3px;
 }
 
 .Select--multi .Select-value-icon:hover,
 .Select--multi .Select-value-icon:focus {
   background-color: #d8eafd;
-
-  /* Fallback color for IE 8 */
-  background-color: rgba(0, 113, 230, 0.08);
-  color: #0071e6;
+  color: #ffffff;
 }
 
 .Select--multi .Select-value-icon:active {
@@ -424,17 +422,14 @@
 }
 
 .accounts-select {
-  .inline-block-mixin;
-
-  width: 85%;
-}
-
-.accounts-select-value {
-  display: flex;
-  justify-content: space-between;
+  vertical-align: middle;
+  margin-right: 0.5em;
 }
 
 .accounts-select-name {
+  .inline-block-mixin;
+
+  max-width: 8em;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -442,12 +437,11 @@
 
 .accounts-select-spendable {
   font-family: @font-family-monospaced;
-  min-width: 10em;
+  vertical-align: middle;
+  margin-right: 0.5em;
+  float: right;
   text-align: right;
-}
-
-.accounts-select-spendable div {
-  display: inline-block;
+  display: flex;
 }
 
 .accounts-select-value .balance-small {

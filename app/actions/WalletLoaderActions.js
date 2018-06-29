@@ -4,11 +4,10 @@ import {
   subscribeToBlockNotifications, fetchHeaders, getStakePoolInfo
 } from "wallet";
 import * as wallet from "wallet";
-import { getWalletServiceAttempt, startWalletServices } from "./ClientActions";
+import { getWalletServiceAttempt, getTicketBuyerServiceAttempt, getAgendaServiceAttempt, getVotingServiceAttempt } from "./ClientActions";
+import { prepStartDaemon } from "./DaemonActions";
 import { getVersionServiceAttempt } from "./VersionActions";
-import { getAvailableWallets, WALLETREMOVED_FAILED } from "./DaemonActions";
-import { getWalletCfg, getHxdCert } from "../config";
-import { getWalletPath } from "main_dev/paths";
+import { getWalletCfg, getWalletCfgPath, getDcrdCert } from "config";
 import { isTestNet } from "selectors";
 import axios from "axios";
 
@@ -24,7 +23,7 @@ export const LOADER_SUCCESS = "LOADER_SUCCESS";
 
 export const loaderRequest = () => (dispatch, getState) => {
   const { grpc: { address, port } } = getState();
-  const { daemon: { walletName } } = getState();
+  const { daemon: { walletName }} = getState();
   const request = { isTestNet: isTestNet(getState()), walletName, address, port };
   dispatch({ request, type: LOADER_ATTEMPT });
   return getLoader(request)
@@ -43,9 +42,12 @@ export const walletExistRequest = () =>
   (dispatch, getState) =>
     getWalletExists(getState().walletLoader.loader)
       .then(response => {
-        dispatch({ response: response, type: WALLETEXIST_SUCCESS });
+        dispatch({response: response, type: WALLETEXIST_SUCCESS });
         if (response.getExists()) {
           dispatch(openWalletAttempt("public", false));
+        }
+        else {
+          dispatch({ type: CREATEWALLET_NEWSEED_INPUT });
         }
       })
       .catch(error => dispatch({ error, type: WALLETEXIST_FAILED }));
@@ -53,28 +55,10 @@ export const walletExistRequest = () =>
 export const CREATEWALLET_NEWSEED_CONFIRM_INPUT = "CREATEWALLET_NEWSEED_CONFIRM_INPUT";
 export const CREATEWALLET_NEWSEED_BACK_INPUT = "CREATEWALLET_NEWSEED_BACK_INPUT";
 export const CREATEWALLET_EXISTINGSEED_INPUT = "CREATEWALLET_EXISTINGSEED_INPUT";
-export const CREATEWALLET_GOBACK_EXISITNG_OR_NEW = "CREATEWALLET_GOBACK_EXISITNG_OR_NEW";
-export const CREATEWALLET_GOBACK = "CREATEWALLET_GOBACK";
 export const CREATEWALLET_NEWSEED_INPUT = "CREATEWALLET_NEWSEED_INPUT";
 
 export const createWalletConfirmNewSeed = () => ({ type: CREATEWALLET_NEWSEED_CONFIRM_INPUT });
 export const createWalletGoBackNewSeed = () => ({ type: CREATEWALLET_NEWSEED_BACK_INPUT });
-export const createWalletGoBackExistingOrNew = () => ({ type: CREATEWALLET_GOBACK_EXISITNG_OR_NEW });
-
-export const createWalletGoBackWalletSelection = () => (dispatch, getState) => {
-  const { daemon: { walletName, network } } = getState();
-  wallet.stopWallet().then(() => {
-    wallet.removeWallet(walletName, network == "testnet")
-      .then(() => {
-        dispatch({ type: CREATEWALLET_GOBACK });
-        dispatch(getAvailableWallets());
-      })
-      .catch((err) => {
-        console.error(err);
-        dispatch({ error: err, type: WALLETREMOVED_FAILED });
-      });
-  });
-};
 export const createWalletExistingToggle = (existing) => (dispatch) =>
   existing
     ? dispatch({ type: CREATEWALLET_EXISTINGSEED_INPUT })
@@ -89,40 +73,51 @@ export const createWalletRequest = (pubPass, privPass, seed, existing) =>
     dispatch({ existing: existing, type: CREATEWALLET_ATTEMPT });
     return createWallet(getState().walletLoader.loader, pubPass, privPass, seed)
       .then(() => {
-        const { daemon: { walletName } } = getState();
+        const { daemon: { walletName }} = getState();
         const config = getWalletCfg(isTestNet(getState()), walletName);
-        config.delete("discoveraccounts");
-        dispatch({ response: {}, type: CREATEWALLET_SUCCESS });
+        // config.delete("discoveraccounts");
+        dispatch({response: {}, type: CREATEWALLET_SUCCESS });
         dispatch(clearStakePoolConfigNewWallet());
-        dispatch(getWalletServiceAttempt());
-        dispatch({ complete: !existing, type: UPDATEDISCOVERACCOUNTS });
-        config.set("discoveraccounts", !existing);
+        dispatch({complete: !existing, type: UPDATEDISCOVERACCOUNTS});
+        // config.set("discoveraccounts", !existing);
+        dispatch(prepStartDaemon());
       })
       .catch(error => dispatch({ error, type: CREATEWALLET_FAILED }));
   };
 
-export const OPENWALLET_INPUT = "OPENWALLET_INPUT";
-export const OPENWALLET_FAILED_INPUT = "OPENWALLET_FAILED_INPUT";
+export const OPENWALLET_PUBLIC_INPUT = "OPENWALLET_PUBLIC_INPUT";
+export const OPENWALLET_FAILED_PUBLIC_INPUT = "OPENWALLET_FAILED_PUBLIC_INPUT";
+export const OPENWALLET_PRIVATE_INPUT = "OPENWALLET_PRIVATE_INPUT";
+export const OPENWALLET_FAILED_PRIVATE_INPUT = "OPENWALLET_FAILED_PRIVATE_INPUT";
 export const OPENWALLET_ATTEMPT = "OPENWALLET_ATTEMPT";
 export const OPENWALLET_FAILED = "OPENWALLET_FAILED";
 export const OPENWALLET_SUCCESS = "OPENWALLET_SUCCESS";
 
-export const openWalletAttempt = (pubPass, retryAttempt) => (dispatch, getState) => {
+export const openWalletAttempt = (pubPass, privPass, retryAttempt) => (dispatch, getState) => {
   dispatch({ type: OPENWALLET_ATTEMPT });
-  return openWallet(getState().walletLoader.loader, pubPass)
+  return openWallet(getState().walletLoader.loader, "public", privPass)
     .then(() => {
-      dispatch(getWalletServiceAttempt());
       dispatch({ type: OPENWALLET_SUCCESS });
+      dispatch(prepStartDaemon());
     })
     .catch(error => {
-      if (error.message.includes("wallet already")) {
-        dispatch(getWalletServiceAttempt());
-        dispatch({ response: {}, type: OPENWALLET_SUCCESS });
+      if (error.message.includes("wallet already loaded")) {
+        dispatch({response: {}, type: OPENWALLET_SUCCESS});
+        dispatch(prepStartDaemon());
+
+        dispatch({ type: 'DISCOVERADDRESS_INPUT' });
+
+      } else if (error.message.includes("invalid passphrase") && error.message.includes("private key")) {
+        if (retryAttempt) {
+          dispatch({ error, type: OPENWALLET_FAILED_PRIVATE_INPUT });
+        } else {
+          dispatch({ type: OPENWALLET_PRIVATE_INPUT });
+        }
       } else if (error.message.includes("invalid passphrase") && error.message.includes("public key")) {
         if (retryAttempt) {
-          dispatch({ error, type: OPENWALLET_FAILED_INPUT });
+          dispatch({ error, type: OPENWALLET_FAILED_PUBLIC_INPUT });
         } else {
-          dispatch({ type: OPENWALLET_INPUT });
+          dispatch({ type: OPENWALLET_PUBLIC_INPUT });
         }
       } else {
         dispatch({ error, type: OPENWALLET_FAILED });
@@ -148,7 +143,7 @@ export const STARTRPC_RETRY = "STARTRPC_RETRY";
 
 export const startRpcRequestFunc = (isRetry) =>
   (dispatch, getState) => {
-    const { daemon: { credentials, appData, walletName } }= getState();
+    const {daemon: { credentials, appData, walletName} }= getState();
     const cfg = getWalletCfg(isTestNet(getState()), walletName);
     let rpcuser, rpccertPath, rpcpass, daemonhost, rpcport;
 
@@ -173,16 +168,16 @@ export const startRpcRequestFunc = (isRetry) =>
 
     const loader = getState().walletLoader.loader;
 
-    const cert = getHxdCert(rpccertPath);
-    if (!isRetry) dispatch({ type: STARTRPC_ATTEMPT });
+    const cert = getDcrdCert(rpccertPath);
+    if (!isRetry) dispatch({type: STARTRPC_ATTEMPT});
     return startRpc(loader, daemonhost, rpcport, rpcuser, rpcpass, cert)
       .then(() => {
-        dispatch({ type: STARTRPC_SUCCESS });
+        dispatch({ type: STARTRPC_SUCCESS});
         dispatch(subscribeBlockAttempt());
       })
       .catch(error => {
         if (error.message.includes("RPC client already created")) {
-          dispatch({ type: STARTRPC_SUCCESS });
+          dispatch({ type: STARTRPC_SUCCESS});
           dispatch(subscribeBlockAttempt());
         } else if (isRetry) {
           const { rpcRetryAttempts } = getState().walletLoader;
@@ -191,7 +186,7 @@ export const startRpcRequestFunc = (isRetry) =>
             setTimeout(() => dispatch(startRpcRequestFunc(isRetry)), RPC_RETRY_DELAY);
           } else {
             dispatch({
-              error: `${error}.  You may need to edit ${getWalletPath(isTestNet(getState()), walletName)} and try again`,
+              error: `${error}.  You may need to edit ${getWalletCfgPath(isTestNet(getState()), walletName)} and try again`,
               type: STARTRPC_FAILED
             });
           }
@@ -208,23 +203,23 @@ export const DISCOVERADDRESS_FAILED = "DISCOVERADDRESS_FAILED";
 export const DISCOVERADDRESS_SUCCESS = "DISCOVERADDRESS_SUCCESS";
 
 export const discoverAddressAttempt = (privPass) => (dispatch, getState) => {
-  const { walletLoader: { loader, discoverAccountsComplete } } = getState();
-  const { daemon: { walletName } } = getState();
+  const { walletLoader: {loader, discoverAccountsComplete }} = getState();
+  const { daemon: { walletName }} = getState();
   dispatch({ type: DISCOVERADDRESS_ATTEMPT });
-  discoverAddresses(loader, !discoverAccountsComplete, privPass)
+  dispatch({ type: 'DISCOVERADDRESS_INPUT' });
+  discoverAddresses(loader, true, privPass)
     .then(() => {
+      const { subscribeBlockNtfnsResponse } = getState().walletLoader;
 
-      if (!discoverAccountsComplete) {
-        const config = getWalletCfg(isTestNet(getState()), walletName);
-        config.delete("discoveraccounts");
-        config.set("discoveraccounts", true);
-        dispatch({ complete: true, type: UPDATEDISCOVERACCOUNTS });
-      } else {
-        const { subscribeBlockNtfnsResponse } = getState().walletLoader;
-        if (subscribeBlockNtfnsResponse !== null) dispatch(fetchHeadersAttempt());
-      }
+      // if (!discoverAccountsComplete) {
+      //   const config = getWalletCfg(isTestNet(getState()), walletName);
+      //   config.delete("discoveraccounts");
+      //   config.set("discoveraccounts", true);
+      //   dispatch({complete: true, type: UPDATEDISCOVERACCOUNTS});
+      // }
 
-      dispatch({ response: {}, complete: discoverAccountsComplete, type: DISCOVERADDRESS_SUCCESS });
+      dispatch({response: {}, type: DISCOVERADDRESS_SUCCESS});
+      if (subscribeBlockNtfnsResponse !== null) dispatch(fetchHeadersAttempt());
     })
     .catch(error => {
       if (error.message.includes("invalid passphrase") && error.message.includes("private key")) {
@@ -242,16 +237,16 @@ export const SUBSCRIBEBLOCKNTFNS_SUCCESS = "SUBSCRIBEBLOCKNTFNS_SUCCESS";
 const subscribeBlockAttempt = () => (dispatch, getState) => {
   const { loader, discoverAccountsComplete } = getState().walletLoader;
 
-  dispatch({ request: {}, type: SUBSCRIBEBLOCKNTFNS_ATTEMPT });
+  dispatch({request: {}, type: SUBSCRIBEBLOCKNTFNS_ATTEMPT});
   return subscribeToBlockNotifications(loader)
     .then(() => {
-      dispatch({ response: {}, type: SUBSCRIBEBLOCKNTFNS_SUCCESS });
-      if (discoverAccountsComplete) {
-        dispatch(discoverAddressAttempt());
-      } else {
+      dispatch({response: {}, type: SUBSCRIBEBLOCKNTFNS_SUCCESS});
+      // if (discoverAccountsComplete) {
+      //   dispatch(discoverAddressAttempt());
+      // } else {
         // This is dispatched to indicate we should wait for user input to discover addresses.
-        dispatch({ response: {}, type: DISCOVERADDRESS_INPUT });
-      }
+        dispatch({response: {}, type: DISCOVERADDRESS_INPUT});
+      // }
     })
     .catch(error => dispatch({ error, type: SUBSCRIBEBLOCKNTFNS_FAILED }));
 };
@@ -262,11 +257,14 @@ export const FETCHHEADERS_SUCCESS = "FETCHHEADERS_SUCCESS";
 export const FETCHHEADERS_PROGRESS = "FETCHHEADERS_PROGRESS";
 
 export const fetchHeadersAttempt = () => (dispatch, getState) => {
-  dispatch({ request: {}, type: FETCHHEADERS_ATTEMPT });
+  dispatch({request: {}, type: FETCHHEADERS_ATTEMPT});
   return fetchHeaders(getState().walletLoader.loader)
     .then(response => {
-      dispatch({ response, type: FETCHHEADERS_SUCCESS });
-      dispatch(startWalletServices());
+      dispatch({response, type: FETCHHEADERS_SUCCESS});
+      dispatch(getWalletServiceAttempt());
+      dispatch(getTicketBuyerServiceAttempt());
+      dispatch(getVotingServiceAttempt());
+      dispatch(getAgendaServiceAttempt());
     })
     .catch(error => dispatch({ error, type: FETCHHEADERS_FAILED }));
 };
@@ -276,7 +274,7 @@ export const CLEARSTAKEPOOLCONFIG = "CLEARSTAKEPOOLCONFIG";
 
 export function clearStakePoolConfigNewWallet() {
   return (dispatch, getState) => {
-    const { daemon: { walletName } } = getState();
+    const { daemon: { walletName }} = getState();
     let config = getWalletCfg(isTestNet(getState()), walletName);
     config.delete("stakepools");
 
@@ -285,7 +283,7 @@ export function clearStakePoolConfigNewWallet() {
         if (foundStakePoolConfigs) {
           let config = getWalletCfg(isTestNet(getState()), walletName);
           config.set("stakepools", foundStakePoolConfigs);
-          dispatch({ currentStakePoolConfig: foundStakePoolConfigs, type: CLEARSTAKEPOOLCONFIG });
+          dispatch({currentStakePoolConfig: foundStakePoolConfigs, type: CLEARSTAKEPOOLCONFIG});
         }
       });
   };
@@ -294,16 +292,18 @@ export function clearStakePoolConfigNewWallet() {
 export const NEEDED_BLOCKS_DETERMINED = "NEEDED_BLOCKS_DETERMINED";
 export function determineNeededBlocks() {
   return (dispatch, getState) => {
-    const network = getState().daemon.network;
-    const explorerInfoURL = `https://${network}.decred.org/api/status`;
-    axios.get(explorerInfoURL, { timeout: 5000 })
+    /*const network = getState().daemon.network;
+    const explorerInfoURL = `http://explorer1.testnet.hybrid.network/api/status`;
+    axios.get(explorerInfoURL, {timeout: 5000})
       .then(function (response) {
         const neededBlocks = response.data.info.blocks;
         wallet.log("info", `Determined needed block height as ${neededBlocks}`);
-        dispatch({ neededBlocks, type: NEEDED_BLOCKS_DETERMINED });
+        dispatch({ neededBlocks, type: NEEDED_BLOCKS_DETERMINED});
       })
       .catch(function (error) {
         console.log("Unable to obtain latest block number.", error);
-      });
+      });*/
+      const neededBlocks = 560
+      dispatch({ neededBlocks, type: NEEDED_BLOCKS_DETERMINED});
   };
 }

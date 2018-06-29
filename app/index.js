@@ -1,43 +1,29 @@
 // @flow
-window.eval = () => { throw new Error("Do not import things that use eval()"); };
 import { render } from "react-dom";
 import { Provider } from "react-redux";
-import { ConnectedRouter } from "react-router-redux";
-import { Switch, Route } from "react-router-dom";
-import { createMemoryHistory } from "history";
-import { App } from "containers";
+import { Router, createMemoryHistory } from "react-router";
+import { syncHistoryWithStore } from "react-router-redux";
+import routes from "./routes";
 import configureStore from "./store/configureStore";
-import { getGlobalCfg } from "./config";
+import { getGlobalCfg } from "./config.js";
 import locales from "./i18n/locales";
 import "./style/main.less";
 import "./style/Global.less";
 import "./style/ReactSelectGlobal.less";
-import pkg from "./package.json";
-import { log } from "./wallet";
 
 var globalCfg = getGlobalCfg();
-const locale = globalCfg.get("locale");
-
-log("info", "Starting main react app");
 
 var initialState = {
   settings: {
     currentSettings: {
-      locale: locale,
+      locale: globalCfg.get("locale"),
       daemonStartAdvanced: globalCfg.get("daemon_start_advanced"),
-      allowedExternalRequests: globalCfg.get("allowed_external_requests"),
-      proxyType: globalCfg.get("proxy_type"),
-      proxyLocation: globalCfg.get("proxy_location"),
     },
     tempSettings: {
-      locale: locale,
+      locale: globalCfg.get("locale"),
       daemonStartAdvanced: globalCfg.get("daemon_start_advanced"),
-      allowedExternalRequests: globalCfg.get("allowed_external_requests"),
-      proxyType: globalCfg.get("proxy_type"),
-      proxyLocation: globalCfg.get("proxy_location"),
     },
     settingsChanged: false,
-    uiAnimations: globalCfg.get("ui_animations"),
   },
   stakepool: {
     currentStakePoolConfig: null,
@@ -46,16 +32,8 @@ var initialState = {
     currentStakePoolConfigSuccessMessage: "",
     activeStakePoolConfig: false,
     selectedStakePool: null,
-    updatedStakePoolList: false,
   },
   daemon: {
-    appVersion: pkg.version,
-    daemonRemote: false,
-    network: globalCfg.get("network"),
-    locale: locale,
-    tutorial: globalCfg.get("show_tutorial"),
-    showPrivacy: globalCfg.get("show_privacy"),
-    setLanguage: globalCfg.get("set_language"),
     daemonStarted: false,
     daemonSynced: false,
     daemonStopped: false,
@@ -70,13 +48,12 @@ var initialState = {
     shutdownRequested: false,
     openForm: globalCfg.get("must_open_form"),
     remoteAppdataError: false,
-    previousWallet: null,
-    selectCreateWalletInputRequest: true,
-    hiddenAccounts: Array(),
+    previousWallet: globalCfg.get("previouswallet"),
+    selectCreateWalletInputRequest: globalCfg.get("previouswallet") ? false : true
   },
   version: {
     // RequiredVersion
-    requiredVersion: "4.38.0",
+    requiredVersion: "4.25.0",
     versionInvalid: false,
     versionInvalidError: null,
     // VersionService
@@ -91,17 +68,16 @@ var initialState = {
   grpc: {
     // WalletService
     address: "127.0.0.1",
-    port: "9121",
+    port: "12010",
     walletService: null,
     requiredStakepoolAPIVersion: 2,
     recentBlockTimestamp: null,
-    currentBlockHeight: 0,
 
     // ints for mainnet and testnet protocol hex
-    // TestNet2 CurrencyNet = 0x48e7a065
-    testnet: 1223139429,
-    // MainNet CurrencyNet = 0xd9b400f9
-    mainnet: 3652452601,
+    // TestNet2 CurrencyNet = 0x9ab5693a
+    testnet: 2595580218,
+    // MainNet CurrencyNet = 0x1125f51b
+    mainnet: 287700251,
 
     // GetWalletService
     getWalletServiceRequestAttempt: false,
@@ -139,6 +115,7 @@ var initialState = {
     getVerifyMessageRequestAttempt: false,
     getVerifyMessageResponse: null,
     // Accounts
+    hiddenAccounts: null,
     getAccountsError: null,
     getAccountsRequestAttempt: false,
     getAccountsResponse: null,
@@ -147,9 +124,6 @@ var initialState = {
     recentTransactionCount: 8,
     recentTransactions: Array(),
 
-    // Transactions since last opened
-    recentTxSinceLastOpenedCount: 10,
-
     // GetTransactions
     minedTransactions: Array(),
     unminedTransactions: Array(),
@@ -157,7 +131,6 @@ var initialState = {
     maximumTransactionCount: 10,
     noMoreTransactions: false,
     transactionsFilter: {
-      search: null, // The freeform text in the Search box
       listDirection: "desc", // asc = oldest -> newest, desc => newest -> oldest
       types: [], // desired transaction types (code). All if blank.
       direction: null, // direction of desired transactions (sent/received/transfer)
@@ -191,7 +164,6 @@ var initialState = {
     maturingBlockHeights: {},
   },
   walletLoader: {
-    existingOrNew: true,
     rpcRetryAttempts: 0,
     neededBlocks: 0,
     curBlocks: 0,
@@ -331,36 +303,24 @@ var initialState = {
     validateAddressRequestAttempt: false,
     validateAddressResponse: null,
     validateAddressError: null,
-
-    exportingData: false,
-    modalVisible: false,
   },
   snackbar: {
     messages: Array()
   },
   sidebar: {
-    showingSidebar: !globalCfg.get("show_tutorial"),
+    showingSidebar: true,
     showingSidebarMenu: false,
-    expandSideBar: true,
-  },
-  statistics: {
-    dailyBalances: Array(),
-    voteTime: null,
-    getMyTicketsStatsRequest: false,
   },
   locales: locales
 };
 
 const history = createMemoryHistory();
 const store = configureStore(initialState, history);
+const syncedHistory = syncHistoryWithStore(history, store);
 
 render(
   <Provider store={store}>
-    <ConnectedRouter history={history}>
-      <Switch>
-        <Route path="/" component={App} />
-      </Switch>
-    </ConnectedRouter>
+    <Router history={syncedHistory} routes={routes} />
   </Provider>,
   document.getElementById("root")
 );

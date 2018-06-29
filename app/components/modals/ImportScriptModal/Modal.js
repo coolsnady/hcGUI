@@ -8,13 +8,14 @@ const Modal = ({
   setScript,
   ...props
 }) => (
-  <PassphraseModal {...{ ...props }} >
+  <PassphraseModal {...{...props}} >
     <PassphraseModalField
       label={<T id="importScriptModal.redeemScript" m="Redeem Script" />}
     >
       <TextInput
         autoFocus
         required
+        requiredMessage={<T id="importScriptModal.errors.noScript" m="*Please enter your script" />}
         showErrors={hasFailedAttempt}
         id="script"
         type="text"

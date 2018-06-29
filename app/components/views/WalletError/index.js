@@ -1,3 +1,4 @@
+import { TabbedHeader } from "shared";
 import { walletError } from "connectors";
 
 const styles = {
@@ -14,13 +15,14 @@ const styles = {
   },
 };
 
-const WalletError = ({ getNetworkError }) => (
+const WalletError = ({ getNetworkError, routes }) => (
   <div style={styles.view}>
+    <TabbedHeader {...{ routes }}/>
     <div style={styles.content}>
       { getNetworkError ?
-        <p>{getNetworkError} Please verify that your hxd is configured correctly and restart.</p> :
+        <p>{getNetworkError} Please verify that your Hcd is configured correctly and restart.</p> :
         <p> We have detected that your wallet has disconnected.
-          Please reload Decrediton to fix this problem. </p>
+          Please reload HcGui to fix this problem. </p>
       }
     </div>
   </div>

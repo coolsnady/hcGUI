@@ -23,14 +23,14 @@ class Input extends React.Component{
     const { onFocus } = this.props;
     const { inputUnitDiv } = this.state;
     var updatedInputUnitDiv = inputUnitDiv;
-    this.setState({ inputUnitDiv: updatedInputUnitDiv.classList.add("active") });
+    this.setState({inputUnitDiv: updatedInputUnitDiv.classList.add("active")});
     onFocus && onFocus(e);
   };
   onInputBlur = (e) => {
     const { onBlur } = this.props;
     const { inputUnitDiv } = this.state;
     var updatedInputUnitDiv = inputUnitDiv;
-    this.setState({ inputUnitDiv: updatedInputUnitDiv.classList.remove("active") });
+    this.setState({inputUnitDiv: updatedInputUnitDiv.classList.remove("active")});
     onBlur && onBlur(e);
   };
   onKeyDown = (e) => {
@@ -55,14 +55,20 @@ class Input extends React.Component{
       hidden,
       type,
     } = this.props;
+
+    const highlightInputDueToError = showErrors && ((invalid && value) || (required && !value));
+    const containerClassName = highlightInputDueToError?
+        `${this.state.divClassName} input-and-unit--with-error`:
+        this.state.divClassName;
+
     return (
       hidden ? null :
         <Aux>
-          <div className={showErrors && (invalid && value || required && !value) ? this.state.divClassName + " error" : this.state.divClassName} ref={div => { this.state.inputUnitDiv = div; }}>
+          <div className={containerClassName} ref={div => { this.state.inputUnitDiv = div; }}>
             <input
               ref={input => { this.input = input; }}
               type={type||"text"}
-              className="input"
+              className={showErrors? "input input--with-error" :"input"}
               disabled={disabled ? disabled : null}
               readOnly={readOnly ? readOnly : null}
               placeholder={placeholder}

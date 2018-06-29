@@ -4,9 +4,8 @@ import { selectorMap } from "../fp";
 import * as sel from "../selectors";
 
 const mapStateToProps = selectorMap({
+  getCredentials: sel.getCredentials,
   walletReady: sel.getWalletReady,
-  isDaemonRemote: sel.isDaemonRemote,
-  isDaemonStarted: sel.getDaemonStarted,
 });
 
 export default connect(mapStateToProps);

@@ -1,97 +1,87 @@
-import { LinearProgressFull, DecredLoading } from "indicators";
+import Header from "../DefaultHeader";
+import LinearProgress from "material-ui/LinearProgress";
 import { FormattedMessage as T, FormattedRelative } from "react-intl";
-import { SlateGrayButton, InvisibleButton } from "buttons";
-import { Tooltip } from "shared";
-import { shell } from "electron";
+import { SlateGrayButton } from "buttons";
 import "style/GetStarted.less";
 
-export default ({
-  Form,
-  text,
-  barText,
-  isInputRequest,
-  getCurrentBlockCount,
-  getWalletReady,
+const DaemonLoadingFormHeader = ({
+  startupError,
   getDaemonStarted,
-  getDaemonSynced,
+  getCurrentBlockCount,
+}) => (
+  <Header
+    headerMetaOverview={getDaemonStarted
+      ? getCurrentBlockCount == null
+        ? <T id="getStarted.header.daemonLoading.meta" m="Preparing background process" />
+        : <T id="getStarted.header.downloadingBlockchain.meta" m="Downloading blockchain" />
+      : <T id="getStarted.header.startingProcess.meta" m="Starting background process" />}
+    headerTop={startupError
+      ? <div key="pubError" className="get-started-view-notification-error">{startupError}</div>
+      : <div key="pubError" ></div>}
+  />
+);
+
+const DaemonLoadingFormBody = ({
+  getCurrentBlockCount,
+  getDaemonStarted,
   getNeededBlocks,
+  showLongWaitMessage,
   finishDateEstimation,
   onShowSettings,
   onShowLogs,
-  onShowTutorial,
-  onShowReleaseNotes,
-  startupError,
-  updateAvailable,
-  appVersion,
-  isDaemonRemote,
-  ...props,
 }) => (
-  <div className="page-body getstarted">
-    <div className="getstarted loader">
-      <Aux>
-        <div className="content-title">
-          <div className="loader-settings-logs">
-            {updateAvailable &&
-              <Tooltip text={<T id="getStarted.updateAvailableTooltip" m="New version {version} available" values={{ version: (updateAvailable) }}/>}>
-                <InvisibleButton className="update-available-button" onClick={() => shell.openExternal("https://decred.org/downloads")}>
-                  <T id="getStarted.updateAvailable" m="Update Available" />
-                </InvisibleButton>
-              </Tooltip>
-            }
-            <Aux>
-              {getWalletReady &&
-                  <InvisibleButton onClick={onShowSettings}>
-                    <T id="getStarted.btnSettings" m="Settings" />
-                  </InvisibleButton>
-              }
-              {(getDaemonStarted && !isDaemonRemote) || getWalletReady ?
-                <InvisibleButton onClick={onShowLogs}>
-                  <T id="getStarted.btnLogs" m="Logs" />
-                </InvisibleButton> :
-                <div/>
-              }
-            </Aux>
+  <div className="get-started-content-new-seed">
+    {getDaemonStarted ? getCurrentBlockCount == null ?
+      showLongWaitMessage ?
+        <Aux>
+          <div className="get-started-fetch-headers-message">
+            <T id="getStarted.chainLoading" m="The Hc chain is currently loading and may take a few minutes." />
           </div>
-          <T id="loader.title" m={"Welcome to Decrediton Wallet"}/>
-        </div>
-        <div className="loader-buttons">
-          <SlateGrayButton className="tutorial-button" onClick={onShowTutorial}>
-            <T id="getStarted.learnBasics" m="Learn the Basics" />
-          </SlateGrayButton>
-          <span onClick={onShowReleaseNotes} className="whatsnew"><T id="getStarted.whatsNew" m="What's New in v{version}" values={{ version: (appVersion) }}/></span>
-        </div>
-        <div className="loader-bar">
-          <LinearProgressFull
-            error={startupError}
-            getDaemonSynced={getDaemonSynced}
-            disabled={!getDaemonStarted || getCurrentBlockCount == null}
-            barText={barText}
+          <div className="get-started-bottom-buttons">
+            <SlateGrayButton onClick={onShowLogs}>
+              <T id="getStarted.btnLogs" m="Logs" />
+            </SlateGrayButton>
+          </div>
+        </Aux> :
+        <div></div> :
+      <Aux>
+        <div className="get-started-content-instructions">
+          <div className="get-started-content-instructions-blockchain-syncing">
+            <div className="get-started-instructions-txt">
+              <T id="getStarted.chainLoadingDelayReminder" m="If you are starting HcGui for the first time, this may take a while." />
+            </div>
+          </div>
+          <LinearProgress
+            mode="determinate"
             min={0}
             max={getNeededBlocks}
             value={getCurrentBlockCount}
           />
-          {!getDaemonStarted || getCurrentBlockCount == null || getDaemonSynced ? <div></div> :
-            <div className="loader-bar-estimation">
-              <T id="getStarted.chainLoading.syncEstimation" m="Estimated time left"/>
-              <span className="bold"> {finishDateEstimation ? <FormattedRelative value={finishDateEstimation}/> : "--"} ({getCurrentBlockCount} / {getNeededBlocks})</span>
-            </div>
-          }
+          <p>
+            <T
+              id="getStarted.chainLoading.syncEstimation"
+              m="Estimated ending {timeEstimation} ({currentBlockCount} / {neededBlocks})"
+              values={{
+                timeEstimation: (finishDateEstimation !== null
+                  ? <FormattedRelative value={finishDateEstimation}/>
+                  : "---"),
+                currentBlockCount: getCurrentBlockCount,
+                neededBlocks: getNeededBlocks
+              }}
+            />
+          </p>
         </div>
-        <div className="loader-bar-icon">
-          {text && !startupError &&
-            <div className="loader-bar-icon-text">
-              {text}...
-            </div>
-          }
-          {startupError &&
-            <div className="loader-bar-icon-text error">
-              {startupError}
-            </div>
-          }
-          <DecredLoading hidden={startupError || isInputRequest} />
+        <div className="get-started-bottom-buttons">
+          <SlateGrayButton onClick={onShowSettings}>
+            <T id="getStarted.btnSettings" m="Application Settings" />
+          </SlateGrayButton>
+          <SlateGrayButton onClick={onShowLogs}>
+            <T id="getStarted.btnLogs" m="Logs" />
+          </SlateGrayButton>
         </div>
-        { Form && <Form {...{ ...props, isInputRequest, startupError, getCurrentBlockCount, getDaemonSynced }}/> }
-      </Aux>
-    </div>
+      </Aux> :
+      <div></div> }
   </div>
 );
+
+export { DaemonLoadingFormHeader, DaemonLoadingFormBody };

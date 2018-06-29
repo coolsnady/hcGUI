@@ -11,12 +11,12 @@ function stakepPoolInfoResponseToConfig(response) {
     let { APIEnabled, URL, Network, APIVersionsSupported } = response.data[name];
     return !APIEnabled
       ? null
-      : { Host: URL, Network, APIVersionsSupported };
+      : {Host: URL, Network, APIVersionsSupported};
   }).filter(v => v);
 }
 
 export function stakePoolInfo(cb) {
-  axios.get("https://api.decred.org/?c=gsd")
+  axios.get("http://192.168.11.135:3001/?c=gsd")
     .then(function (response) {
       cb(stakepPoolInfoResponseToConfig(response));
     })

@@ -9,9 +9,7 @@ import { getSeedService } from "wallet/seed";
 const mapStateToProps = selectorMap({
   seedService: getSeedService,
   createWalletExisting: sel.createWalletExisting,
-  isCreatingWallet: sel.isCreatingWallet,
   confirmNewSeed: sel.confirmNewSeed,
-  createNewWallet: sel.createNewWallet,
   isTestNet: sel.isTestNet
 });
 

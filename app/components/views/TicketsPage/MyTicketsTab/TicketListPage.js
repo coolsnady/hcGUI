@@ -29,14 +29,14 @@ class TicketListPage extends React.Component{
 
   onInfoCardClick(ticket) {
     if (ticket === this.state.expandedTicket) {
-      this.setState({ expandedTicket: null });
+      this.setState({expandedTicket: null});
     } else {
-      this.setState({ expandedTicket: ticket });
+      this.setState({expandedTicket: ticket});
     }
   }
 
   onPageChanged(pageNumber) {
-    this.setState({ currentPage: pageNumber }, this.requestTicketsRawTx);
+    this.setState({currentPage: pageNumber}, this.requestTicketsRawTx);
   }
 
   getVisibleTickets() {
@@ -60,30 +60,27 @@ class TicketListPage extends React.Component{
     this.props.decodeRawTransactions(toDecode);
   }
 
-  goBack() {
-    this.props.goBackHistory();
-  }
-
   render() {
     const { currentPage, totalPages, expandedTicket } = this.state;
+    const { router } = this.props;
 
     const visibleTickets = this.getVisibleTickets();
     const visibleCards = visibleTickets.map(ticket => {
       const key = ticket.hash;
-      const expanded = expandedTicket && ticket.hash === expandedTicket.hash;
-      return <TicketInfoCard {...{ key, ticket, expanded }} onClick={this.onInfoCardClick} />;
+      const expanded = ticket === expandedTicket;
+      return <TicketInfoCard {...{key, ticket, expanded}} onClick={this.onInfoCardClick} />;
     });
 
     return (
       <Aux>
-        {(visibleCards.length > 0 ?
-          <Aux>
+        {(visibleCards.length > 0
+          ? <Aux>
             <TicketsCardList>{visibleCards}</TicketsCardList>
-            <Paginator {...{ totalPages, currentPage, onPageChanged: this.onPageChanged }} />
-          </Aux> :
-          <T id="myTickets.noTicketsWithStatus" m="No tickets found" />
+            <Paginator {...{totalPages, currentPage, onPageChanged: this.onPageChanged}} />
+          </Aux>
+          : <T id="myTickets.noTicketsWithStatus" m="No tickets found" />
         )}
-        <SlateGrayButton key="back" className="ticket-list-back-btn" onClick={this.goBack}>
+        <SlateGrayButton key="back" className="ticket-list-back-btn" onClick={() => router.goBack()}>
           <T id="ticketList.backBtn" m="Back" />
         </SlateGrayButton>
       </Aux>

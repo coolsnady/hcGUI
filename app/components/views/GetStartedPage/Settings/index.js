@@ -1,5 +1,6 @@
 
 import { settings } from "connectors";
+export { default as SettingsHeader } from "./Header";
+
 import SettingsForm from "./Form";
-const Settings = settings(SettingsForm);
-export default Settings;
+export const SettingsBody = settings(SettingsForm);

@@ -1,4 +1,5 @@
 import {
+  WalletSelectionFormHeader as WalletSelectionHeader,
   WalletSelectionFormBody
 } from "./Form";
 
@@ -11,12 +12,10 @@ class WalletSelectionBody extends React.Component {
 
   getInitialState() {
     return {
-      editWallets: false,
-      createNewWallet: true,
-      createWalletForm: false,
       newWalletName: "",
-      selectedWallet: this.props.availableWallets ? this.props.availableWallets[0] : null,
-      hasFailedAttempt: false,
+      newWalletNetwork: "testnet",
+      sideActive: false,
+      selectedWallet: this.props.availableWallets ? this.props.availableWallets[0] : null
     };
   }
   componentWillReceiveProps(nextProps) {
@@ -31,85 +30,72 @@ class WalletSelectionBody extends React.Component {
 
   render() {
     const {
-      getDaemonSynced
-    } = this.props;
-    const {
       onChangeAvailableWallets,
       startWallet,
       createWallet,
+      onShowCreateWallet,
+      onShowSelectWallet,
       onChangeCreateWalletName,
-      showCreateWalletForm,
-      hideCreateWalletForm,
-      onEditWallets,
-      onCloseEditWallets,
+      onChangeCreateWalletNetwork
     } = this;
     const {
       selectedWallet,
       sideActive,
       newWalletName,
       newWalletNetwork,
-      createWalletForm,
-      createNewWallet,
-      editWallets,
-      hasFailedAttempt
     } = this.state;
     return (
       <WalletSelectionFormBody
         {...{
           sideActive,
+          onShowCreateWallet,
+          onShowSelectWallet,
           onChangeAvailableWallets,
           onChangeCreateWalletName,
+          onChangeCreateWalletNetwork,
           startWallet,
           createWallet,
-          createWalletForm,
-          createNewWallet,
-          showCreateWalletForm,
-          hideCreateWalletForm,
           selectedWallet,
           newWalletName,
-          hasFailedAttempt,
           newWalletNetwork,
-          onEditWallets,
-          onCloseEditWallets,
-          editWallets,
-          networkSelected: newWalletNetwork == "mainnet",
-          getDaemonSynced,
           ...this.props,
           ...this.state,
         }}
       />
     );
   }
-  onEditWallets() {
-    this.setState({ editWallets: true });
+  onShowCreateWallet() {
+    this.setState({ sideActive: false });
   }
-  onCloseEditWallets() {
-    this.setState({ editWallets: false });
-  }
-  showCreateWalletForm(createNewWallet) {
-    this.setState({ createNewWallet, createWalletForm: true });
-  }
-  hideCreateWalletForm(createNewWallet) {
-    this.setState({ hasFailedAttempt: false, createNewWallet, createWalletForm: false });
+  onShowSelectWallet() {
+    this.setState({ sideActive: true });
   }
   onChangeAvailableWallets(selectedWallet) {
     this.setState({ selectedWallet });
   }
   onChangeCreateWalletName(newWalletName) {
-    if (newWalletName == "") {
-      this.setState({ hasFailedAttempt: true });
-    }
     this.setState({ newWalletName });
   }
+  onChangeCreateWalletNetwork() {
+    const { newWalletNetwork } = this.state;
+    var updatedNetwork = newWalletNetwork;
+    if (newWalletNetwork == "mainnet") {
+      updatedNetwork = "testnet";
+    } else if (newWalletNetwork == "testnet") {
+      updatedNetwork = "mainnet";
+    }
+    this.setState({ newWalletNetwork: updatedNetwork });
+  }
   createWallet() {
-    const { newWalletName, createNewWallet } = this.state;
-    if (newWalletName == "" ) {
-      this.setState({ hasFailedAttempt: true });
+    const { newWalletName, newWalletNetwork } = this.state;
+    if (newWalletName == "" || (newWalletNetwork !== "mainnet" && newWalletNetwork !== "testnet")) {
       return;
     }
-    this.props.onCreateWallet(
-      createNewWallet,
-      { label: newWalletName, value: { wallet: newWalletName } });
+    this.props.onCreateWallet({
+      label: newWalletName + " (" + newWalletNetwork + ")",
+      network: newWalletNetwork,
+      value: {wallet: newWalletName, network: newWalletNetwork
+      }});
   }
   startWallet() {
     this.props.onStartWallet(this.state.selectedWallet);
@@ -120,4 +106,4 @@ class WalletSelectionBody extends React.Component {
 
 }
 
-export { WalletSelectionBody };
+export { WalletSelectionHeader, WalletSelectionBody};

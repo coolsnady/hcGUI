@@ -1,14 +1,14 @@
 import { GetTicketsResponse }  from "../middleware/walletrpc/api_pb";
 
 export const TicketTypes = new Map([
-  [ GetTicketsResponse.TicketDetails.TicketStatus.UNKNOWN, "unknown" ],
-  [ GetTicketsResponse.TicketDetails.TicketStatus.UNMINED, "unmined" ],
-  [ GetTicketsResponse.TicketDetails.TicketStatus.IMMATURE, "immature" ],
-  [ GetTicketsResponse.TicketDetails.TicketStatus.LIVE, "live" ],
-  [ GetTicketsResponse.TicketDetails.TicketStatus.VOTED, "voted" ],
-  [ GetTicketsResponse.TicketDetails.TicketStatus.MISSED, "missed" ],
-  [ GetTicketsResponse.TicketDetails.TicketStatus.EXPIRED, "expired" ],
-  [ GetTicketsResponse.TicketDetails.TicketStatus.REVOKED, "revoked" ],
+  [GetTicketsResponse.TicketDetails.TicketStatus.UNKNOWN, "unknown"],
+  [GetTicketsResponse.TicketDetails.TicketStatus.UNMINED, "unmined"],
+  [GetTicketsResponse.TicketDetails.TicketStatus.IMMATURE, "immature"],
+  [GetTicketsResponse.TicketDetails.TicketStatus.LIVE, "live"],
+  [GetTicketsResponse.TicketDetails.TicketStatus.VOTED, "voted"],
+  [GetTicketsResponse.TicketDetails.TicketStatus.MISSED, "missed"],
+  [GetTicketsResponse.TicketDetails.TicketStatus.EXPIRED, "expired"],
+  [GetTicketsResponse.TicketDetails.TicketStatus.REVOKED, "revoked"],
 ]);
 
 // decodeVoteScript decodes the output script of a vote transaction into the
@@ -18,7 +18,7 @@ export const TicketTypes = new Map([
 // Testing whether the provided script is a vote script is really basic right
 // now.
 // Reference for what a voting script looks like (as of this writing):
-// https://github.com/decred/hxd/blob/3f3174c987091b03bb34f1fdf4614d10ce6fbfc5/blockchain/stake/staketx.go#L458
+// https://github.com/decred/dcrd/blob/3f3174c987091b03bb34f1fdf4614d10ce6fbfc5/blockchain/stake/staketx.go#L458
 export function decodeVoteScript(network, outputScript) {
   if ((outputScript.length < 4) || (outputScript[0] !== 0x6a)) { // 0x6a == OP_RETURN
     return null;
@@ -37,24 +37,24 @@ export function decodeVoteScript(network, outputScript) {
   let agendas = {
     testnet: {
       5: [
-        { mask: 0x06, name: "DCP0001", choices: { 0x02: "no", 0x04: "yes" },
-          defaultChoice: "abstain" }
+        { mask: 0x06, name: "DCP0001", choices: {0x02: "no", 0x04: "yes"},
+          defaultChoice: "abstain"}
       ],
       6: [
-        { mask: 0x06, name: "DCP0002&3", choices: { 0x02: "no", 0x04: "yes" },
-          defaultChoice: "abstain" }
+        {mask: 0x06, name: "DCP0002&3", choices: {0x02: "no", 0x04: "yes"},
+          defaultChoice: "abstain"}
       ],
     },
     mainnet: {
       4: [
-        { mask: 0x06, name: "DCP0001", choices: { 0x02: "no", 0x04: "yes" },
-          defaultChoice: "abstain" },
-        { mask: 0x18, name: "lnsupport", choices: { 0x08: "no", 0x10: "yes" },
-          defaultChoice: "abstain" }
+        { mask: 0x06, name: "DCP0001", choices: {0x02: "no", 0x04: "yes"},
+          defaultChoice: "abstain"},
+        { mask: 0x18, name: "lnsupport", choices: {0x08: "no", 0x10: "yes"},
+          defaultChoice: "abstain"}
       ],
       5: [
-        { mask: 0x06, name: "DCP0002&3", choices: { 0x02: "no", 0x04: "yes" },
-          defaultChoice: "abstain" }
+        {mask: 0x06, name: "DCP0002&3", choices: {0x02: "no", 0x04: "yes"},
+          defaultChoice: "abstain"}
       ],
     }
   };

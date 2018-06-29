@@ -1,6 +1,6 @@
-import { AdvancedHeader, AdvancedBody } from "./Form";
+import {AdvancedHeader, AdvancedBody} from "./Form";
 import Error from "./Error";
-import { setAppdataPath, getAppdataPath, getRemoteCredentials, setRemoteCredentials } from "config.js";
+import { setAppdataPath, getAppdataPath, getRemoteCredentials, setRemoteCredentials} from "config.js";
 
 @autobind
 class AdvancedStartupHeader extends React.Component {
@@ -22,21 +22,15 @@ class AdvancedStartupBody extends React.Component {
   }
 
   getInitialState() {
-    const { rpc_password, rpc_user, rpc_cert, rpc_host, rpc_port } = getRemoteCredentials();
+    const {rpc_password, rpc_user, rpc_cert, rpc_host, rpc_port} = getRemoteCredentials(this.props.network == "testnet", this.props.walletName);
     return {
-      sideActive: true,
+      sideActive: false,
       rpc_user: rpc_user,
       rpc_password: rpc_password,
       rpc_cert: rpc_cert,
       rpc_host: rpc_host,
       rpc_port: rpc_port,
-      rpcUserHasFailedAttempt: false,
-      rpcPasswordHasFailedAttempt: false,
-      rpcHostHasFailedAttempt: false,
-      rpcPortHasFailedAttempt: false,
-      rpcCertHasFailedAttempt: false,
-      appDataHasFailedAttempt: false,
-      appData: getAppdataPath(),
+      appData: getAppdataPath(this.props.network == "testnet", this.props.walletName),
     };
   }
 
@@ -52,7 +46,7 @@ class AdvancedStartupBody extends React.Component {
       setRpcHost,
       setRpcPort,
       setAppData,
-      onSubmitAppDataForm,
+      onSubmitAppData,
       onSubmitRemoteForm,
       skipAdvancedDaemon,
       onShowRemote,
@@ -63,7 +57,7 @@ class AdvancedStartupBody extends React.Component {
         {...{
           ...this.props,
           ...this.state,
-          onSubmitAppDataForm,
+          onSubmitAppData,
           onSubmitRemoteForm,
           skipAdvancedDaemon,
           onShowRemote,
@@ -84,71 +78,45 @@ class AdvancedStartupBody extends React.Component {
   }
 
   setRpcUser(rpc_user) {
-    if (rpc_user == "") {
-      this.setState({ rpcUserHasFailedAttempt: true });
-    }
+    setRemoteCredentials(this.props.network == "testnet", this.props.walletName, "rpc_user", rpc_user);
     this.setState({ rpc_user });
   }
 
   setRpcPass(rpc_password) {
-    if (rpc_password == "") {
-      this.setState({ rpcPasswordHasFailedAttempt: true });
-    }
+    setRemoteCredentials(this.props.network == "testnet", this.props.walletName, "rpc_password", rpc_password);
     this.setState({ rpc_password });
   }
 
   setRpcHost(rpc_host) {
-    if (rpc_host == "") {
-      this.setState({ rpcHostHasFailedAttempt: true });
-    }
+    setRemoteCredentials(this.props.network == "testnet", this.props.walletName, "rpc_host", rpc_host);
     this.setState({ rpc_host });
   }
 
   setRpcPort(rpc_port) {
-    if (rpc_port == "") {
-      this.setState({ rpcPortHasFailedAttempt: true });
-    }
+    setRemoteCredentials(this.props.network == "testnet", this.props.walletName, "rpc_port", rpc_port);
     this.setState({ rpc_port });
   }
 
   setRpcCert(rpc_cert) {
-    if (rpc_cert == "") {
-      this.setState({ rpcCertHasFailedAttempt: true });
-    }
+    setRemoteCredentials(this.props.network == "testnet", this.props.walletName, "rpc_cert", rpc_cert);
     this.setState({ rpc_cert });
   }
 
   setAppData(appData) {
-    if (appData == "") {
-      this.setState({ appDataHasFailedAttempt: true });
-    }
+    setAppdataPath(this.props.network == "testnet", appData, this.props.walletName);
     this.setState({ appData });
   }
 
   onSubmitRemoteForm() {
-    if (!this.isRemoteValid()) {
-      this.setState({ rpcUserHasFailedAttempt: true, rpcPasswordHasFailedAttempt: true, rpcHostHasFailedAttempt: true, rpcPortHasFailedAttempt: true, rpcCertHasFailedAttempt: true });
-      return;
-    }
+    if (!this.isRemoteValid()) return;
     const { rpc_user, rpc_password, rpc_cert, rpc_host, rpc_port } = this.state;
-    setRemoteCredentials("rpc_user", rpc_user);
-    setRemoteCredentials("rpc_password", rpc_password);
-    setRemoteCredentials("rpc_host", rpc_host);
-    setRemoteCredentials("rpc_port", rpc_port);
-    setRemoteCredentials("rpc_cert", rpc_cert);
-    let args = { rpc_user, rpc_password, rpc_cert, rpc_host, rpc_port };
+    let args = {rpc_user, rpc_password, rpc_cert, rpc_host, rpc_port};
     this.props.onStartDaemon(args);
   }
 
-  onSubmitAppDataForm() {
-    const { appData } = this.state;
-    if (!this.isAppDataValid()) {
-      this.setState({ appDataHasFailedAttempt: true });
-      return;
-    }
-    console.log(!this.isAppDataValid(), !!(appData), appData);
-    setAppdataPath(appData);
-    this.props.onStartDaemon(null, appData);
+  onSubmitAppData() {
+    if (!this.isAppDataValid()) return;
+    this.props.onStartDaemon(null, this.state.appData);
   }
 
   isRemoteValid() {

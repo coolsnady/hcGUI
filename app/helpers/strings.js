@@ -28,7 +28,7 @@ export function restrictToStdDecimalNumber(s) {
 //
 // Due to floating point inacuracies, a rounding function compatible to dcrutil
 // `round` is used (see:
-// https://github.com/decred/hxd/blob/v1.1.2/dcrutil/amount.go#L77)
+// https://github.com/decred/dcrd/blob/v1.1.2/dcrutil/amount.go#L77)
 //
 // Note that, since JS doesn't actually have an integer type (all numbers
 // are floating-point numbers), the Math.trunc function is used to simulate

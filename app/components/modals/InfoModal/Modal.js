@@ -1,31 +1,28 @@
 import Modal from "../Modal";
-import { KeyBlueButton } from "buttons";
+import { SlateGrayButton } from "buttons";
 import { FormattedMessage as T } from "react-intl";
 import PropTypes from "prop-types";
 
 const propTypes = {
-  modalTitle: PropTypes.object,
+  modalTitle: PropTypes.object.isRequired,
   show: PropTypes.bool.isRequired,
   modalContent: PropTypes.object.isRequired,
   onCancelModal: PropTypes.func.isRequired
 };
 
-const Title = ({ modalTitle }) => (
-  <div className="info-modal-header-title">
-    {modalTitle}
-  </div>
-);
-
-const InfoModal = ({ modalTitle, modalContent, modalClassName, show, onCancelModal, double }) => (
-  <Modal className={(double ? "info-modal double " : "info-modal ") + (modalClassName||"")} {...{ show, onCancelModal }}>
-    {modalTitle ? <Title {...{ modalTitle }} /> : null }
-    <div className="info-modal-close-button-top" onClick={onCancelModal}/>
+const InfoModal = ({modalTitle, modalContent, show, onCancelModal}) => (
+  <Modal className="info-modal" {...{show}}>
+    <div className="info-modal-header">
+      <div className="info-modal-header-title">
+        {modalTitle}
+      </div>
+      <SlateGrayButton className="info-modal-close-button" onClick={onCancelModal}>
+        <T id="infoModal.btnClose" m="Close" />
+      </SlateGrayButton>
+    </div>
     <div className="info-modal-content">
       {modalContent}
     </div>
-    <KeyBlueButton className="info-modal-close-button" onClick={onCancelModal}>
-      <T id="infoModal.btnClose" m="Got it" />
-    </KeyBlueButton>
   </Modal>
 );
 

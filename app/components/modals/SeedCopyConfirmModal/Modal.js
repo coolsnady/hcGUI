@@ -1,8 +1,8 @@
 import DefaultModal from "../Modal";
-import { InvisibleButton, DangerButton } from "buttons";
+import { SlateGrayButton, DangerButton } from "buttons";
 import { FormattedMessage as T } from "react-intl";
-import { Documentation } from "shared";
 import { TextInput } from "inputs";
+import { ExternalLink } from "shared";
 
 const propTypes = {
   show: PropTypes.bool.isRequired,
@@ -11,29 +11,39 @@ const propTypes = {
   copyConfirmationPhrase: PropTypes.string.isRequired,
 };
 
-const Modal = ({ show, onCancelModal, onSubmit, copyConfirmationPhrase,
-  typedConfirmationPhrase, onTypedConfirmationPhraseChanged }) => (
-  <DefaultModal className="confirm-seed-copy-modal" {...{ show }}>
-    <div className="confirm-seed-copy-modal-content">
-      <div className="confirm-seed-copy-warning-text">
-        <Documentation name="SeedCopyWarning" />
-        <T
-          id="seedCopyConfirmModal.confirmPhraseInstruction"
-          m="Please type {confirmationPhrase} to copy the seed."
-          values={{ confirmationPhrase: <span className="mono confirm-seed-copy-phrase">'{copyConfirmationPhrase}'</span> }} />
+const Modal = ({show, onCancelModal, onSubmit, copyConfirmationPhrase,
+  typedConfirmationPhrase, onTypedConfirmationPhraseChanged}) => (
+  <DefaultModal className="confirm-modal" {...{ show }}>
+    <div className="confirm-modal-header">
+      <div className="confirm-modal-header-title">
+        <T id="seedCopyConfirmModal.title" m="Seed Clipboard Copy Warning" />
       </div>
+    </div>
+    <div className="confirm-seed-copy-modal-content">
+      <p className="confirm-seed-copy-warning-text">
+        <T id="seedCopyConfirmModal.warningText" m={`Please note that copying the seed to the clipboard may be a security risk, as other applications may be able to monitor and copy the contents of the clipboard.
+
+          It is also highly unadvised to maintain the seed on a computer file, specially without encryption, as that can lead to stealing of funds by anyone with access to the computer.
+
+          Further, storing the seed on a computer file without backing it up on a physical medium (written down piece of paper stored in a secure location) can cause loss of funds if the local wallet file gets corrupted or is otherwise unavailable (due to hardware failure or any other number of issues).
+
+          If you are sure you understand the risks and still want to copy the seed to the clipboard, please type the phrase {confirmationPhrase} in the box below and the seed will be copied to the clipboard.`}
+        values={{
+          confirmationPhrase: <span className="mono confirm-seed-copy-phrase">'{copyConfirmationPhrase}'</span>,
+        }}/>
+      </p>
       <TextInput
         autoFocus
         value={typedConfirmationPhrase}
         onChange={(e) => onTypedConfirmationPhraseChanged(e.target.value)}/>
     </div>
-    <div className="confirm-seed-copy-modal-toolbar">
+    <div className="confirm-modal-toolbar">
       <DangerButton className="confirm-modal-confirm-button" onClick={onSubmit} disabled={typedConfirmationPhrase.toLowerCase() !== copyConfirmationPhrase.toLowerCase()}>
         <T id="seedCopyConfirm.btnConfirm" m="Confirm Seed Copy" />
       </DangerButton>
-      <InvisibleButton className="confirm-modal-close-button" onClick={onCancelModal}>
+      <SlateGrayButton className="confirm-modal-close-button" onClick={onCancelModal}>
         <T id="seedCopyConfirm.btnCancel" m="Cancel" />
-      </InvisibleButton>
+      </SlateGrayButton>
     </div>
   </DefaultModal>
 );

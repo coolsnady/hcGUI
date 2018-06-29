@@ -1,7 +1,4 @@
 import {
-  SELECT_LANGUAGE,
-  FINISH_TUTORIAL,
-  FINISH_PRIVACY,
   DAEMONSTARTED,
   DAEMONSTARTED_REMOTE,
   DAEMONSTARTED_APPDATA,
@@ -13,54 +10,27 @@ import {
   WALLETCREATED,
   SHUTDOWN_REQUESTED,
   SET_CREDENTIALS_APPDATA_ERROR,
-  AVAILABLE_WALLETS,
-  DECREDITON_VERSION,
-  FATAL_DAEMON_ERROR,
-  FATAL_WALLET_ERROR,
+  AVAILABLE_WALLETS
 } from "../actions/DaemonActions";
-import {
-  CREATEWALLET_GOBACK
-} from "../actions/WalletLoaderActions";
-import {
-  UPDATEHIDDENACCOUNTS
-} from "../actions/ClientActions";
 
 export default function version(state = {}, action) {
   switch (action.type) {
-  case DECREDITON_VERSION:
-    return { ...state,
-      updateAvailable: action.msg,
-    };
-  case SELECT_LANGUAGE:
-    return { ...state,
-      locale: action.language,
-      setLanguage: false,
-    };
-  case FINISH_TUTORIAL:
-    return { ...state,
-      tutorial: false,
-    };
-  case FINISH_PRIVACY:
-    return { ...state,
-      showPrivacy: false,
-    };
   case DAEMONSTARTED:
-    return { ...state,
+    return {...state,
       daemonStarted: true,
       daemonAdvanced: false,
       daemonStopped: false,
       credentials: action.credentials,
     };
   case DAEMONSTARTED_REMOTE:
-    return { ...state,
+    return {...state,
       daemonStarted: true,
       daemonAdvanced: false,
       daemonStopped: false,
       credentials: action.credentials,
-      daemonRemote: true,
     };
   case DAEMONSTARTED_APPDATA:
-    return { ...state,
+    return {...state,
       daemonStarted: true,
       daemonAdvanced: false,
       daemonStopped: false,
@@ -68,70 +38,48 @@ export default function version(state = {}, action) {
       credentials: action.credentials,
     };
   case DAEMONSYNCING_START:
-    return { ...state,
+    return {...state,
       currentBlockCount: action.currentBlockCount,
       timeStart: action.timeStart,
       blockStart: action.blockStart,
     };
   case DAEMONSYNCING_PROGRESS:
-    return { ...state,
+    return {...state,
       currentBlockCount: action.currentBlockCount,
       timeLeftEstimate: action.timeLeftEstimate,
     };
   case DAEMONSYNCED:
-    return { ...state,
+    return {...state,
       daemonSynced: true,
     };
   case WALLETREADY:
-    return { ...state,
+    return {...state,
       selectCreateWalletInputRequest: false,
       walletReady: true,
       walletName: action.walletName,
+      network: action.network,
       hiddenAccounts: action.hiddenAccounts,
     };
-  case CREATEWALLET_GOBACK:
-    return { ...state,
-      walletReady: false,
-      walletName: "",
-      selectCreateWalletInputRequest: true,
-    };
   case WALLETCREATED:
-    return { ...state,
+    return {...state,
       selectCreateWalletInputRequest: false,
     };
   case SHUTDOWN_REQUESTED:
-    return { ...state,
+    return {...state,
       shutdownRequested: true,
     };
   case DAEMONSTOPPED:
-    return { ...state,
+    return {...state,
       daemonStarted: false,
       daemonStopped: true,
     };
   case SET_CREDENTIALS_APPDATA_ERROR:
-    return { ...state,
+    return {...state,
       remoteAppdataError: true,
     };
   case AVAILABLE_WALLETS:
-    return { ...state,
-      availableWallets: action.availableWallets,
-      previousWallet: action.previousWallet,
-      selectCreateWalletInputRequest: !action.previousWallet,
-    };
-  case UPDATEHIDDENACCOUNTS:
-    return {
-      ...state,
-      hiddenAccounts: action.hiddenAccounts,
-    };
-  case FATAL_DAEMON_ERROR:
-    return {
-      ...state,
-      daemonError: action.error,
-    };
-  case FATAL_WALLET_ERROR:
-    return {
-      ...state,
-      walletError: action.error,
+    return {...state,
+      availableWallets: action.availableWallets
     };
   default:
     return state;

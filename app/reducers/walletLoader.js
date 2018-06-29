@@ -2,20 +2,17 @@ import {
   CREATEWALLET_ATTEMPT, CREATEWALLET_FAILED, CREATEWALLET_SUCCESS,
   LOADER_ATTEMPT, LOADER_FAILED, LOADER_SUCCESS,
   WALLETEXIST_ATTEMPT, WALLETEXIST_FAILED, WALLETEXIST_SUCCESS,
-  OPENWALLET_INPUT, OPENWALLET_FAILED_INPUT, OPENWALLET_ATTEMPT, OPENWALLET_FAILED, OPENWALLET_SUCCESS,
+  OPENWALLET_PUBLIC_INPUT, OPENWALLET_FAILED_PUBLIC_INPUT,
+  OPENWALLET_PRIVATE_INPUT, OPENWALLET_FAILED_PRIVATE_INPUT,
+  OPENWALLET_ATTEMPT, OPENWALLET_FAILED, OPENWALLET_SUCCESS,
   CLOSEWALLET_ATTEMPT, CLOSEWALLET_FAILED, CLOSEWALLET_SUCCESS,
   STARTRPC_ATTEMPT, STARTRPC_FAILED, STARTRPC_SUCCESS, STARTRPC_RETRY,
   DISCOVERADDRESS_INPUT, DISCOVERADDRESS_FAILED_INPUT, DISCOVERADDRESS_ATTEMPT, DISCOVERADDRESS_FAILED, DISCOVERADDRESS_SUCCESS,
   SUBSCRIBEBLOCKNTFNS_ATTEMPT, SUBSCRIBEBLOCKNTFNS_FAILED, SUBSCRIBEBLOCKNTFNS_SUCCESS,
   FETCHHEADERS_ATTEMPT, FETCHHEADERS_FAILED, FETCHHEADERS_PROGRESS, FETCHHEADERS_SUCCESS,
   CREATEWALLET_EXISTINGSEED_INPUT, CREATEWALLET_NEWSEED_INPUT, CREATEWALLET_NEWSEED_CONFIRM_INPUT, CREATEWALLET_NEWSEED_BACK_INPUT,
-  CREATEWALLET_GOBACK_EXISITNG_OR_NEW, CREATEWALLET_GOBACK,
   UPDATEDISCOVERACCOUNTS, NEEDED_BLOCKS_DETERMINED
 } from "actions/WalletLoaderActions";
-import {
-  WALLETCREATED
-} from "actions/DaemonActions";
-
 import {
   GETSTARTUPWALLETINFO_ATTEMPT
 } from "actions/ClientActions";
@@ -27,125 +24,111 @@ import { WALLET_LOADER_SETTINGS } from "actions/DaemonActions";
 export default function walletLoader(state = {}, action) {
   switch (action.type) {
   case LOADER_ATTEMPT:
-    return { ...state,
+    return {...state,
       getLoaderRequestAttempt: true,
     };
   case LOADER_FAILED:
-    return { ...state,
+    return {...state,
       getLoaderError: String(action.error),
       getLoaderRequestAttempt: false,
       loader: null,
     };
   case LOADER_SUCCESS:
-    return { ...state,
+    return {...state,
       getLoaderError: null,
       loader: action.loader,
       getLoaderRequestAttempt: false,
       stepIndex: 1,
     };
   case WALLETEXIST_ATTEMPT:
-    return { ...state,
+    return {...state,
       walletExistRequestAttempt: true,
     };
   case WALLETEXIST_FAILED:
-    return { ...state,
+    return {...state,
       walletExistError: String(action.error),
       walletExistRequestAttempt: false,
       walletExistResponse: null,
     };
   case WALLETEXIST_SUCCESS:
-    return { ...state,
+    return {...state,
       walletExistError: null,
       walletExistRequestAttempt: false,
       walletExistResponse: action.response,
       stepIndex: 2,
     };
-  case WALLETCREATED:
-    return { ...state,
-      createWalletExisting: action.createNewWallet,
-    };
-  case CREATEWALLET_GOBACK:
-    return { ...state,
-      stepIndex: 1,
-      existingOrNew: true,
-      createNewWallet: false,
-    };
-  case CREATEWALLET_GOBACK_EXISITNG_OR_NEW:
-    return { ...state,
-      confirmNewSeed: false,
-      existingOrNew: true,
-      createNewWallet: false,
-    };
   case CREATEWALLET_NEWSEED_CONFIRM_INPUT:
-    return { ...state,
+    return {...state,
       createWalletInputRequest: true,
       createWalletExisting: false,
       confirmNewSeed: true,
     };
   case  CREATEWALLET_NEWSEED_BACK_INPUT:
-    return { ...state,
+    return {...state,
       createWalletInputRequest: true,
       confirmNewSeed: false,
     };
   case CREATEWALLET_EXISTINGSEED_INPUT:
-    return { ...state,
+    return {...state,
       createWalletInputRequest: true,
       createWalletExisting: true,
-      existingOrNew: false,
-      createNewWallet: true,
-      stepIndex: 2,
     };
   case CREATEWALLET_NEWSEED_INPUT:
-    return { ...state,
+    return {...state,
       createWalletInputRequest: true,
       createWalletExisting: false,
-      existingOrNew: false,
-      createNewWallet: true,
-      stepIndex: 2,
     };
   case CREATEWALLET_ATTEMPT:
-    return { ...state,
+    return {...state,
       createWalletInputRequest: false,
       walletCreateExisting: action.existing,
       walletCreateRequestAttempt: true,
     };
   case CREATEWALLET_FAILED:
-    return { ...state,
+    return {...state,
       walletCreateError: String(action.error),
       walletCreateRequestAttempt: false,
     };
   case CREATEWALLET_SUCCESS:
-    return { ...state,
+    return {...state,
       walletCreateError: null,
       walletCreateRequestAttempt: false,
       walletCreateResponse: action.response,
       advancedDaemonInputRequest: true,
       stepIndex: 3,
     };
-  case OPENWALLET_INPUT:
-    return { ...state,
-      openWalletInputRequest: true,
-      walletOpenRequestAttempt: false,
+  case OPENWALLET_PUBLIC_INPUT:
+    return {...state,
+      openWalletPublicInputRequest: true,
     };
-  case OPENWALLET_FAILED_INPUT:
-    return { ...state,
+  case OPENWALLET_FAILED_PUBLIC_INPUT:
+    return {...state,
       walletOpenError: String(action.error),
-      openWalletInputRequest: true,
-      walletOpenRequestAttempt: false,
+      openWalletPublicInputRequest: true,
+    };
+  case OPENWALLET_PRIVATE_INPUT:
+    return {...state,
+      openWalletPrivateInputRequest: true,
+    };
+  case OPENWALLET_FAILED_PRIVATE_INPUT:
+    return {...state,
+      walletOpenError: String(action.error),
+      openWalletPrivateInputRequest: true,
     };
   case OPENWALLET_ATTEMPT:
-    return { ...state,
+    return {...state,
       walletOpenError: false,
-      openWalletInputRequest: false,
+      openWalletPublicInputRequest: false,
+      openWalletPrivateInputRequest: false,
       walletOpenRequestAttempt: true,
     };
   case OPENWALLET_FAILED:
-    return { ...state,
+    return {...state,
       walletOpenError: String(action.error),
       walletOpenRequestAttempt: false,
     };
   case OPENWALLET_SUCCESS:
-    return { ...state,
+    return {...state,
       walletOpenError: null,
       walletOpenRequestAttempt: false,
       walletOpenResponse: action.response,
@@ -153,109 +136,107 @@ export default function walletLoader(state = {}, action) {
       stepIndex: 3,
     };
   case CLOSEWALLET_ATTEMPT:
-    return { ...state,
+    return {...state,
       walletCloseRequestAttempt: true,
     };
   case CLOSEWALLET_FAILED:
-    return { ...state,
+    return {...state,
       walletCloseError: String(action.error),
       walletCloseRequestAttempt: false,
     };
   case CLOSEWALLET_SUCCESS:
-    return { ...state,
+    return {...state,
       walletCloseError: null,
       walletCloseRequestAttempt: false,
       walletCloseResponse: action.response,
     };
   case STARTRPC_ATTEMPT:
-    return { ...state,
+    return {...state,
       startRpcError: null,
       startRpcRequestAttempt: true,
     };
   case STARTRPC_RETRY:
-    return { ...state,
+    return {...state,
       rpcRetryAttempts: action.rpcRetryAttempts,
     };
   case STARTRPC_FAILED:
-    return { ...state,
+    return {...state,
       startRpcError: String(action.error),
       startRpcRequestAttempt: false,
       rpcRetryAttempts: 0,
     };
   case STARTRPC_SUCCESS:
-    return { ...state,
+    return {...state,
       startRpcError: null,
       startRpcRequestAttempt: false,
       startRpcResponse: true,
       stepIndex: 4,
     };
   case DISCOVERADDRESS_INPUT:
-    return { ...state,
+    return {...state,
       discoverAddressInputRequest: true,
     };
   case DISCOVERADDRESS_FAILED_INPUT:
-    return { ...state,
+    return {...state,
       discoverAddressInputRequest: true,
       discoverAddressError: String(action.error),
-      discoverAddressRequestAttempt: false,
     };
   case DISCOVERADDRESS_ATTEMPT:
-    return { ...state,
+    return {...state,
       discoverAddressInputRequest: false,
       discoverAddressError: null,
       discoverAddressRequestAttempt: true,
     };
   case DISCOVERADDRESS_FAILED:
-    return { ...state,
+    return {...state,
       discoverAddressError: String(action.error),
       discoverAddressRequestAttempt: false,
     };
   case DISCOVERADDRESS_SUCCESS:
-    return { ...state,
+    return {...state,
       discoverAddressError: null,
       discoverAddressRequestAttempt: false,
       discoverAddressResponse: true,
-      stepIndex: action.complete ? 7 : 6, // 6 = stakepool selection, 7 = fetch headers
+      stepIndex: 6,
     };
   case FETCHHEADERS_ATTEMPT:
-    return { ...state,
+    return {...state,
       fetchHeadersRequestAttempt: true,
-      stepIndex: 7,
     };
   case FETCHHEADERS_FAILED:
-    return { ...state,
+    return {...state,
       fetchHeadersError: String(action.error),
       fetchHeadersRequestAttempt: false,
     };
   case FETCHHEADERS_PROGRESS:
-    return { ...state,
+    return {...state,
       fetchHeadersResponse: action.response,
     };
   case FETCHHEADERS_SUCCESS:
-    return { ...state,
+    return {...state,
       fetchHeadersError: null,
       fetchHeadersRequestAttempt: false,
       fetchHeadersResponse: action.response,
     };
   case RESCAN_ATTEMPT:
-    return { ...state,
-      stepIndex: 8
+    return {...state,
+      stepIndex: 7
     };
   case GETSTARTUPWALLETINFO_ATTEMPT:
-    return { ...state,
-      stepIndex: 9
+    return {...state,
+      stepIndex: 8
     };
   case SUBSCRIBEBLOCKNTFNS_ATTEMPT:
-    return { ...state,
+    return {...state,
       subscribeBlockNtfnsRequestAttempt: true,
     };
   case SUBSCRIBEBLOCKNTFNS_FAILED:
-    return { ...state,
+    return {...state,
       subscribeBlockNtfnsError: String(action.error),
       subscribeBlockNtfnsRequestAttempt: false,
     };
   case SUBSCRIBEBLOCKNTFNS_SUCCESS:
-    return { ...state,
+    return {...state,
       subscribeBlockNtfnsError: null,
       subscribeBlockNtfnsRequestAttempt: false,
       subscribeBlockNtfnsRequest: null,
@@ -263,15 +244,15 @@ export default function walletLoader(state = {}, action) {
       stepIndex: 5,  // Onto final prep
     };
   case UPDATEDISCOVERACCOUNTS:
-    return { ...state,
+    return {...state,
       discoverAccountsComplete: action.complete,
     };
   case NEEDED_BLOCKS_DETERMINED:
-    return { ...state,
+    return {...state,
       neededBlocks: action.neededBlocks
     };
   case WALLET_LOADER_SETTINGS:
-    return { ...state,
+    return {...state,
       discoverAccountsComplete: action.discoverAccountsComplete,
     };
   default:

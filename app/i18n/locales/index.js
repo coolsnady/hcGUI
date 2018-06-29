@@ -10,12 +10,6 @@ export const defaultFormats = {
       style: "percent",
       minimumFractionDigits: 4
     }
-  },
-  date: {
-    "day-short-month": {
-      day: "numeric",
-      month: "short"
-    }
   }
 };
 
@@ -24,14 +18,6 @@ const en = {
   language: "en",
   description: "English",
   messages: staticDefaults, // uses defaultMessage for anything not on the staticDefaults
-  formats: defaultFormats //dont customize for en language
-};
-
-const en_AU = {
-  key: "en-AU",
-  language: "en-AU",
-  description: "Australian English",
-  messages: require("../translations/original.json"),
   formats: defaultFormats //dont customize for en language
 };
 
@@ -53,7 +39,7 @@ const dev = {
   formats: defaultFormats
 };
 
-const locales = [ en, en_AU, pt_BR ];
+const locales = [en, pt_BR];
 
 if (process.env.NODE_ENV === "development") {
   locales.push(dev);
@@ -73,8 +59,6 @@ export function appLocaleFromElectronLocale(electronLocale) {
   case "pt-PT":
     return "pt-BR";
 
-  case "en-AU":
-    return "en-AU";
   default: return "en";
   }
 }

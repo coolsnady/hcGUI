@@ -3,13 +3,16 @@
 .advanced-page-toggle {
   float: left;
   z-index: 10;
+  position: absolute;
+  left: 100px;
 }
 
 .text-toggle {
   display: block;
-  height: 40px;
   float: right;
   text-align: left;
+  letter-spacing: .5px;
+  font-size: 15px;
 }
 
 .text-toggle-small {
@@ -27,23 +30,34 @@
 
 .inverted-colors .text-toggle-button-left,
 .inverted-colors .text-toggle-button-right {
-  background-color: #8997a5;
-  color: #ddd;
+  background-color: @darkGrey;
+  color: @white;
+
+  &:hover {
+    background-color: @lightPurple;
+  }
+}
+
+.inverted-colors .text-toggle-button-left .text-toggle-button-active,
+.inverted-colors .text-toggle-button-right .text-toggle-button-active {
+  &:hover {
+    background-color: @purple;
+  }
 }
 
 .inverted-colors .text-toggle-button-active {
-  background-color: #091440;
-  color: @background-container;
+  background-color: @purple;
+  color: @white;
 }
 
 .text-toggle-button-left,
 .text-toggle-button-right {
   min-width: 140px;
   float: left;
-  border: 1px #e7eaed solid;
-  background-color: #fff;
+  border: 2px @purple solid;
+  background-color: @darkGrey;
   box-shadow: none;
-  color: #8997a5;
+  color: @grey;
   padding: 12px 18px;
   font-size: 13px;
   font-weight: 600;
@@ -55,17 +69,22 @@
 
 .text-toggle-button-left {
   border-radius: 5px 0px 0px 5px;
+  border-right: none;
 }
 
 .text-toggle-button-right {
+  border-left: none;
   border-radius: 0px 5px 5px 0px;
 }
 
 .text-toggle-button-active {
-  background-color: @background-container;
+  background-color: @purple;
   color: #091440;
-  border: 1px solid #bec7cf;
   cursor: default;
+
+  &:hover {
+    background-color: @purple;
+  }
 }
 
 .text-toggle-button-description {

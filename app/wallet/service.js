@@ -1,8 +1,15 @@
 import Promise from "promise";
 import * as client from "middleware/grpc/client";
-import { reverseHash, strHashToRaw } from "../helpers/byteActions";
+import { reverseHash } from "../helpers/byteActions";
+import {
+  NextAddressRequest,
+  DecodeRawTransactionRequest,
+  ValidateAddressRequest,
+  GetTransactionsRequest,
+  TransactionDetails,
+  PublishUnminedTransactionsRequest,
+} from "middleware/walletrpc/api_pb";
 import { withLog as log, withLogNoData, logOptionNoResponseData } from "./index";
-import * as api from "middleware/walletrpc/api_pb";
 
 const promisify = fn => (...args) => new Promise((ok, fail) => fn(...args,
   (res, err) => err ? fail(err) : ok(res)));
@@ -16,31 +23,27 @@ export const getDecodeService = promisify(client.getDecodeMessageService);
 
 export const getNextAddress = log((walletService, accountNum) =>
   new Promise((resolve, reject) => {
-    const request = new api.NextAddressRequest();
+    const request = new NextAddressRequest();
     request.setAccount(accountNum);
     request.setKind(0);
-    request.setGapPolicy(api.NextAddressRequest.GapPolicy.GAP_POLICY_WRAP);
     walletService
       .nextAddress(request, (error, response) => error ? reject(error) : resolve(response));
   })
     .then(response => ({
-      ...response,
-      publicKey: response.getPublicKey(),
-      address: response.getAddress()
+      publicKey: response.getPublicKey()
     })), "Get Next Address", logOptionNoResponseData());
 
 export const validateAddress = withLogNoData((walletService, address) =>
   new Promise((resolve, reject) => {
-    const request = new api.ValidateAddressRequest();
+    const request = new ValidateAddressRequest();
     request.setAddress(address);
     walletService.validateAddress(request, (error, response) => error ? reject(error) : resolve(response));
   }), "Validate Address");
 
-export const decodeTransaction = withLogNoData((decodeMessageService, rawTx) =>
+export const decodeTransaction = withLogNoData((decodeMessageService, hexTx) =>
   new Promise((resolve, reject) => {
-    var request = new api.DecodeRawTransactionRequest();
-    var buffer = Buffer.isBuffer(rawTx) ? rawTx : Buffer.from(rawTx, "hex");
-    var buff = new Uint8Array(buffer);
+    var request = new DecodeRawTransactionRequest();
+    var buff = new Uint8Array(Buffer.from(hexTx, "hex"));
     request.setSerializedTransaction(buff);
     decodeMessageService.decodeRawTransaction(request, (error, tx) => {
       if (error) {
@@ -59,19 +62,13 @@ export const UNMINED_BLOCK_TEMPLATE = {
   getHash() { return null; }
 };
 
-export const TRANSACTION_TYPE_REGULAR = "Regular";
-export const TRANSACTION_TYPE_TICKET_PURCHASE = "Ticket";
-export const TRANSACTION_TYPE_VOTE = "Vote";
-export const TRANSACTION_TYPE_REVOCATION = "Revocation";
-export const TRANSACTION_TYPE_COINBASE = "Coinbase";
-
 // Map from numerical into string transaction type
 export const TRANSACTION_TYPES = {
-  [api.TransactionDetails.TransactionType.REGULAR]: TRANSACTION_TYPE_REGULAR,
-  [api.TransactionDetails.TransactionType.TICKET_PURCHASE]: TRANSACTION_TYPE_TICKET_PURCHASE,
-  [api.TransactionDetails.TransactionType.VOTE]: TRANSACTION_TYPE_VOTE,
-  [api.TransactionDetails.TransactionType.REVOCATION]: TRANSACTION_TYPE_REVOCATION,
-  [api.TransactionDetails.TransactionType.COINBASE]: TRANSACTION_TYPE_COINBASE
+  [TransactionDetails.TransactionType.REGULAR]: "Regular",
+  [TransactionDetails.TransactionType.TICKET_PURCHASE]: "Ticket",
+  [TransactionDetails.TransactionType.VOTE]: "Vote",
+  [TransactionDetails.TransactionType.REVOCATION]: "Revocation",
+  [TransactionDetails.TransactionType.COINBASE]: "Coinbase"
 };
 
 export const TRANSACTION_DIR_SENT = "sent";
@@ -91,13 +88,7 @@ export function formatTransaction(block, transaction, index) {
   const type = transaction.getTransactionType();
   let direction = "";
 
-  let debitAccounts = [];
-  transaction.getDebitsList().forEach((debit) => debitAccounts.push(debit.getPreviousAccount()));
-
-  let creditAddresses = [];
-  transaction.getCreditsList().forEach((credit) => creditAddresses.push(credit.getAddress()));
-
-  if (type === api.TransactionDetails.TransactionType.REGULAR) {
+  if (type === TransactionDetails.TransactionType.REGULAR) {
     if (amount > 0) {
       direction = TRANSACTION_DIR_RECEIVED;
     } else if (amount < 0 && (fee == Math.abs(amount))) {
@@ -115,15 +106,10 @@ export function formatTransaction(block, transaction, index) {
     hash: transaction.getHash(),
     txHash: reverseHash(Buffer.from(transaction.getHash()).toString("hex")),
     tx: transaction,
-    txType: TRANSACTION_TYPES[type],
-    debitsAmount: inputAmounts,
-    creditsAmount: outputAmounts,
     type,
     direction,
     amount,
-    fee,
-    debitAccounts,
-    creditAddresses
+    fee
   };
 }
 
@@ -131,83 +117,43 @@ export function formatUnminedTransaction(transaction, index) {
   return formatTransaction(UNMINED_BLOCK_TEMPLATE, transaction, index);
 }
 
-export const streamGetTransactions = withLogNoData((walletService, startBlockHeight,
-  endBlockHeight, targetTransactionCount, dataCb) =>
+export const getTransactions = withLogNoData((walletService, startBlockHeight,
+  endBlockHeight, targetTransactionCount) =>
   new Promise((resolve, reject) => {
-    var request = new api.GetTransactionsRequest();
+    var request = new GetTransactionsRequest();
     request.setStartingBlockHeight(startBlockHeight);
     request.setEndingBlockHeight(endBlockHeight);
     request.setTargetTransactionCount(targetTransactionCount);
 
+    var foundMined = [];
+    var foundUnmined = [];
+
     let getTx = walletService.getTransactions(request);
     getTx.on("data", (response) => {
-      var foundMined = [];
-      var foundUnmined = [];
-
       let minedBlock = response.getMinedTransactions();
       if (minedBlock) {
-        foundMined = minedBlock
+        minedBlock
           .getTransactionsList()
-          .map((v, i) => formatTransaction(minedBlock, v, i));
+          .map((v, i) => formatTransaction(minedBlock, v, i))
+          .forEach(v => { foundMined.push(v); });
       }
 
       let unmined = response.getUnminedTransactionsList();
       if (unmined) {
-        foundUnmined = unmined
-          .map((v, i) => formatUnminedTransaction(v, i));
+        unmined
+          .map((v, i) => formatUnminedTransaction(v, i))
+          .forEach(v => foundUnmined.push(v));
       }
-
-      dataCb(foundMined, foundUnmined);
     });
     getTx.on("end", () => {
-      resolve();
+      resolve({mined: foundMined, unmined: foundUnmined});
     });
     getTx.on("error", (err) => {
       reject(err);
     });
   }), "Get Transactions");
 
-export const getTransactions = (walletService, startBlockHeight,
-  endBlockHeight, targetTransactionCount) =>
-  new Promise((resolve, reject) => {
-
-    var mined = [];
-    var unmined = [];
-
-    const dataCb = (foundMined, foundUnmined) => {
-      mined  = mined.concat(foundMined);
-      unmined = unmined.concat(foundUnmined);
-    };
-
-    streamGetTransactions(walletService, startBlockHeight,
-      endBlockHeight, targetTransactionCount, dataCb)
-      .then(() => resolve({ mined, unmined }))
-      .catch(reject);
-  });
-
-export const getTransaction = (walletService, txHash) =>
-  new Promise((resolve, reject) => {
-    var request = new api.GetTransactionRequest();
-    request.setTransactionHash(strHashToRaw(txHash));
-    walletService.getTransaction(request, (err, resp) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-
-      // wallet.GetTransaction doesn't return block height/timestamp information
-      const block = {
-        getHash: resp.getBlockHash,
-        getHeight: () => -1,
-        getTimestamp: () => -1,
-      };
-      const index = -1; // wallet.GetTransaction doesn't return the index
-      const tx = formatTransaction(block, resp.getTransaction(), index);
-      resolve(tx);
-    });
-  });
-
 export const publishUnminedTransactions = log((walletService) => new Promise((resolve, reject) => {
-  const req = new api.PublishUnminedTransactionsRequest();
+  const req = new PublishUnminedTransactionsRequest();
   walletService.publishUnminedTransactions(req, (err) => err ? reject(err) : resolve());
 }), "Publish Unmined Transactions");

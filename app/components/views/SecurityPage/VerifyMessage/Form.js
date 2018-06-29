@@ -1,6 +1,7 @@
 import { FormattedMessage as T, defineMessages } from "react-intl";
 import { TextInput } from "inputs";
-import { InfoDocModalButton, KeyBlueButton } from "buttons";
+import { InfoModalButton, KeyBlueButton } from "buttons";
+import { VerifyMessageInfoModalContent } from "modals";
 
 const messages = defineMessages({
   addressFieldPlaceholder: {
@@ -32,68 +33,64 @@ const VerifyMessageForm = ({
   formatMessage
 }) => {
   return (
-    <Aux>
-      <div className="security-center-form">
-        <div className="button-right">
-          <InfoDocModalButton document="VerifyMessageInfo" />
+    <div className="security-center-form">
+      <div className="button-right">
+        <InfoModalButton
+          modalTitle={<h1><T id="securitycenter.verifyInfo" m="Verify Message Information"/></h1>}
+          modalContent={<VerifyMessageInfoModalContent />}
+        />
+      </div>
+      <div className="security-center-form-row">
+        <div className="security-center-form-row-label">
+          <T id="securitycenter.form.field.address.label" m="Address"/>:
         </div>
-        <div className="security-center-form-row">
-          <div className="security-center-form-row-label">
-            <T id="securitycenter.form.field.address.label" m="Address"/>
-          </div>
-          <div className="security-center-form-row-field">
-            <TextInput
-              required
-              value={address}
-              invalid={addressError}
-              invalidMessage={addressError}
-              onChange={e => onChangeAddress(e.target.value)}
-              placeholder={formatMessage(messages.addressFieldPlaceholder)}
-              showErrors={addressError}
-            />
-          </div>
-        </div>
-        <div className="security-center-form-row">
-          <div className="security-center-form-row-label">
-            <T id="securitycenter.form.field.signature.label" m="Signature"/>
-          </div>
-          <div className="security-center-form-row-field">
-            <TextInput
-              required
-              value={signature}
-              invalid={signatureError}
-              invalidMessage={signatureError}
-              onChange={e => onChangeSignature(e.target.value)}
-              placeholder={formatMessage(messages.signatureFieldPlaceholder)}
-              showErrors={signatureError}
-            />
-          </div>
-        </div>
-        <div className="security-center-form-row">
-          <div className="security-center-form-row-label">
-            <T id="securitycenter.form.field.message.label" m="Message"/>
-          </div>
-          <div className="security-center-form-row-field-message">
-            <TextInput
-              required
-              value={message}
-              invalid={messageError}
-              invalidMessage={messageError}
-              onChange={e => onChangeMessage(e.target.value)}
-              placeholder={formatMessage(messages.messageFieldPlaceholder)}
-              showErrors={messageError}
-            />
+        <div className="security-center-form-row-field">
+          <TextInput
+            value={address}
+            onChange={e => onChangeAddress(e.target.value)}
+            placeholder={formatMessage(messages.addressFieldPlaceholder)}
+          />
+          <div className="message-error">
+            {addressError && <span className="error">{addressError}</span>}
           </div>
         </div>
       </div>
-      <KeyBlueButton
-        className="stakepool-content-purchase-button"
-        disabled={isVerifyingMessage || address == "" || message == "" || signature == "" || addressError || messageError || signatureError}
-        onClick={onSubmit}
-        loading={isVerifyingMessage}>
-        <T id="securitycenter.verify.form.submit" m="Verify Message" />
-      </KeyBlueButton>
-    </Aux>
+      <div className="security-center-form-row">
+        <div className="security-center-form-row-label">
+          <T id="securitycenter.form.field.message.label" m="Message"/>:
+        </div>
+        <div className="security-center-form-row-field">
+          <TextInput
+            value={message}
+            onChange={e => onChangeMessage(e.target.value)}
+            placeholder={formatMessage(messages.messageFieldPlaceholder)}
+          />
+          <div className="message-error">
+            {messageError && <span className="error">{messageError}</span>}
+          </div>
+        </div>
+      </div>
+      <div className="security-center-form-row">
+        <div className="security-center-form-row-label">
+          <T id="securitycenter.form.field.signature.label" m="Signature"/>:
+        </div>
+        <div className="security-center-form-row-field">
+          <TextInput
+            value={signature}
+            onChange={e => onChangeSignature(e.target.value)}
+            placeholder={formatMessage(messages.signatureFieldPlaceholder)}
+          />
+          <div className="message-error">
+            {signatureError && <span className="error">{signatureError}</span>}
+          </div>
+        </div>
+      </div>
+      <div className="message-toolbar">
+        <KeyBlueButton disabled={isVerifyingMessage || address == "" || message == "" || signature == "" || addressError || messageError || signatureError} onClick={onSubmit} loading={isVerifyingMessage}>
+          <T id="securitycenter.verify.form.submit" m="Verify" />
+        </KeyBlueButton>
+      </div>
+    </div>
   );
 };
 

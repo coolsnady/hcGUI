@@ -8,16 +8,6 @@ import { FormattedMessage as T } from "react-intl";
 import { TRANSACTION_DIR_SENT, TRANSACTION_DIR_RECEIVED,
   TRANSACTION_DIR_TRANSFERED
 } from "wallet/service";
-import { DescriptionHeader } from "layout";
-import { Balance } from "shared";
-
-export const HistoryTabHeader = historyPage(({ totalBalance }) =>
-  <DescriptionHeader
-    description={<T id="transactions.description.history" m="Total Balance: {totalBalance}"
-      values={{ totalBalance: <Balance amount={totalBalance} classNameWrapper="header-small-balance"/> }} />
-    }
-  />
-);
 
 @autobind
 class History extends React.Component {
@@ -26,8 +16,7 @@ class History extends React.Component {
     super(props);
     const selectedTxTypeKey = this.selectedTxTypeFromFilter(this.props.transactionsFilter);
     const selectedSortOrderKey = this.props.transactionsFilter.listDirection;
-    const searchText = this.props.transactionsFilter.search;
-    this.state = { selectedTxTypeKey, selectedSortOrderKey, searchText };
+    this.state = {selectedTxTypeKey, selectedSortOrderKey};
   }
 
   render() {
@@ -47,7 +36,6 @@ class History extends React.Component {
           ...substruct({
             onChangeSelectedType: null,
             onChangeSortType: null,
-            onChangeSearchText: null,
             onLoadMoreTransactions: null
           }, this)
         }}
@@ -58,21 +46,21 @@ class History extends React.Component {
   getTxTypes() {
     const types = TransactionDetails.TransactionType;
     return [
-      { key: "all",      value: { types: [],                      direction: null },  label: (<T id="transaction.type.all" m="All"/>) },
-      { key: "regular",  value: { types: [ types.REGULAR ],         direction: null },  label: (<T id="transaction.type.regular" m="Regular"/>) },
-      { key: "ticket",   value: { types: [ types.TICKET_PURCHASE ], direction: null },  label: (<T id="transaction.type.tickets" m="Tickets"/>) },
-      { key: "vote",     value: { types: [ types.VOTE ],            direction: null },  label: (<T id="transaction.type.votes" m="Votes"/>) },
-      { key: "revoke",   value: { types: [ types.REVOCATION ],      direction: null },  label: (<T id="transaction.type.revokes" m="Revokes"/>) },
-      { key: "sent",     value: { types: [ types.REGULAR ],         direction: TRANSACTION_DIR_SENT },       label: (<T id="transaction.type.sent" m="Sent"/>) },
-      { key: "receiv",   value: { types: [ types.REGULAR ],         direction: TRANSACTION_DIR_RECEIVED },   label: (<T id="transaction.type.received" m="Received"/>) },
-      { key: "transf",   value: { types: [ types.REGULAR ],         direction: TRANSACTION_DIR_TRANSFERED }, label: (<T id="transaction.type.transfered" m="Transfered"/>) },
+      {key: "all",      value: {types: [],                      direction: null},  label: (<T id="transaction.type.all" m="All"/>)},
+      {key: "regular",  value: {types: [types.REGULAR],         direction: null},  label: (<T id="transaction.type.regular" m="Regular"/>)},
+      {key: "ticket",   value: {types: [types.TICKET_PURCHASE], direction: null},  label: (<T id="transaction.type.tickets" m="Tickets"/>)},
+      {key: "vote",     value: {types: [types.VOTE],            direction: null},  label: (<T id="transaction.type.votes" m="Votes"/>)},
+      {key: "revoke",   value: {types: [types.REVOCATION],      direction: null},  label: (<T id="transaction.type.revokes" m="Revokes"/>)},
+      {key: "sent",     value: {types: [types.REGULAR],         direction: TRANSACTION_DIR_SENT},       label: (<T id="transaction.type.sent" m="Sent"/>)},
+      {key: "receiv",   value: {types: [types.REGULAR],         direction: TRANSACTION_DIR_RECEIVED},   label: (<T id="transaction.type.received" m="Received"/>)},
+      {key: "transf",   value: {types: [types.REGULAR],         direction: TRANSACTION_DIR_TRANSFERED}, label: (<T id="transaction.type.transfered" m="Transfered"/>)},
     ];
   }
 
   getSortTypes() {
     return [
-      { value: "desc", label: (<T id="transaction.sortby.newest" m="Newest"/>) },
-      { value: "asc", label: (<T id="transaction.sortby.oldest" m="Oldest"/>) }
+      {value: "desc", label: (<T id="transaction.sortby.newest" m="Newest"/>)},
+      {value: "asc", label: (<T id="transaction.sortby.oldest" m="Oldest"/>)}
     ];
   }
 
@@ -94,17 +82,12 @@ class History extends React.Component {
 
   onChangeSelectedType(type) {
     this.onChangeFilter(type.value);
-    this.setState({ selectedTxTypeKey: type.key });
+    this.setState({selectedTxTypeKey: type.key});
   }
 
   onChangeSortType(type) {
-    this.onChangeFilter({ listDirection: type.value });
-    this.setState({ selectedSortOrderKey: type.value });
-  }
-
-  onChangeSearchText(searchText) {
-    this.onChangeFilter({ search: searchText });
-    this.setState({ searchText });
+    this.onChangeFilter({listDirection: type.value});
+    this.setState({selectedSortOrderKey: type.value});
   }
 
   selectedTxTypeFromFilter(filter) {

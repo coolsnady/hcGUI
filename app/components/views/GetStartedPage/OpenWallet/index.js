@@ -1,7 +1,39 @@
-import OpenWalletDecryptFormBody from "./DecryptForm";
+import { OpenWalletDecryptFormHeader, OpenWalletDecryptFormBody } from "./DecryptForm";
+import { OpenWalletCreateFormHeader, OpenWalletCreateFormBody } from "./CreateForm";
 
 @autobind
-class OpenWallet extends React.Component {
+class OpenWalletHeader extends React.Component {
+  render() {
+    const { hasExistingWallet } = this.props;
+    const { onToggleNewExisting } = this;
+
+    return hasExistingWallet ? (
+      <OpenWalletDecryptFormHeader
+        {...{
+          ...this.props
+        }}
+      />
+    ) : (
+      <OpenWalletCreateFormHeader
+        {...{
+          ...this.props,
+          onToggleNewExisting
+        }}
+      />
+    );
+  }
+
+  onToggleNewExisting(side) {
+    if (side == "right") {
+      this.props.onSetCreateWalletFromExisting(true);
+    } else if (side == "left") {
+      this.props.onSetCreateWalletFromExisting(false);
+    }
+  }
+}
+
+@autobind
+class OpenWalletBody extends React.Component {
   constructor(props)  {
     super(props);
     this.state = this.getInitialState();
@@ -14,27 +46,38 @@ class OpenWallet extends React.Component {
   getInitialState() {
     return {
       publicPassPhrase: "",
+      privatePassPhrase: "",
+      hasAttemptedOpen: false
     };
   }
 
   render() {
-    const { publicPassPhrase, onKeyDown } = this.state;
+    const { publicPassPhrase, privatePassPhrase, hasAttemptedOpen } = this.state;
+    const { hasExistingWallet } = this.props;
     const {
       onSetPublicPassPhrase,
+      onSetPrivatePassPhrase,
       onOpenWallet,
+      onKeyDown,
     } = this;
-    const { isInputRequest, isOpeningWallet } = this.props;
-    return (
+
+    return hasExistingWallet ? (
       <OpenWalletDecryptFormBody
         {...{
           ...this.props,
-
-          isInputRequest,
-          isOpeningWallet,
           publicPassPhrase,
+          privatePassPhrase,
+          hasAttemptedOpen,
           onSetPublicPassPhrase,
+          onSetPrivatePassPhrase,
           onOpenWallet,
           onKeyDown
+        }}
+      />
+    ) : (
+      <OpenWalletCreateFormBody
+        {...{
+          ...this.props
         }}
       />
     );
@@ -48,17 +91,22 @@ class OpenWallet extends React.Component {
     this.setState({ publicPassPhrase });
   }
 
-  onOpenWallet() {
-    if (this.state.publicPassPhrase == "") {
-      return;
-    }
+  onSetPrivatePassPhrase(privatePassPhrase) {
+    this.setState({ privatePassPhrase });
+  }
 
-    this.props.onOpenWallet(this.state.publicPassPhrase, true);
+  onOpenWallet() {
+    /// TODO: determine if this can be removed or needs to stay?
+    // if (!this.state.publicPassPhrase) {
+    //   return this.setState({ hasAttemptedOpen: true });
+    // }
+
+    this.props.onOpenWallet(this.state.publicPassPhrase, this.state.privatePassPhrase, true);
     this.resetState();
   }
 
   onKeyDown(e) {
-    if(e.keyCode == 13) {
+    if(e.keyCode == 13) {     // Enter key
       e.preventDefault();
       this.onOpenWallet();
     }
@@ -66,4 +114,4 @@ class OpenWallet extends React.Component {
 
 }
 
-export default OpenWallet;
+export { OpenWalletHeader, OpenWalletBody };

@@ -9,10 +9,7 @@ const mapStateToProps = selectorMap({
   unconfiguredStakePools: sel.unconfiguredStakePools,
   defaultStakePool: sel.defaultStakePool,
   stakePool: sel.selectedStakePool,
-  rescanRequest: sel.rescanRequest,
-  stakePoolListingEnabled: sel.stakePoolListingEnabled,
-  updatedStakePoolList: sel.updatedStakePoolList,
-  isSavingStakePoolConfig: sel.isSavingStakePoolConfig,
+  rescanRequest: sel.rescanRequest
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

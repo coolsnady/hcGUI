@@ -1,7 +1,26 @@
 @import (reference) "./main.less";
 @import (reference) "./Icons.less";
 
-.txdetails-indicator-mixin {
+.txdetails-header-title {
+  color: @white;
+}
+
+.txdetails-content-title {
+  display: block;
+  height: 44px;
+  margin-right: auto;
+  margin-bottom: 10px;
+  margin-left: auto;
+  border-bottom: 1px solid transparent;
+  color: @grey;
+  font-size: 27px;
+}
+
+.txdetails-content-nest {
+  padding-top: 1px;
+}
+
+.txdetails-indicator-pending {
   display: inline-block;
   padding: 5px 8px 5px 20px;
   border-style: solid;
@@ -11,35 +30,51 @@
   line-height: 8px;
   text-align: right;
   text-transform: capitalize;
+  border-color: @blue;
+  background-image: @indicator-pending-icon;
   background-position: 6px 50%;
   background-size: 10px;
   background-repeat: no-repeat;
-}
-
-.txdetails-indicator-pending {
-  .txdetails-indicator-mixin;
-
-  border-color: #2971ff;
-  background-image: @indicator-pending-icon;
-  color: #2971ff;
+  color: @blue;
 }
 
 .txdetails-indicator-confirmed {
-  .txdetails-indicator-mixin;
-
-  border-color: #2ed8a3;
+  display: inline-block;
+  padding: 5px 8px 5px 20px;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 3px;
+  font-size: 12px;
+  line-height: 8px;
+  text-align: right;
+  text-transform: capitalize;
+  border-color: @purple;
+  background-color: @purple;
   background-image: @indicator-confirmed-icon;
-  color: #2ed8a3;
+  background-position: 6px 50%;
+  background-size: 10px;
+  background-repeat: no-repeat;
+  color: @white;
 }
 
 .txdetails-details {
-  border-bottom: 1px solid #e7eaed;
+  border-bottom: 1px solid @grey;
   font-size: 13px;
 }
 
 .txdetails-top {
-  border-bottom: 1px solid #e7eaed;
+  border-bottom: 1px solid @grey;
   font-size: 13px;
+}
+
+.txdetails-left {
+  width: 150px;
+  float: left;
+}
+
+.txdetails-right {
+  width: 570px;
+  float: right;
 }
 
 .txdetails-name {
@@ -72,7 +107,7 @@
 .txdetails-overview {
   padding-left: 5em;
   margin-bottom: 3em;
-  border-top: 1px solid #e7eaed;
+  border-top: 1px solid @grey;
 }
 
 .txdetails-overview-title-mixin {
@@ -174,7 +209,7 @@
 
 .txdetails-title {
   padding-top: 1em;
-  color: #596d81;
+  color: @white;
   font-size: 20px;
 }
 

@@ -1,10 +1,8 @@
 import { createElement as h } from "react";
-export * from "./dateFormat";
+export { tsToDate } from "./dateFormat";
 export { addSpacingAroundText, restrictToStdDecimalNumber } from "./strings";
-export { reverseHash, reverseRawHash } from "./byteActions";
+export { reverseHash } from "./byteActions";
 export * from "./addresses";
-export * from "./arrays";
-export * from "./dom.js";
 
 // kidCheck takes a component and returns a component that only renders if it has children
 export const kidCheck = C => {
@@ -21,3 +19,9 @@ export const showCheck = C => {
   Comp.displayName = `ShowChecked: ${ C.displayName || C.name || C }`;
   return Comp;
 };
+
+// our tabbed pages and headers rely on knowing which page and tab they're on and what others are available.
+// This centralizes the logic for how those are resolved in case this changes when we upgrade to react router 4
+export const getTabs = routes => routes[1].childRoutes && routes[1].childRoutes.map( route => route.path );
+export const getTab = routes => routes[2] && routes[2].path;
+export const getPage = routes => (routes[1] && routes[1].path) || "root";

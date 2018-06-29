@@ -1,31 +1,18 @@
-import { BarChart, Bar, XAxis, YAxis, ReferenceLine, Tooltip } from "recharts";
-import messages from "./messages";
-import { injectIntl } from "react-intl";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ReferenceLine } from "recharts";
+import { balance } from "connectors";
 import ChartTooltip from "./ChartTooltip";
-import { yAxisStyle, xAxisStyle, homeChartSize, radiusFull, padding, hoverFill } from "./Styles";
-import "style/Chart.less";
 
-const BalanceChart = ({ data, intl }) => {
-  const sentKey = intl.formatMessage(messages.sentKey);
-  const receivedKey = intl.formatMessage(messages.receivedKey);
+const BalanceChart = ({ data, currencyDisplay }) => (
+  <BarChart stackOffset="sign" width={400} height={244} data={data}
+    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+    <XAxis dataKey="name" />
+    <YAxis orientation="right" />
+    <Tooltip content={<ChartTooltip />} />
+    <Legend />
+    <ReferenceLine y={0} stroke='#000' />
+    <Bar dataKey="sent" stackId="a" fill="#f60fff" barSize={8} radius={[10, 10, 10, 10]} unit={currencyDisplay} />
+    <Bar dataKey="received" stackId="a" fill="#8539dd" barSize={8} radius={[10, 10, 10, 10]} unit={currencyDisplay} />
+  </BarChart>
+);
 
-  const displayData = data.map(s => ({
-    name: intl.formatMessage(messages.dayMonthDisplay, { value: s.time }),
-    legendName: intl.formatMessage(messages.fullDayDisplay, { value: s.time }),
-    [sentKey]: s.sent,
-    [receivedKey]: s.received
-  }));
-
-  return (
-    <BarChart stackOffset="sign" width={homeChartSize.width} height={homeChartSize.height} data={displayData}>
-      <XAxis tickLine={false} dataKey="name" style={xAxisStyle}/>
-      <YAxis tickLine={false} orientation="right" style={yAxisStyle} padding={padding}/>
-      <Tooltip cursor={hoverFill} content={<ChartTooltip />} />
-      <ReferenceLine y={0} stroke="#f3f6f6" />
-      <Bar dataKey={sentKey} stackId="a" fill="#fd704a" barSize={8} radius={radiusFull} />
-      <Bar dataKey={receivedKey} stackId="a" fill="#41bf53" barSize={8} radius={radiusFull} />
-    </BarChart>
-  );
-};
-
-export default injectIntl(BalanceChart);
+export default balance(BalanceChart);

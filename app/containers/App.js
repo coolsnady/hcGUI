@@ -1,21 +1,23 @@
+import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import { IntlProvider } from "react-intl";
+import MUItheme from "materialUITheme";
 import { defaultFormats } from "i18n/locales";
-import { app, theming } from "connectors";
-import { Redirect, Route, Switch } from "react-router-dom";
-import { AnimatedSwitch } from "react-router-transition";
-import { StaticSwitch } from "shared";
-import GetStartedContainer from "./GetStarted";
-import WalletContainer from "./Wallet";
-import ShutdownAppPage from "components/views/ShutdownAppPage";
-import FatalErrorPage from "components/views/FatalErrorPage";
+import app from "connectors/app";
+import SideBar from "components/SideBar";
 import Snackbar from "components/Snackbar";
-import { log } from "wallet";
+import { RouteTransition } from "shared";
+import { getPage } from "helpers";
+import theme from "theme";
 import "style/Layout.less";
-const topLevelAnimation = { atEnter: { opacity: 0 }, atLeave: { opacity: 0 }, atActive: { opacity: 1 } };
+
+const fade = { atEnter: { opacity: 0 }, atActive: { opacity: 1 }, atLeave: { opacity: 0 }};
+
+const wrapperComponent = props => <div className="page-view" { ...props } />;
 
 @autobind
 class App extends React.Component {
   static propTypes = {
+    children: PropTypes.element.isRequired,
     locale: PropTypes.object.isRequired,
     window: PropTypes.object.isRequired,
     shutdownApp: PropTypes.func.isRequired,
@@ -23,22 +25,25 @@ class App extends React.Component {
     daemonStopped: PropTypes.bool.isRequired,
   };
 
+  state = {
+    showAlphaMessage: true,
+  };
+
   constructor (props) {
     super(props);
     const { window } = props;
     window.addEventListener("beforeunload", this.beforeWindowUnload);
-    window.addEventListener("click", this.onClick);
     this.refreshing = false;
 
     props.listenForAppReloadRequest(this.onReloadRequested);
   }
 
-  componentWillUnmount () {
-    window.removeEventListener("beforeunload", this.beforeWindowUnload);
+  dismissAlphaMessage () {
+      this.setState({ showAlphaMessage: false });
   }
 
-  componentDidMount() {
-    log("info", "Main app container mounted");
+  componentWillUnmount () {
+    window.removeEventListener("beforeunload", this.beforeWindowUnload);
   }
 
   beforeWindowUnload(event) {
@@ -53,53 +58,68 @@ class App extends React.Component {
     }
 
     if (!shutdownRequested) {
-      log("info", "Main app received shutdown request");
       this.props.shutdownApp();
     }
   }
 
-  onClick(event) {
-    const target = event.target;
-    if (target.localName !== "a") return;
-    const href = target.attributes.href ? target.attributes.href.value : "";
-    if (href === "") {
-      event.stopPropagation();
-      event.preventDefault();
-      return false;
-    }
-  }
-
   onReloadRequested(event) {
-    log("info", "Main app received reload UI request");
     this.refreshing = true;
     event.sender.send("app-reload-ui");
   }
 
   render() {
-    const { locale } = this.props;
-    const MainSwitch = this.props.uiAnimations ? AnimatedSwitch : StaticSwitch;
+    const { locale, routes, children } = this.props;
+    const pathname = getPage(routes);
+
+    const alphaMessageView = this.state.showAlphaMessage?
+        <div style={{
+            padding: '20px',
+            margin: '20px',
+            backgroundColor: '#862ee0',
+            borderRadius: '10px',
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            padding: '20px',
+            position: 'absolute',
+            width: '100%',
+            top: '0',
+            right: '0',
+            width: 'calc(100% - 140px)',
+            zIndex: '99999',
+        }}>
+            <div style={{ flex: '1 1 100%'  }}>
+                This product is in , have a feature idea? &nbsp;&nbsp;&nbsp;&nbsp;Email it to features@h.cash.
+            </div>
+            <div style={{ flex: '0 0 50px' }}>
+                <button
+                    style={{ border: '0', color: '#fff', backgroundColor: 'transparent', cursor: 'pointer' }}
+                    onClick={this.dismissAlphaMessage}
+                >
+                    Dismiss
+                </button>
+            </div>
+        </div>: null;
 
     return (
-      <IntlProvider
-        locale={locale.language}
-        messages={locale.messages}
-        formats={locale.formats}
-        defaultFormats={defaultFormats}
-        key={locale.key}>
-        <Aux>
-          <Switch><Redirect from="/" exact to="/getStarted" /></Switch>
-          <Snackbar/>
-          <MainSwitch {...topLevelAnimation} className="top-level-container">
-            <Route path="/getStarted"  component={GetStartedContainer} />
-            <Route path="/shutdown"    component={ShutdownAppPage} />
-            <Route path="/error"       component={FatalErrorPage} />
-            <Route path="/"            component={WalletContainer} />
-          </MainSwitch>
-          <div id="modal-portal" />
-        </Aux>
-      </IntlProvider>
+      <MuiThemeProvider muiTheme={MUItheme}>
+        <IntlProvider
+          locale={locale.language}
+          messages={locale.messages}
+          formats={locale.formats}
+          defaultFormats={defaultFormats}
+          key={locale.key}>
+          <div className="page-body">
+            <SideBar />
+            <Snackbar />
+            <RouteTransition className="page-container" opts={ theme("springs.page") } {...{ wrapperComponent, pathname, ...fade }}>
+              { children }
+            </RouteTransition>
+          </div>
+        </IntlProvider>
+      </MuiThemeProvider>
     );
   }
 }
 
-export default app(theming(App));
+export default app(App);

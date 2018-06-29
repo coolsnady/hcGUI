@@ -1,60 +1,33 @@
 import Logs from "./Page";
-import { getHxdLogs, getDcrwalletLogs } from "wallet";
-import { logging } from "connectors";
-import { DescriptionHeader } from "layout";
-import { FormattedMessage as T } from "react-intl";
-import ReactTimeout from "react-timeout";
+import {getDcrdLogs, getDcrwalletLogs, getDecreditonLogs} from "wallet";
+import {logging} from "connectors";
 
-export const LogsTabHeader = () =>
-  <DescriptionHeader
-    description={<T id="help.description.logs" m="Please find your current logs below to look for any issue or error you are having." />}
-  />;
 @autobind
-class LogsTabBody extends React.Component {
+class LogsTab extends React.Component {
   constructor(props) {
     super(props);
     this.state = this.getInitialState();
   }
 
-  componentDidMount() {
-    const interval = this.props.setInterval(() => {
-      Promise
-        .all([ getHxdLogs(), getDcrwalletLogs() ])
-        .then(([ rawHxdLogs, rawDcrwalletLogs ]) => {
-          const hxdLogs = Buffer.from(rawHxdLogs).toString("utf8");
-          const dcrwalletLogs = Buffer.from(rawDcrwalletLogs).toString("utf8");
-          if ( hxdLogs !== this.state.hxdLogs )
-            this.setState({ hxdLogs });
-          if ( dcrwalletLogs !== this.state.dcrwalletLogs )
-            this.setState({ dcrwalletLogs });
-        });
-    }, 2000);
-    this.setState({ interval });
-  }
-
-  componentWillUnmount() {
-    this.props.clearInterval(this.state.interval);
-  }
-
   getInitialState() {
+    let remoteDcrd = false;
+    if (this.props.getCredentials && this.props.getCredentials.rpc_host) {
+      remoteDcrd = true;
+    }
     return {
-      interval: null,
-      hxdLogs: "",
-      dcrwalletLogs: "",
+      dcrdLogs: null,
+      dcrwalletLogs: null,
       decreditonLogs: null,
-      showHxdLogs: false,
-      showDcrwalletLogs: false,
-      showDecreditonLogs: false
+      remoteDcrd: remoteDcrd,
     };
   }
 
   render() {
-    const { onShowDecreditonLogs, onShowHxdLogs, onShowDcrwalletLogs,
-      onHideDecreditonLogs, onHideHxdLogs, onHideDcrwalletLogs
+    const {showDecreditonLogs, showDcrdLogs, showDcrwalletLogs,
+      hideDecreditonLogs, hideDcrdLogs, hideDcrwalletLogs
     } = this;
-    const { isDaemonRemote, isDaemonStarted } = this.props;
     const {
-      hxdLogs, dcrwalletLogs, decreditonLogs, showHxdLogs, showDcrwalletLogs, showDecreditonLogs
+      dcrdLogs, dcrwalletLogs, decreditonLogs, remoteDcrd
     } = this.state;
     return (
       <Logs
@@ -62,47 +35,54 @@ class LogsTabBody extends React.Component {
           ...this.props, ...this.state }}
         {...{
           showDecreditonLogs,
-          showHxdLogs,
+          showDcrdLogs,
           showDcrwalletLogs,
-          onShowDecreditonLogs,
-          onShowHxdLogs,
-          onShowDcrwalletLogs,
-          onHideDecreditonLogs,
-          onHideHxdLogs,
-          onHideDcrwalletLogs,
-          hxdLogs,
+          hideDecreditonLogs,
+          hideDcrdLogs,
+          hideDcrwalletLogs,
+          dcrdLogs,
           dcrwalletLogs,
           decreditonLogs,
-          isDaemonRemote,
-          isDaemonStarted
-        }}
+          remoteDcrd }}
       />
     );
   }
 
-  onShowDecreditonLogs() {
-    this.setState({ showDecreditonLogs: true });
+  showDecreditonLogs() {
+    getDecreditonLogs()
+      .then(logs => {
+        this.setState({decreditonLogs: Buffer.from(logs).toString("utf8")});
+      })
+      .catch(err => console.error(err));
   }
 
-  onHideDecreditonLogs() {
-    this.setState({ showDecreditonLogs: false });
+  hideDecreditonLogs() {
+    this.setState({decreditonLogs: null});
   }
 
-  onShowHxdLogs() {
-    this.setState({ showHxdLogs: true });
+  showDcrdLogs() {
+    getDcrdLogs()
+      .then(logs => {
+        this.setState({dcrdLogs: Buffer.from(logs).toString("utf8")});
+      })
+      .catch(err => console.error(err));
   }
 
-  onHideHxdLogs() {
-    this.setState({ showHxdLogs: false });
+  hideDcrdLogs() {
+    this.setState({dcrdLogs: null});
   }
 
-  onShowDcrwalletLogs() {
-    this.setState({ showDcrwalletLogs: true });
+  showDcrwalletLogs() {
+    getDcrwalletLogs()
+      .then(logs => {
+        this.setState({dcrwalletLogs: Buffer.from(logs).toString("utf8")});
+      })
+      .catch(err => console.error(err));
   }
 
-  onHideDcrwalletLogs() {
-    this.setState({ showDcrwalletLogs: false });
+  hideDcrwalletLogs() {
+    this.setState({dcrwalletLogs: null});
   }
 }
 
-export const LogsTab = ReactTimeout(logging(LogsTabBody));
+export default logging(LogsTab);

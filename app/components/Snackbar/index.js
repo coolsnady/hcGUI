@@ -1,11 +1,7 @@
 // @flow
-import { snackbar, theming } from "connectors";
-import ReactTimeout from "react-timeout";
-import EventListener from "react-event-listener";
+import { snackbar } from "connectors";
+import MUISnackbar from "material-ui/Snackbar";
 import Notification from "./Notification";
-import theme from "theme";
-import { eventOutsideComponent } from "helpers";
-import { spring, TransitionMotion } from "react-motion";
 import { TRANSACTION_DIR_SENT, TRANSACTION_DIR_RECEIVED,
   TRANSACTION_DIR_TRANSFERED
 } from "wallet/service";
@@ -33,7 +29,6 @@ class Snackbar extends React.Component {
 
   constructor(props) {
     super(props);
-    this.hideTimer = null;
     this.state = {
       message: props.messages.length > 0
         ? props.messages[props.messages.length-1]
@@ -48,7 +43,6 @@ class Snackbar extends React.Component {
     if (message !== this.state.message) {
       const state = this.state;
       this.setState({ ...state, message });
-      message && this.enableHideTimer();
     }
   }
 
@@ -56,89 +50,35 @@ class Snackbar extends React.Component {
     return this.state.message !== nextState.message;
   }
 
-  enableHideTimer() {
-    this.clearHideTimer();
-    this.hideTimer = this.props.setTimeout(this.onDismissMessage, 4000);
-  }
-
-  clearHideTimer() {
-    if (this.hideTimer) {
-      this.props.clearTimeout(this.hideTimer);
-      this.hideTimer = null;
-    }
-  }
-
-  windowClicked(event) {
-    if (!this.state.message) return;
-    if (eventOutsideComponent(this, event.target)) {
-      this.onDismissMessage();
-    }
-  }
-
   onDismissMessage() {
     const state = this.state;
     this.setState({ ...state, message: null });
     this.props.onDismissAllMessages();
-    this.clearHideTimer();
   }
 
-  getStaticNotification() {
-    const { message } = this.state;
-    return (
-      <div
-        className={snackbarClasses(message || "")}
-        onMouseEnter={this.clearHideTimer}
-        onMouseLeave={this.enableHideTimer}
-        style={{ bottom: "0px" }}
-      >
-        {message ? <Notification {...message} /> : ""}
-      </div>
-    );
-  }
-
-  notifWillEnter() {
-    return { bottom: -10 };
-  }
-
-  getAnimatedNotification() {
-    const { message } = this.state;
-
-    const styles = [ {
-      key: "ntf"+Math.random(),
-      data: message,
-      style: { bottom: spring(0, theme("springs.tab")) }
-    } ];
-
-    return (
-      <TransitionMotion styles={styles} willEnter={this.notifWillEnter}>
-        { is => !is[0].data
-          ? ""
-          : <div
-            className={snackbarClasses(message || "")}
-            onMouseEnter={this.clearHideTimer}
-            onMouseLeave={this.enableHideTimer}
-            style={is[0].style}
-          >
-            <Notification {...is[0].data} />
-          </div>
-        }
-      </TransitionMotion>
-    );
+  onRequestClose(reason) {
+    if (reason !== "clickaway") {
+      this.onDismissMessage();
+    }
   }
 
   render() {
-    const notification = this.props.uiAnimations
-      ? this.getAnimatedNotification()
-      : this.getStaticNotification();
-
+    const { message } = this.state;
     return (
-      <EventListener target="document" onMouseUp={this.windowClicked}>
-        {notification}
-      </EventListener>
+      <MUISnackbar
+        className={snackbarClasses(message || "")}
+        open={!!message}
+        message={message ? <Notification {...message} /> : ""}
+        autoHideDuration={4000}
+        bodyStyle={{backgroundColor: "inherited", fontFamily: null,
+          lineHeight: null, height: null}}
+        style={{fontFamily: null, lineHeight: null}}
+        onRequestClose={this.onRequestClose}
+      />
     );
   }
 }
 
 Snackbar.propTypes = propTypes;
 
-export default ReactTimeout(snackbar(theming(Snackbar)));
+export default snackbar(Snackbar);

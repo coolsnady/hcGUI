@@ -1,7 +1,5 @@
 import { FormattedMessage as T } from "react-intl";
-import { SettingsInput, LanguageSelect, NumericInput } from "inputs";
-import { InfoDocModalButton } from "buttons";
-import "style/LanguageSelect.less";
+import { SettingsInput } from "inputs";
 
 const propTypes = {
   tempSettings: PropTypes.object.isRequired,
@@ -29,7 +27,7 @@ const GeneralSettings = ({
         <SettingsInput
           className="settings-input"
           value={tempSettings.currencyDisplay}
-          onChange={(newCurrency) => onChangeTempSettings({ currencyDisplay: newCurrency.name })}
+          onChange={(newCurrency) => onChangeTempSettings({currencyDisplay: newCurrency.name})}
           valueKey="name" labelKey="name"
           options={currencies}
         />
@@ -39,10 +37,10 @@ const GeneralSettings = ({
         <div className="settings-label">
           <T id="settings.locale" m="Locale" />
         </div>
-        <LanguageSelect
-          className="language-select-input"
+        <SettingsInput
+          className="settings-input"
           value={tempSettings.locale}
-          onChange={(newLocale) => onChangeTempSettings({ locale: newLocale.key })}
+          onChange={(newLocale) => onChangeTempSettings({locale: newLocale.key})}
           valueKey="key" labelKey="description"
           options={locales}
         />
@@ -55,26 +53,14 @@ const GeneralSettings = ({
         <SettingsInput
           className="settings-input"
           value={tempSettings.daemonStartAdvanced ? "true" : "false"}
-          onChange={(opt) => onChangeTempSettings({ daemonStartAdvanced: opt.value })}
+          onChange={(opt) => onChangeTempSettings({daemonStartAdvanced: opt.value})}
           valueKey="key"
           labelKey="description"
           options={[
-            { key: "true", value: true, description: <T id="settings.advancedDaemon.true" m="Enabled" /> },
-            { key: "false", value: false, description: <T id="settings.advancedDaemon.false" m="Disabled" /> },
+            {key: "true", value: true, description: <T id="settings.advancedDaemon.true" m="Enabled" />},
+            {key: "false", value: false, description: <T id="settings.advancedDaemon.false" m="Disabled" />},
           ]}
         />
-      </div>
-      <div className="settings-row">
-        <div className="settings-label">
-          <InfoDocModalButton document="GapLimitInfo" double/>
-          <T id="settings.gapLimit.label" m="Gap Limit" />
-        </div>
-        <div className="settings-input">
-          <NumericInput
-            value={tempSettings.gapLimit}
-            onChange={(e) => onChangeTempSettings({ gapLimit: e.target.value })}
-          />
-        </div>
       </div>
     </div>
   </div>

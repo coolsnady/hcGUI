@@ -1,5 +1,5 @@
 // @flow
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { Balance } from "shared";
 import { FormattedMessage as T, injectIntl, defineMessages } from "react-intl";
 import { TRANSACTION_DIR_SENT, TRANSACTION_DIR_RECEIVED,

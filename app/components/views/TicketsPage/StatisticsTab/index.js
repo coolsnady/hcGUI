@@ -1,27 +1,19 @@
+import ErrorScreen from "ErrorScreen";
 import StatisticsPage from "./Page";
-import { myTicketsCharts } from "connectors";
+import service from "connectors/service";
 
 @autobind
 class Statistics extends React.Component{
-
-  constructor(props) {
-    super(props);
-    if (!props.voteTimeStats && !props.getMyTicketsStatsRequest && props.allTickets.length > 0) {
-      props.getMyTicketsStats();
-    }
-    this.state = { hasStats: props.voteTimeStats && !props.getMyTicketsStatsRequest };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setState({ hasStats: nextProps.voteTimeStats && !nextProps.getMyTicketsStatsRequest });
-  }
-
   render() {
-    return <StatisticsPage {...{
-      ...this.props,
-      ...this.state
-    }} />;
+    const { walletService } = this.props;
+
+    return walletService
+      ? <StatisticsPage {...{
+        ...this.props,
+        ...this.state
+      }} />
+      : <ErrorScreen />;
   }
 }
 
-export default myTicketsCharts(Statistics);
+export default service(Statistics);

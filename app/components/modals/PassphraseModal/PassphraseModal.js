@@ -28,8 +28,6 @@ class PassphraseModal extends React.Component {
   }
 
   setPassPhrase(passPhrase) {
-    if (passPhrase == "") this.setState({ hasFailedAttempt: true });
-
     this.setState({ passPhrase });
   }
 
@@ -53,7 +51,7 @@ class PassphraseModal extends React.Component {
 
   render() {
     const { setPassPhrase, onSubmit, onCancelModal } = this;
-    const { hasFailedAttempt } = this.state;
+
     return (
       <Modal
         {...{
@@ -61,8 +59,7 @@ class PassphraseModal extends React.Component {
           ...this.state,
           setPassPhrase,
           onSubmit,
-          onCancelModal,
-          hasFailedAttempt
+          onCancelModal
         }}
       />
     );

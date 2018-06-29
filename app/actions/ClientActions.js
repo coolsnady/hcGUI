@@ -2,42 +2,27 @@
 import * as wallet from "wallet";
 import * as sel from "selectors";
 import eq from "lodash/fp/eq";
-import { getNextAddressAttempt, loadActiveDataFiltersAttempt, rescanAttempt,
-  stopAutoBuyerAttempt, getTicketBuyerConfigAttempt, publishUnminedTransactionsAttempt } from "./ControlActions";
+import { getNextAddressAttempt, loadActiveDataFiltersAttempt, rescanAttempt, stopAutoBuyerAttempt } from "./ControlActions";
 import { transactionNtfnsStart, accountNtfnsStart } from "./NotificationActions";
 import { updateStakepoolPurchaseInformation, setStakePoolVoteChoices } from "./StakePoolActions";
 import { getDecodeMessageServiceAttempt } from "./DecodeMessageActions";
-import { showSidebarMenu, showSidebar } from "./SidebarActions";
-import { push as pushHistory, goBack } from "react-router-redux";
-import { getWalletCfg, getGlobalCfg } from "../config";
+import { showSidebarMenu } from "./SidebarActions";
+import { push as pushHistory } from "react-router-redux";
+import { getWalletCfg } from "../config.js";
 import { onAppReloadRequested } from "wallet";
 import { getTransactions as walletGetTransactions } from "wallet/service";
 import { TransactionDetails } from "middleware/walletrpc/api_pb";
 import { clipboard } from "electron";
-import { getStartupStats } from "./StatisticsActions";
-
-export const goToTransactionHistory = () => (dispatch) => {
-  dispatch(pushHistory("/transactions/history"));
-};
-
-export const goToMyTickets = () => (dispatch) => {
-  dispatch(pushHistory("/tickets/mytickets"));
-};
 
 export const GETWALLETSERVICE_ATTEMPT = "GETWALLETSERVICE_ATTEMPT";
 export const GETWALLETSERVICE_FAILED = "GETWALLETSERVICE_FAILED";
 export const GETWALLETSERVICE_SUCCESS = "GETWALLETSERVICE_SUCCESS";
 
 function getWalletServiceSuccess(walletService) {
-  return (dispatch) => {
-    dispatch({ walletService, type: GETWALLETSERVICE_SUCCESS });
-  };
-}
-
-export function startWalletServices() {
   return (dispatch, getState) => {
+    dispatch({ walletService, type: GETWALLETSERVICE_SUCCESS });
     setTimeout(() => { dispatch(loadActiveDataFiltersAttempt()); }, 1000);
-    setTimeout(() => { dispatch(getNextAddressAttempt(0)); }, 1000);
+    setTimeout(() => { dispatch(getNextAddressAttempt(0, 0)); }, 1000);
     setTimeout(() => { dispatch(getTicketPriceAttempt()); }, 1000);
     setTimeout(() => { dispatch(getPingAttempt()); }, 1000);
     setTimeout(() => { dispatch(getNetworkAttempt()); }, 1000);
@@ -45,13 +30,9 @@ export function startWalletServices() {
     setTimeout(() => { dispatch(accountNtfnsStart()); }, 1000);
     setTimeout(() => { dispatch(updateStakepoolPurchaseInformation()); }, 1000);
     setTimeout(() => { dispatch(getDecodeMessageServiceAttempt()); }, 1000);
-    setTimeout(() => { dispatch(getTicketBuyerServiceAttempt()); }, 1000);
-    setTimeout(() => { dispatch(getVotingServiceAttempt()); }, 1000);
-    setTimeout(() => { dispatch(getAgendaServiceAttempt()); }, 1000);
 
     var goHomeCb = () => {
       setTimeout(() => { dispatch(pushHistory("/home")); }, 1000);
-      setTimeout(() => { dispatch(showSidebar()); }, 1000);
       setTimeout(() => { dispatch(showSidebarMenu()); }, 1000);
     };
 
@@ -75,24 +56,19 @@ export const GETSTARTUPWALLETINFO_SUCCESS = "GETSTARTUPWALLETINFO_SUCCESS";
 export const GETSTARTUPWALLETINFO_FAILED = "GETSTARTUPWALLETINFO_FAILED";
 
 export const getStartupWalletInfo = () => (dispatch) => {
-  dispatch({ type: GETSTARTUPWALLETINFO_ATTEMPT });
+  dispatch({type: GETSTARTUPWALLETINFO_ATTEMPT});
   setTimeout( () => { dispatch(getStakeInfoAttempt()); }, 1000);
   setTimeout( () => { dispatch(getTicketsInfoAttempt()); }, 1000);
   return new Promise((resolve, reject) => {
     setTimeout( async () => {
       try {
         await dispatch(getAccountsAttempt(true));
-        await dispatch(getMostRecentRegularTransactions());
-        await dispatch(getTransactionsSinceLastOppened());
-        await dispatch(getMostRecentStakeTransactions());
         await dispatch(getMostRecentTransactions());
-        await dispatch(publishUnminedTransactionsAttempt());
-        await dispatch(getStartupStats());
         dispatch(findImmatureTransactions());
-        dispatch({ type: GETSTARTUPWALLETINFO_SUCCESS });
+        dispatch({type: GETSTARTUPWALLETINFO_SUCCESS});
         resolve();
       } catch (error) {
-        dispatch({ error, type: GETSTARTUPWALLETINFO_FAILED });
+        dispatch({error, type: GETSTARTUPWALLETINFO_FAILED});
         reject(error);
       }
     }, 1000);
@@ -116,7 +92,7 @@ function transactionsMaturingHeights(txs, chainParams) {
     let accountsToUpdate = [];
     switch (tx.type) {
     case TransactionDetails.TransactionType.TICKET_PURCHASE:
-      checkAccountsToUpdate([ tx ], accountsToUpdate);
+      checkAccountsToUpdate([tx], accountsToUpdate);
       addToRes(tx.height + chainParams.TicketExpiry, accountsToUpdate);
       addToRes(tx.height + chainParams.SStxChangeMaturity, accountsToUpdate);
       addToRes(tx.height + chainParams.TicketMaturity, accountsToUpdate); // FIXME: remove as it doesn't change balances
@@ -124,7 +100,7 @@ function transactionsMaturingHeights(txs, chainParams) {
 
     case TransactionDetails.TransactionType.VOTE:
     case TransactionDetails.TransactionType.REVOCATION:
-      checkAccountsToUpdate([ tx ], accountsToUpdate);
+      checkAccountsToUpdate([tx], accountsToUpdate);
       addToRes(tx.height + chainParams.CoinbaseMaturity, accountsToUpdate);
       break;
     }
@@ -166,7 +142,7 @@ export const findImmatureTransactions = () => async (dispatch, getState) => {
       currentBlockHeight+1, pageSize);
   }
 
-  dispatch({ maturingBlockHeights: checkHeights, type: MATURINGHEIGHTS_CHANGED });
+  dispatch({maturingBlockHeights: checkHeights, type: MATURINGHEIGHTS_CHANGED});
 };
 
 export const getWalletServiceAttempt = () => (dispatch, getState) => {
@@ -176,49 +152,6 @@ export const getWalletServiceAttempt = () => (dispatch, getState) => {
   wallet.getWalletService(sel.isTestNet(getState()), walletName, address, port)
     .then(walletService => dispatch(getWalletServiceSuccess(walletService)))
     .catch(error => dispatch({ error, type: GETWALLETSERVICE_FAILED }));
-};
-
-export const GETTRANSACTIONSSINCELASTOPPENED_ATTEMPT = "GETTRANSACTIONSSINCELASTOPPENED_ATTEMPT";
-export const GETTRANSACTIONSSINCELASTOPPENED_FAILED = "GETTRANSACTIONSSINCELASTOPPENED_FAILED";
-export const GETTRANSACTIONSSINCELASTOPPENED_SUCCESS = "GETTRANSACTIONSSINCELASTOPPENED_SUCCESS";
-
-export const getTransactionsSinceLastOppened = () => async (dispatch, getState) => {
-  dispatch({ type: GETTRANSACTIONSSINCELASTOPPENED_ATTEMPT });
-  const transactionsSinceLastOpenedInfo = {
-    transactionsReceived: [],
-    ticketsVoted:         [],
-    ticketsRevoked:       [],
-    totalReward:           0,
-    totalDCR:              0,
-  };
-  const config = getGlobalCfg();
-  const lastBlockHeightSeen = config.get("last_height");
-  const { currentBlockHeight, walletService, recentTxSinceLastOpenedCount } = getState().grpc;
-
-  try {
-    const { mined, unmined } =
-      await walletGetTransactions(walletService, lastBlockHeightSeen, currentBlockHeight, recentTxSinceLastOpenedCount);
-    const transactions = [ ...mined, ...unmined ];
-
-    transactions.forEach( tx => {
-      switch (tx.type) {
-      case TransactionDetails.TransactionType.REGULAR:
-        transactionsSinceLastOpenedInfo.totalDCR += tx.amount;
-        transactionsSinceLastOpenedInfo.transactionsReceived.push(tx);
-        break;
-      case TransactionDetails.TransactionType.VOTE:
-        transactionsSinceLastOpenedInfo.totalReward += tx.amount;
-        transactionsSinceLastOpenedInfo.ticketsVoted.push(tx);
-        break;
-      case TransactionDetails.TransactionType.REVOCATION:
-        transactionsSinceLastOpenedInfo.ticketsRevoked.push(tx);
-        break;
-      }
-    });
-    dispatch({ transactionsSinceLastOpened: transactionsSinceLastOpenedInfo, type: GETTRANSACTIONSSINCELASTOPPENED_SUCCESS });
-  } catch (error) {
-    dispatch({ error, type: GETTRANSACTIONSSINCELASTOPPENED_FAILED });
-  }
 };
 
 export const GETTICKETBUYERSERVICE_ATTEMPT = "GETTICKETBUYERSERVICE_ATTEMPT";
@@ -232,14 +165,19 @@ export const getTicketBuyerServiceAttempt = () => (dispatch, getState) => {
   wallet.getTicketBuyerService(sel.isTestNet(getState()), walletName, address, port)
     .then(ticketBuyerService => {
       dispatch({ ticketBuyerService, type: GETTICKETBUYERSERVICE_SUCCESS });
-      setTimeout(() => { dispatch(getTicketBuyerConfigAttempt()); }, 10);
       setTimeout(() => { dispatch(stopAutoBuyerAttempt()); }, 10);
     })
     .catch(error => dispatch({ error, type: GETTICKETBUYERSERVICE_FAILED }));
 };
 
-export const getAccountNumbersBalances = (accountNumbers) => (dispatch) => {
-  accountNumbers.forEach(a => dispatch(getBalanceUpdateAttempt(a, 0)));
+export const getAccountNumbersBalances = (accountNumbers) => (dispatch, getState) => {
+  const { getAccountsResponse } = getState().grpc;
+  const accounts = getAccountsResponse.getAccountsList();
+  const byAccountNumber = accounts.reduce((l, a) => {
+    l[a.getAccountNumber()] = a;
+    return l;
+  }, {});
+  accountNumbers.forEach(a => dispatch(updateAccount(byAccountNumber[a])));
 };
 
 const getAccountsBalances = (accounts) => (dispatch, getState) => {
@@ -263,6 +201,7 @@ const getAccountsBalances = (accounts) => (dispatch, getState) => {
           externalKeys: account.getExternalKeyCount(),
           internalKeys: account.getInternalKeyCount(),
           importedKeys: account.getImportedKeyCount(),
+          accountType: account.getAccountType(),
           hidden,
           HDPath,
           total: resp.getTotal(),
@@ -279,25 +218,33 @@ const getAccountsBalances = (accounts) => (dispatch, getState) => {
         return;
       });
   });
-  dispatch({ balances, type: GETBALANCE_SUCCESS });
+  dispatch({balances, type: GETBALANCE_SUCCESS });
 };
 
 export const GETBALANCE_ATTEMPT = "GETBALANCE_ATTEMPT";
 export const GETBALANCE_FAILED = "GETBALANCE_FAILED";
 export const GETBALANCE_SUCCESS = "GETBALANCE_SUCCESS";
 
-const getBalanceUpdateSuccess = (accountNumber, getBalanceResponse) => (dispatch) => {
-  let updatedBalance = {
-    accountNumber,
-    total: getBalanceResponse.getTotal(),
-    spendable: getBalanceResponse.getSpendable(),
-    immatureReward: getBalanceResponse.getImmatureReward(),
-    immatureStakeGeneration: getBalanceResponse.getImmatureStakeGeneration(),
-    lockedByTickets: getBalanceResponse.getLockedByTickets(),
-    votingAuthority: getBalanceResponse.getVotingAuthority(),
-  };
+const getBalanceUpdateSuccess = (accountNumber, getBalanceResponse) => (dispatch, getState) => {
+  const { grpc: { balances } } = getState();
+  let updatedBalance;
+  balances.some(balance => {
+    if (balance.accountNumber == accountNumber) {
+      updatedBalance = balance;
+      return balance.accountNumber == accountNumber;
+    }
+  });
+  updatedBalance.total = getBalanceResponse.getTotal();
+  updatedBalance.spendable = getBalanceResponse.getSpendable();
+  updatedBalance.immatureReward = getBalanceResponse.getImmatureReward();
+  updatedBalance.immatureStakeGeneration = getBalanceResponse.getImmatureStakeGeneration();
+  updatedBalance.lockedByTickets = getBalanceResponse.getLockedByTickets();
+  updatedBalance.votingAuthority = getBalanceResponse.getVotingAuthority();
 
-  dispatch(updateAccount(updatedBalance));
+  const updatedBalances = balances.map(balance =>
+    (balance.accountNumber === accountNumber) ? updatedBalance : balance);
+
+  dispatch({balances: updatedBalances, type: GETBALANCE_SUCCESS });
 };
 
 export const getBalanceUpdateAttempt = (accountNumber, requiredConfs) => (dispatch, getState) =>
@@ -373,8 +320,8 @@ export const getStakeInfoAttempt = () => (dispatch, getState) => {
       let { getStakeInfoResponse } = getState().grpc;
       dispatch({ getStakeInfoResponse: resp, type: GETSTAKEINFO_SUCCESS });
 
-      const checkedFields = [ "getExpired", "getLive", "getMissed", "getOwnMempoolTix",
-        "getRevoked", "getVoted" ];
+      const checkedFields = ["getExpired", "getLive", "getMissed", "getOwnMempoolTix",
+        "getRevoked", "getVoted"];
       const reloadTickets = getStakeInfoResponse
         ? checkedFields.reduce((a, v) => a||getStakeInfoResponse[v]() !== resp[v](), false)
         : false;
@@ -420,29 +367,41 @@ export const UPDATEACCOUNT_SUCCESS = "UPDATEACCOUNT_SUCCESS";
 export function updateAccount(account) {
   return (dispatch, getState) => {
     const { grpc: { balances } } = getState();
-    const existingAccount = balances.find(a => a.accountNumber === account.accountNumber);
-    const updatedAccount = { ...existingAccount, ...account };
-    const updatedBalances = balances.map(a =>
-      (a.accountNumber === account.accountNumber) ? updatedAccount : a);
-    if (!existingAccount) {
-      updatedBalances.push(updatedAccount);
-    }
+    let updatedBalance;
+    balances.some(balance => {
+      if (balance.accountNumber == account.accountNumber) {
+        updatedBalance = balance;
+        return balance.accountNumber == account.accountNumber;
+      }
+    });
 
-    dispatch({ balances: updatedBalances, type: GETBALANCE_SUCCESS });
+    if (account.hidden) updatedBalance.hidden = account.hidden;
+    if (account.accountName) updatedBalance.accountName = account.accountName;
+    if (account.externalKeys) updatedBalance.externalKeys = account.externalKeys;
+    if (account.internalKeys) updatedBalance.internalKeys = account.internalKeys;
+    if (account.importedKeys) updatedBalance.importedKeys = account.importedKeys;
+
+    const updatedBalances = balances.map(balance =>
+      (balance.accountNumber === account.accountNumber) ? updatedBalance : balance);
+
+    dispatch({balances: updatedBalances, type: GETBALANCE_SUCCESS });
   };
 }
 
 export function hideAccount(accountNumber) {
   return (dispatch, getState) => {
     const { daemon: { walletName, hiddenAccounts } } = getState();
-    var updatedHiddenAccounts = [ ...hiddenAccounts ];
-    if (updatedHiddenAccounts.indexOf(accountNumber) === -1) {
-      updatedHiddenAccounts.push(accountNumber);
+    var updatedHiddenAccounts;
+    if (hiddenAccounts.length == 0) {
+      updatedHiddenAccounts = Array();
+    } else {
+      updatedHiddenAccounts = hiddenAccounts;
     }
+    updatedHiddenAccounts.push(accountNumber);
     var cfg = getWalletCfg(sel.isTestNet(getState()), walletName);
     cfg.set("hiddenaccounts", updatedHiddenAccounts);
-    dispatch({ hiddenAccounts: updatedHiddenAccounts, type: UPDATEHIDDENACCOUNTS });
-    dispatch(updateAccount({ accountNumber, hidden: true }));
+    dispatch({hiddenAccounts: updatedHiddenAccounts, type: UPDATEHIDDENACCOUNTS});
+    dispatch(updateAccount({accountNumber, hidden: true}));
   };
 }
 
@@ -457,8 +416,8 @@ export function showAccount(accountNumber) {
     }
     var cfg = getWalletCfg(sel.isTestNet(getState()), walletName);
     cfg.set("hiddenaccounts", updatedHiddenAccounts);
-    dispatch({ hiddenAccounts: updatedHiddenAccounts, type: UPDATEHIDDENACCOUNTS });
-    dispatch(updateAccount({ accountNumber, hidden: false }));
+    dispatch({hiddenAccounts: updatedHiddenAccounts, type: UPDATEHIDDENACCOUNTS});
+    dispatch(updateAccount({accountNumber, hidden: false}));
   };
 }
 
@@ -494,9 +453,8 @@ export const GETTRANSACTIONS_COMPLETE = "GETTRANSACTIONS_COMPLETE";
 // If empty, all transactions are accepted.
 function filterTransactions(transactions, filter) {
   return transactions
-    .filter(v => filter.types.length ? filter.types.indexOf(v.type) > -1 : true)
-    .filter(v => filter.direction ? filter.direction === v.direction : true)
-    .filter(v => filter.search ? v.creditAddresses.find(address => address.length > 1 && address.toLowerCase().indexOf(filter.search.toLowerCase()) !== -1) != undefined : true);
+    .filter(v => filter.types.length ? filter.types.indexOf(v.type) > -1 : true )
+    .filter(v => filter.direction ? filter.direction === v.direction : true);
 }
 
 // getTransactions loads a list of transactions from the wallet, given the
@@ -510,12 +468,13 @@ function filterTransactions(transactions, filter) {
 // When no more transactions are available given the current filter,
 // `grpc.noMoreTransactions` is set to true.
 export const getTransactions = () => async (dispatch, getState) => {
-  const { currentBlockHeight, getTransactionsRequestAttempt,
-    transactionsFilter, walletService, maximumTransactionCount, recentTransactionCount } = getState().grpc;
-  let { noMoreTransactions, lastTransaction, minedTransactions, recentRegularTransactions, recentStakeTransactions } = getState().grpc;
+  const { getAccountsResponse, getTransactionsRequestAttempt,
+    transactionsFilter, walletService, maximumTransactionCount } = getState().grpc;
+  let { noMoreTransactions, lastTransaction, minedTransactions } = getState().grpc;
   if (getTransactionsRequestAttempt || noMoreTransactions) return;
 
-  if (!currentBlockHeight) {
+  // Check to make sure getAccountsResponse (which has current block height) is available
+  if (getAccountsResponse === null) {
     // Wait a little then re-dispatch this call since we have no starting height yet
     setTimeout(() => { dispatch(getTransactions()); }, 1000);
     return;
@@ -538,11 +497,11 @@ export const getTransactions = () => async (dispatch, getState) => {
     let startRequestHeight, endRequestHeight;
 
     if ( transactionsFilter.listDirection === "desc" ) {
-      startRequestHeight = lastTransaction ? lastTransaction.height -1 : currentBlockHeight;
+      startRequestHeight = lastTransaction ? lastTransaction.height -1 : getAccountsResponse.getCurrentBlockHeight();
       endRequestHeight = 1;
     } else {
       startRequestHeight = lastTransaction ? lastTransaction.height +1 : 1;
-      endRequestHeight = currentBlockHeight;
+      endRequestHeight = getAccountsResponse.getCurrentBlockHeight();
     }
 
     try {
@@ -553,23 +512,14 @@ export const getTransactions = () => async (dispatch, getState) => {
       filterTransactions(mined, transactionsFilter)
         .forEach(v => filtered.push(v));
     } catch (error) {
-      dispatch({ type: GETTRANSACTIONS_FAILED, error });
+      dispatch({ type: GETTRANSACTIONS_FAILED, error});
       return;
     }
   }
 
-  minedTransactions = [ ...minedTransactions, ...filtered ];
-
-  if (transactionsFilter.types.indexOf(TransactionDetails.TransactionType.REGULAR) > -1) {
-    recentRegularTransactions = [ ...unminedTransactions, ...minedTransactions ];
-    recentRegularTransactions = recentRegularTransactions.slice(0, recentTransactionCount);
-  } else if (transactionsFilter.types.indexOf(TransactionDetails.TransactionType.VOTE) > -1) {
-    recentStakeTransactions = [ ...unminedTransactions, ...minedTransactions ];
-    recentStakeTransactions = recentStakeTransactions.slice(0, recentTransactionCount);
-  }
-
+  minedTransactions = [...minedTransactions, ...filtered];
   const stateChange = { unminedTransactions, minedTransactions,
-    noMoreTransactions, lastTransaction, recentRegularTransactions, recentStakeTransactions, type: GETTRANSACTIONS_COMPLETE };
+    noMoreTransactions, lastTransaction, type: GETTRANSACTIONS_COMPLETE};
   dispatch(stateChange);
   return stateChange;
 };
@@ -600,7 +550,7 @@ function checkForStakeTransactions(txs) {
 export const newTransactionsReceived = (newlyMinedTransactions, newlyUnminedTransactions) => (dispatch, getState) => {
   if (!newlyMinedTransactions.length && !newlyUnminedTransactions.length) return;
 
-  let { unminedTransactions, minedTransactions, recentRegularTransactions, recentStakeTransactions } = getState().grpc;
+  let { unminedTransactions, minedTransactions, recentTransactions } = getState().grpc;
   const { transactionsFilter, recentTransactionCount } = getState().grpc;
   const chainParams = sel.chainParams(getState());
 
@@ -626,32 +576,14 @@ export const newTransactionsReceived = (newlyMinedTransactions, newlyUnminedTran
     ...unminedTransactions.filter(tx => !newlyMinedMap[tx.hash] && !newlyUnminedMap[tx.hash])
   ], transactionsFilter);
 
-  const regularTransactionFilter = {
-    listDirection: "desc",
-    types: [ TransactionDetails.TransactionType.REGULAR ],
-    direction: null,
-  };
-
-  recentRegularTransactions = filterTransactions([
+  recentTransactions = [
     ...newlyUnminedTransactions,
     ...newlyMinedTransactions,
-    ...recentRegularTransactions.filter(tx => !newlyMinedMap[tx.hash] && !newlyUnminedMap[tx.hash])
-  ], regularTransactionFilter).slice(0, recentTransactionCount);
-
-  const stakeTransactionFilter = {
-    listDirection: "desc",
-    types: [ TransactionDetails.TransactionType.TICKET_PURCHASE, TransactionDetails.TransactionType.VOTE, TransactionDetails.TransactionType.REVOCATION ],
-    direction: null,
-  };
-
-  recentStakeTransactions = filterTransactions([
-    ...newlyUnminedTransactions,
-    ...newlyMinedTransactions,
-    ...recentStakeTransactions.filter(tx => !newlyMinedMap[tx.hash] && !newlyUnminedMap[tx.hash])
-  ], stakeTransactionFilter).slice(0, recentTransactionCount);
+    ...recentTransactions.filter(tx => !newlyMinedMap[tx.hash] && !newlyUnminedMap[tx.hash])
+  ].slice(0, recentTransactionCount);
 
   const { maturingBlockHeights } = getState().grpc;
-  const newMaturingHeights = { ...maturingBlockHeights };
+  const newMaturingHeights = {...maturingBlockHeights};
   const mergeNewMaturingHeights = (hs) => Object.keys(hs).forEach(h => {
     const accounts = newMaturingHeights[h] || [];
     hs[h].forEach(a => accounts.indexOf(a) === -1 ? accounts.push(a) : null);
@@ -659,61 +591,41 @@ export const newTransactionsReceived = (newlyMinedTransactions, newlyUnminedTran
   });
 
   mergeNewMaturingHeights(transactionsMaturingHeights(newlyMinedTransactions, chainParams));
-  dispatch({ maturingBlockHeights: newMaturingHeights, type: MATURINGHEIGHTS_CHANGED });
+  dispatch({maturingBlockHeights: newMaturingHeights, type: MATURINGHEIGHTS_CHANGED});
 
   // TODO: filter newlyMinedTransactions against minedTransactions if this
   // starts generating a duplicated key error
 
   if (transactionsFilter.listDirection === "desc") {
-    minedTransactions = [ ...newlyMinedTransactions, ...minedTransactions ];
+    minedTransactions = [...newlyMinedTransactions, ...minedTransactions];
   } else {
-    minedTransactions = [ ...minedTransactions, ...newlyMinedTransactions ];
+    minedTransactions = [...minedTransactions, ...newlyMinedTransactions];
   }
   minedTransactions = filterTransactions(minedTransactions, transactionsFilter);
 
-  dispatch({ unminedTransactions, minedTransactions, newlyUnminedTransactions,
-    newlyMinedTransactions, recentRegularTransactions, recentStakeTransactions, type: NEW_TRANSACTIONS_RECEIVED });
-
-  if (newlyMinedTransactions.length > 0) {
-    dispatch(getStartupStats());
-  }
+  dispatch({unminedTransactions, minedTransactions, newlyUnminedTransactions,
+    newlyMinedTransactions, recentTransactions, type: NEW_TRANSACTIONS_RECEIVED});
 };
 
-// getMostRecentRegularTransactions clears the transaction filter and refetches
+export const CLEAR_MOSTRECENTTRANSACTIONS = "CLEAR_MOSTRECENTTRANSACTIONS";
+
+// getMostRecentTransactions clears the transaction filter and refetches
 // the first page of transactions. This is used to get and store the initial
 // list of recent transactions.
-export const getMostRecentRegularTransactions = () => dispatch => {
-  const defaultFilter = {
-    listDirection: "desc",
-    types: [ TransactionDetails.TransactionType.REGULAR ],
-    direction: null,
-  };
-  return dispatch(changeTransactionsFilter(defaultFilter));
-};
-
-export const getMostRecentStakeTransactions = () => dispatch => {
-  const defaultFilter = {
-    listDirection: "desc",
-    types: [ TransactionDetails.TransactionType.TICKET_PURCHASE, TransactionDetails.TransactionType.VOTE, TransactionDetails.TransactionType.REVOCATION ],
-    direction: null,
-  };
-  return dispatch(changeTransactionsFilter(defaultFilter));
-};
-
 export const getMostRecentTransactions = () => dispatch => {
   const defaultFilter = {
-    search: null,
     listDirection: "desc",
     types: [],
     direction: null,
   };
+  dispatch({type: CLEAR_MOSTRECENTTRANSACTIONS});
   return dispatch(changeTransactionsFilter(defaultFilter));
 };
 
 export const CHANGE_TRANSACTIONS_FILTER = "CHANGE_TRANSACTIONS_FILTER";
 export function changeTransactionsFilter(newFilter) {
   return (dispatch) => {
-    dispatch({ transactionsFilter: newFilter, type: CHANGE_TRANSACTIONS_FILTER });
+    dispatch({transactionsFilter: newFilter, type: CHANGE_TRANSACTIONS_FILTER});
     return dispatch(getTransactions());
   };
 }
@@ -741,7 +653,7 @@ export const GETAGENDASERVICE_SUCCESS = "GETAGENDASERVICE_SUCCESS";
 
 export const getAgendaServiceAttempt = () => (dispatch, getState) => {
   const { grpc: { address, port } } = getState();
-  const { daemon: { walletName } } = getState();
+  const { daemon: { walletName }} = getState();
   dispatch({ type: GETAGENDASERVICE_ATTEMPT });
   wallet.getAgendaService(sel.isTestNet(getState()), walletName, address, port)
     .then(agendaService => {
@@ -757,7 +669,7 @@ export const GETVOTINGSERVICE_SUCCESS = "GETVOTINGSERVICE_SUCCESS";
 
 export const getVotingServiceAttempt = () => (dispatch, getState) => {
   const { grpc: { address, port } } = getState();
-  const { daemon: { walletName } } = getState();
+  const { daemon: { walletName }} = getState();
   dispatch({ type: GETVOTINGSERVICE_ATTEMPT });
   wallet.getVotingService(sel.isTestNet(getState()), walletName, address, port)
     .then(votingService => dispatch({ votingService, type: GETVOTINGSERVICE_SUCCESS }))
@@ -809,7 +721,7 @@ export const GETMESSAGEVERIFICATIONSERVICE_SUCCESS = "GETMESSAGEVERIFICATIONSERV
 
 export const getMessageVerificationServiceAttempt = () => (dispatch, getState) => {
   const { grpc: { address, port } } = getState();
-  const { daemon: { walletName } } = getState();
+  const { daemon: { walletName }} = getState();
   dispatch({ type: GETMESSAGEVERIFICATIONSERVICE_ATTEMPT });
   wallet.getMessageVerificationService(sel.isTestNet(getState()), walletName, address, port)
     .then(messageVerificationService =>
@@ -822,11 +734,10 @@ export const listenForAppReloadRequest = cb => () => onAppReloadRequested(cb);
 export const showTicketList = status => dispatch =>
   dispatch(pushHistory("/tickets/mytickets/" + status));
 
-export const goBackHistory = () => dispatch => dispatch(goBack());
 
 export const SEEDCOPIEDTOCLIPBOARD = "SEEDCOPIEDTOCLIPBOARD";
 export const copySeedToClipboard = (mnemonic) => (dispatch) => {
   clipboard.clear();
   clipboard.writeText(mnemonic);
-  dispatch({ type: SEEDCOPIEDTOCLIPBOARD });
+  dispatch({type: SEEDCOPIEDTOCLIPBOARD});
 };

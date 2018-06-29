@@ -14,7 +14,7 @@ const messages = defineMessages({
 class AccountsSelect extends React.Component {
 
   static propTypes = {
-    accountsType: PropTypes.oneOf([ "spending", "visible" ]),
+    accountsType: PropTypes.oneOf(["spending", "visible"]),
     intl: intlShape.isRequired,
     className: PropTypes.string,
     showAccountsButton: PropTypes.bool,
@@ -35,7 +35,7 @@ class AccountsSelect extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.state.account !== nextProps.account) {
-      this.setState({ account: nextProps.account });
+      this.setState({account: nextProps.account});
     }
   }
 
@@ -46,7 +46,7 @@ class AccountsSelect extends React.Component {
       <div className={className}>
         <Select
           clearable={false}
-          style={{ zIndex:"9" }}
+          style={{zIndex:"9"}}
           placeholder={formatMessage(messages.placeholder)}
           multi={false}
           value={this.state.account}
@@ -57,20 +57,10 @@ class AccountsSelect extends React.Component {
           optionRenderer={this.valueRenderer}
           onChange={this.onChangeAccount}
           className="accounts-select"
-          onInputKeyDown={this.selectKeyDown}
         />
         { showAccountsButton && <LinkToAccounts /> }
       </div>
     );
-  }
-
-  selectKeyDown (e) {
-    switch(e.keyCode) {
-    case 8:
-    case 46:
-      e.preventDefault();
-      break;
-    }
   }
 
   valueRenderer(option) {

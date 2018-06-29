@@ -6,7 +6,6 @@ import * as ca from "../actions/ClientActions";
 
 const mapStateToProps = selectorMap({
   ticketsPerStatus: sel.ticketsPerStatus,
-  allTickets: sel.allTickets,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

@@ -2,7 +2,7 @@
 let ipcRenderer = require("electron").ipcRenderer;
 ipcRenderer.on("exes-versions", function (event, versions) {
   document.getElementById("decreditonVersion").innerHTML = versions["decrediton"];
-  document.getElementById("hxdVersion").innerHTML = versions["hxd"];
+  document.getElementById("dcrdVersion").innerHTML = versions["dcrd"];
   document.getElementById("dcrwalletVersion").innerHTML = versions["dcrwallet"];
   document.getElementById("walletGrpcVersion").innerHTML = versions["grpc"]["walletVersion"];
   document.getElementById("requiredWalletGrpcVersion").innerHTML = versions["grpc"]["requiredVersion"];

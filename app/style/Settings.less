@@ -3,38 +3,25 @@
 
 .settings-wrapper {
   display: flex;
-  background: white;
+  flex-direction: row;
+  width: 740px;
+  background: @darkGrey;
   margin-bottom: 20px;
-  padding: 26px 26px 26px 40px;
-  justify-content: space-between;
+  padding: 26px 0 26px 40px;
 }
 
-.settings-columns {
-  flex: 50%;
-}
-
-.settings-wrapper .settings-label {
-  width: 200px;
+.settings-security {
+  padding-left: 100px;
 }
 
 .settings-column-title {
   font-size: 19px;
   text-transform: capitalize;
-  margin-bottom: 14px;
-  line-height: 24px;
+  margin-bottom: 32px;
 }
 
-.settings-privacy,
-.settings-security {
-  width: 100%;
-  float: left;
-  margin-bottom: 20px;
-}
-
-.settings-privacy .settings-column-title,
-.settings-security .settings-column-title {
-  text-align: right;
-  margin-right: 145px;
+.settings-column-content {
+  margin-left: 60px;
 }
 
 .settings-restart {
@@ -46,20 +33,6 @@
   justify-content: flex-end;
 }
 
-.settings-row-checklist {
-  flex-wrap: wrap;
-}
-
-.settings-checklist-description {
-  font-style: italic;
-  text-align: right;
-  margin: -16px 28px 10px 0px;
-  color: #8997a5;
-  font-size: 11px;
-  line-height: 15px;
-  width: 175px;
-}
-
 .settings-label {
   .inline-block-mixin;
 
@@ -69,7 +42,7 @@
 
 .change-password-default-icon {
   background: @change-password-default-icon no-repeat center;
-  background-color: #2971ff;
+  background-color: @blue;
   background-size: 16px;
   cursor: pointer;
   width: 19px;
@@ -83,20 +56,14 @@
 }
 
 .change-password-default-icon:hover {
-  background-color: #1b58ff;
+  background-color: @blue;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
 }
 
 .settings-input {
   .inline-block-mixin;
 
-  width: 200px;
-}
-
-.settings-text-input {
-  width: 194px;
-  height: 23px;
-  padding: 0px 4px 1px 10px;
+  width: 150px;
 }
 
 .settings-input-error {
@@ -120,65 +87,10 @@
   float: right;
 }
 
-.settings-update-passphrase-button span {
-  float: left;
-  margin-top: 1px;
-  font-size: 13px;
-  line-height: 17px;
-}
-
 .inverted-colors .settings-general {
-  color: #fff;
+  color: @white;
 }
 
 .get-started-content-new-seed .settings-general {
   max-width: 400px;
-}
-
-.privacy-checkbox {
-  margin-top: 2px;
-}
-
-input[type="checkbox"] {
-  display: none;
-}
-
-input[type="checkbox"]:disabled + label {
-  display: inline-block;
-  background-color: #e7eaed;
-  border: 1px solid #8997a5;
-  width: 12px;
-  height: 12px;
-}
-
-input[type="checkbox"]:checked:disabled + label {
-  display: inline-block;
-  border: 1px solid #8997a5;
-  background-color: #e7eaed;
-  background-image: @checkmarkGrey;
-  background-repeat: no-repeat;
-  background-size: 11px;
-  background-position: 0px;
-  width: 12px;
-  height: 12px;
-}
-
-input[type="checkbox"] + label {
-  display: inline-block;
-  border: 1px solid #8997a5;
-  background-color: none;
-  width: 12px;
-  height: 12px;
-}
-
-input[type="checkbox"]:checked + label {
-  display: inline-block;
-  border: 1px solid #2970ff;
-  background-color: none;
-  background-image: @checkmarkBlue;
-  background-repeat: no-repeat;
-  background-size: 11px;
-  background-position: 0px;
-  width: 12px;
-  height: 12px;
 }

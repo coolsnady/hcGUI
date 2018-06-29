@@ -1,5 +1,5 @@
 import Modal from "../Modal";
-import { InvisibleButton, KeyBlueButton, DangerButton } from "buttons";
+import { SlateGrayButton, KeyBlueButton } from "buttons";
 import { FormattedMessage as T } from "react-intl";
 
 const propTypes = {
@@ -10,9 +10,9 @@ const propTypes = {
   onSubmit: PropTypes.func.isRequired
 };
 
-const ConfirmModal = ({ modalTitle, modalContent, show, onCancelModal, onSubmit,
-  confirmLabel, danger }) => (
-  <Modal className="confirm-modal" {...{ show, onCancelModal }}>
+const ConfirmModal = ({modalTitle, modalContent, show, onCancelModal, onSubmit,
+  confirmLabel}) => (
+  <Modal className="confirm-modal" {...{ show }}>
     <div className="confirm-modal-header">
       <div className="confirm-modal-header-title">
         {modalTitle}
@@ -22,17 +22,12 @@ const ConfirmModal = ({ modalTitle, modalContent, show, onCancelModal, onSubmit,
       {modalContent}
     </div>
     <div className="confirm-modal-toolbar">
-      { danger ?
-        <DangerButton className="confirm-modal-confirm-button" onClick={onSubmit}>
-          {confirmLabel || <T id="infoModal.btnConfirm" m="Confirm" />}
-        </DangerButton> :
-        <KeyBlueButton className="confirm-modal-confirm-button" onClick={onSubmit}>
-          {confirmLabel || <T id="infoModal.btnConfirm" m="Confirm" />}
-        </KeyBlueButton>
-      }
-      <InvisibleButton className="confirm-modal-close-button" onClick={onCancelModal}>
+      <KeyBlueButton className="confirm-modal-confirm-button" onClick={onSubmit}>
+        {confirmLabel || <T id="infoModal.btnConfirm" m="Confirm" />}
+      </KeyBlueButton>
+      <SlateGrayButton className="confirm-modal-close-button" onClick={onCancelModal}>
         <T id="confirmModal.btnCancel" m="Cancel" />
-      </InvisibleButton>
+      </SlateGrayButton>
     </div>
   </Modal>
 );

@@ -3,9 +3,8 @@ import { FormattedMessage as T } from "react-intl";
 import { shell } from "electron";
 import StakePoolsList from "./List";
 import StakePoolsAddForm from "./AddForm";
-import { stakePools } from "connectors";
-import { EnableExternalRequestButton } from "buttons";
-import { EXTERNALREQUEST_STAKEPOOL_LISTING } from "main_dev/externalRequests";
+import stakePools from "connectors/stakePools";
+
 @autobind
 class StakePools extends React.Component {
   constructor(props) {
@@ -13,32 +12,21 @@ class StakePools extends React.Component {
     this.state = {
       isAdding: false,
       apiKey: "",
-      selectedUnconfigured: this.props.unconfiguredStakePools[0],
-      hasFailedAttempt: false,
+      selectedUnconfigured: this.props.unconfiguredStakePools[0]
     };
-    if (!props.updatedStakePoolList && this.getStakepoolListingEnabled()) {
+    if (this.getNoAvailableStakepools()) {
       this.props.discoverAvailableStakepools();
     }
   }
 
   componentWillReceiveProps(nextProps) {
     if (!this.state.selectedUnconfigured) {
-      this.setState({ selectedUnconfigured: nextProps.unconfiguredStakePools[0] });
-    }
-    if (!this.getStakepoolListingEnabled() && nextProps.stakePoolListingEnabled) {
-      this.props.discoverAvailableStakepools();
+      this.setState({selectedUnconfigured: nextProps.unconfiguredStakePools[0]});
     }
   }
 
   render() {
-    return this.getNoAvailableStakepools() && !this.getStakepoolListingEnabled() ? (
-      <div>
-        <p><T id="stake.enableStakePoolListing.description" m="StakePool listing from external API endpoint is currently disabled. Please enable the access to this third party service or manually configure the stakepool." /></p>
-        <EnableExternalRequestButton requestType={EXTERNALREQUEST_STAKEPOOL_LISTING}>
-          <T id="stake.enableStakePoolListing.button" m="Enable StakePool Listing" />
-        </EnableExternalRequestButton>
-      </div>
-    ) : this.getNoAvailableStakepools() ? (
+    return this.getNoAvailableStakepools() ? (
       <T
         id="stake.noAvailableStakepools"
         m="No stakepool found. Check your internet connection or {link} to see if the StakePool API is down."
@@ -98,9 +86,6 @@ class StakePools extends React.Component {
   }
 
   onChangeApiKey(apiKey) {
-    if (apiKey == "") {
-      this.setState({ hasFailedAttempt: true });
-    }
     this.setState({ apiKey });
   }
 
@@ -113,16 +98,12 @@ class StakePools extends React.Component {
   onSetStakePoolInfo(privpass) {
     const { apiKey } = this.state;
     const onSetInfo = this.props.onSetStakePoolInfo;
-    apiKey ? (onSetInfo && onSetInfo(privpass, this.getSelectedUnconfigured().Host, apiKey, 0)) : this.setState({ hasFailedAttempt: true });
+    apiKey ? (onSetInfo && onSetInfo(privpass, this.getSelectedUnconfigured().Host, apiKey, 0)) : null;
   }
 
   onRemoveStakePool(host) {
     const { onRemoveStakePool } = this.props;
     onRemoveStakePool && onRemoveStakePool(host);
-  }
-
-  getStakepoolListingEnabled() {
-    return this.props.stakePoolListingEnabled;
   }
 }
 

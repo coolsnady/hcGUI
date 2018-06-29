@@ -29,7 +29,7 @@ class ChangePassphraseModal extends React.Component {
     const privPassError = !this.state.privPass;
     const hasFailedAttempt = true;
     const confirmPrivPassError = this.state.privPass !== this.state.confirmPrivPass;
-    this.setState({ privPassError, hasFailedAttempt, confirmPrivPassError });
+    this.setState({privPassError, hasFailedAttempt, confirmPrivPassError});
   }
 
   isValid() {
@@ -45,12 +45,10 @@ class ChangePassphraseModal extends React.Component {
   }
 
   updatePrivatePassphrase(privPass) {
-    if (privPass == "" ) this.setState({ hasFailedAttempt: true });
     this.setState({ privPass });
   }
 
   updateConfirmPrivatePassphrase(confirmPrivPass) {
-    if (confirmPrivPass == "" ) this.setState({ hasFailedAttempt: true });
     this.setState({ confirmPrivPass, confirmPrivPassError: false });
   }
 
@@ -66,7 +64,7 @@ class ChangePassphraseModal extends React.Component {
 
     return (
       <Modal
-        {...{ ...this.props, ...this.state }}
+        {...{...this.props, ...this.state}}
         {...{
           updatePrivatePassphrase,
           updateConfirmPrivatePassphrase,

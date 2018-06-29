@@ -10,15 +10,14 @@ const ReceivePage = ({
   nextAddress,
   onRequestAddress,
 }) => (
-  <Aux>
-    <div className="tabbed-page-subtitle"><T id="receive.subtitle" m="Receive DCR"/></div>
+  <div className="tab-card">
     <div className="receive-content-nest">
       <div className="receive-content-nest-for-address">
         <div className="receive-content-nest-prefix">
           <T id="receive.accountLabel" m="This address is for" />:
         </div>
         <div className="receive-select-account-input">
-          <ReceiveAccountsSelect showAccountsButton />
+          <ReceiveAccountsSelect />
         </div>
         <div style={{ clear: "both" }}></div>
       </div>
@@ -36,7 +35,7 @@ const ReceivePage = ({
         <T id="receive.newAddressBtn" m="Generate new address" />
       </KeyBlueButton>
     </div>
-  </Aux>
+  </div>
 );
 
 export default ReceivePage;

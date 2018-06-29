@@ -2,8 +2,7 @@ process.env["GRPC_SSL_CIPHER_SUITES"] = "HIGH+ECDSA";
 
 import grpc from "grpc";
 
-import { getWalletCert } from "config.js";
-import { getWalletPath } from "main_dev/paths.js";
+import { getWalletCert, getWalletPath } from "config.js";
 var services = require("../walletrpc/api_grpc_pb.js");
 
 const getServiceClient = (clientClass) => (isTestNet, walletPath, address, port, cb) => {

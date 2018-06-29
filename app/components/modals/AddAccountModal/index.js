@@ -21,7 +21,7 @@ class AddAccountModal extends React.Component {
   }
 
   validationFailed() {
-    this.setState({ hasFailedAttempt: true });
+    this.setState({hasFailedAttempt: true});
   }
 
   getInitialState() {
@@ -32,7 +32,6 @@ class AddAccountModal extends React.Component {
   }
 
   setName(name) {
-    if (name == "") this.setState({ hasFailedAttempt: true });
     this.setState({ name });
   }
 
@@ -58,7 +57,7 @@ class AddAccountModal extends React.Component {
 
     return (
       <Modal
-        {...{ ...this.props, ...this.state }}
+        {...{...this.props, ...this.state}}
         {...{
           setName,
           onSubmit,

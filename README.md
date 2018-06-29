@@ -1,21 +1,18 @@
-# decrediton
+# hcGUI
 
-[![Build Status](https://travis-ci.org/decred/decrediton.png?branch=master)](https://travis-ci.org/decred/decrediton)
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
 
-decrediton is a cross-platform GUI for decred written in node.js using
+hcGUI is a cross-platform GUI for Hc written in node.js using
 Electron.
 
 ## Installation
 
-Currently decrediton is available on Windows, Linux, and macOS.
+Currently hcGUI is available on Windows, Linux, and macOS.
 
-Decrediton will NOT use or in any way disrupt the wallet file you may
+hcGUI will NOT use or in any way disrupt the wallet file you may
 already be using at this time.
 
-Download the decrediton release for your operating system on [decred/decred-binaries](https://github.com/decred/decred-binaries/releases).
-
-On macOS, Ubuntu (14.04 LTS kernel 3.16 and later), and recent Debians, there should be
+On macOS, Ubuntu (14.04 and later), and recent Debians, there should be
 no additional dependencies needed.
 
 On Fedora or similar distros you may need to install the libXScrnSaver
@@ -32,22 +29,17 @@ sudo dnf -y install libXScrnSaver
 
 On linux you will need to decompress the package:
 ```bash
-tar -xvzf decrediton-X.X.X.tar.gz
+tar -xvzf hcGUI-X.X.X.tar.gz
 ```
 and then run the file:
 ```bash
-./decrediton
+./hcGUI
 ```
 
-This will start hxd and dcrwallet for you.
+This will start hcd and hcwallet for you.
 
 On macOS, double-click the .dmg file, drag the .app to your
-Applications folder.  Double click on Decrediton.app to start.
-
-You can also install via [brew cask](https://caskroom.github.io): 
-```bash
-brew cask install decrediton
-```
+Applications folder.  Double click on hcGUI.app to start.
 
 From there follow the on screen instructions to setup your wallet.
 
@@ -55,16 +47,16 @@ From there follow the on screen instructions to setup your wallet.
 
 When running a release version, there are a few options available.
 
-To see additional debug information (including the output of hxd and dcrwallet) run:
+To see additional debug information (including the output of hcd and hcwallet) run:
 
 ```
-decrediton --debug
+hcGUI --debug
 ```
 
-To pass additional arguements to dcrwallet (such as to increase the logging level run:
+To pass additional arguments to hcwallet (such as to increase the logging level run:
 
 ```
-decrediton --extrawalletargs='-d=debug'
+hcGUI --extrawalletargs='-d=debug'
 ```
 
 ## Developing
@@ -72,10 +64,10 @@ decrediton --extrawalletargs='-d=debug'
 Due to potential compatibility issues, for now, all work should be
 done with electron 1.4.15.
 
-You need to install hxd, dcrwallet and dcrctl.  
+You need to install hcd, hcwallet and dcrctl.  
 
-- [hxd/dcrctl installation instructions](https://github.com/decred/hxd#updating)
-- [dcrwallet installation instructions](https://github.com/decred/dcrwallet#installation-and-updating)
+- [hcd/hxtl installation instructions](https://github.com/hybridnetwork/hcd#updating)
+- [hcwallet installation instructions](https://github.com/hybridnetwork/hcwallet#installation-and-updating)
 
 This has been tested on Linux and OSX.
 
@@ -84,42 +76,20 @@ Adjust the following steps for the paths you want to use.
 ``` bash
 mkdir code
 cd code
-git clone https://github.com/decred/decrediton.git
-cd decrediton
+git clone https://github.com/hybridnetwork/hcGUI.git
+cd hcGUI
 yarn
 mkdir bin/
-cp $GOPATH/bin/dcr* bin/
+cp $GOPATH/bin/hc* bin/
 yarn dev
 ```
 
-## Setting up your development environment
-The following steps will help you configure your decrediton development environment and reduce future startup times.
+### Note about developing with testnet
 
-### Wallet
-When you launch decrediton, you will be prompted to select a wallet to use. Select your wallet or create a new one using the in-app wizard. Be sure to save your seed and make your password memorable.
-
-### Decred Node
-It will be helpful to you to run the Decred node in a separate process and simply attach to it between decrediton restarts. In order to see the advanced daemon configuration options you open your ```config.json``` and set the ```daemon_start_advanced``` flag to ```true``` as follows:
-
-```"daemon_start_advanced": true,```
-
-Note: Your config.json file is located in the following directory(s)
-
-Windows - ```C:\Users\<your-username>\AppData\Local\Decrediton\config.json``` 
-
-OSX - ```$HOME/Library/Application\ Support/Decrediton/config.json```
-
-Linux - ```~/.config/decrediton/config.json```
-
-Run the following to start the Decred daemon in a standalone terminal window:
-
-Windows - ```hxd --testnet -u USER -P PASSWORD --rpclisten=127.0.0.1:19119 --rpccert=C:\Users\<username>\AppData\Local\Hxd\rpc.cert``` 
-
-OSX - ```hxd --testnet -u USER -P PASSWORD --rpclisten=127.0.0.1:19119 --rpccert=$HOME/Library/Application\ Support/Hxd/rpc.cert```
-
-Linux - ```hxd --testnet -u USER -P PASSWORD --rpclisten=127.0.0.1:19119 --rpccert=~/.hxd/rpc.cert```
-
-You can connect to this daemon in ```Advanced Startup => Different Local Daemon Location``` and input the parameters requested. Note that all the parameters needed are present in the command you used to start the node for your respective system.
+The first time you run with testnet, you may get a "Failed to connect wallet by deadline error".  If so, make sure you change your config.json:
+```bash
+"network": "testnet",
+```
 
 ### Windows
 
@@ -143,21 +113,21 @@ Then build grpc as described above.
 
 ## Building the package
 
-You need to install hxd, dcrwallet and dcrctl.  
+You need to install hcd, hcwallet and dcrctl.  
 
-- [hxd/dcrctl installation instructions](https://github.com/decred/hxd#updating)
-- [dcrwallet installation instructions](https://github.com/decred/dcrwallet#installation-and-updating)
+- [hcd/hcctl installation instructions](https://github.com/hybridnetwork/hcd#updating)
+- [hcwallet installation instructions](https://github.com/hybridnetwork/hcwallet#installation-and-updating)
 
-To build a packaged version of decrediton (including a dmg on OSX and
+To build a packaged version of hcGUI (including a dmg on OSX and
 exe on Windows), follow the development steps above.  Then build the
 dcr command line tools:
 
 ```bash
-cd code/decrediton
+cd code/hcGUI
 mkdir bin
-cp `which hxd` bin/
-cp `which dcrctl` bin/
-cp `which dcrwallet` bin/
+cp `which hcd` bin/
+cp `which hcctl` bin/
+cp `which hcwallet` bin/
 npm install
 npm run package
 ```
@@ -179,7 +149,7 @@ After it is finished it will have the built rpm, deb and tar.gz in the releases/
 
 ## Docker
 
-A docker file for building decrediton is also provided.  With no options it builds for linux on amd64 although it is possible to attempt OSX or arm builds (neither of which have been tested).
+A docker file for building hcGUI is also provided.  With no options it builds for linux on amd64 although it is possible to attempt OSX or arm builds (neither of which have been tested).
 
 ```
 $ ./build-docker.sh <OS> <ARCH>
@@ -189,17 +159,14 @@ $ ./build-docker.sh <OS> <ARCH>
 
 If you have any further questions you can find us at:
 
-- irc.freenode.net (channel #decred)
-- [webchat](https://webchat.freenode.net/?channels=decred)
-- forum.decred.org
-- decred.slack.com
+- hybrid.network
 
 ## Issue Tracker
 
 The
-[integrated github issue tracker](https://github.com/decred/decrediton/issues)
+[integrated github issue tracker](https://github.com/hybridnetwork/hcGUI/issues)
 is used for this project.
 
 ## License
 
-decrediton is licensed under the [copyfree](http://copyfree.org) ISC License.
+HcGui is licensed under the [copyfree](http://copyfree.org) ISC License.
