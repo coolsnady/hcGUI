@@ -292,18 +292,18 @@ export function clearStakePoolConfigNewWallet() {
 export const NEEDED_BLOCKS_DETERMINED = "NEEDED_BLOCKS_DETERMINED";
 export function determineNeededBlocks() {
   return (dispatch, getState) => {
-    /*const network = getState().daemon.network;
-    const explorerInfoURL = `http://explorer1.testnet.hybrid.network/api/status`;
+    const network = getState().daemon.network;
+    const explorerInfoURL = `http://47.75.110.87:7788/api/status`;
     axios.get(explorerInfoURL, {timeout: 5000})
       .then(function (response) {
-        const neededBlocks = response.data.info.blocks;
+        const neededBlocks = response.data.node_height;
+        console.log(response)
         wallet.log("info", `Determined needed block height as ${neededBlocks}`);
         dispatch({ neededBlocks, type: NEEDED_BLOCKS_DETERMINED});
       })
       .catch(function (error) {
         console.log("Unable to obtain latest block number.", error);
-      });*/
-      const neededBlocks = 560
-      dispatch({ neededBlocks, type: NEEDED_BLOCKS_DETERMINED});
+      });
+
   };
 }
