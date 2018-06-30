@@ -16,7 +16,7 @@ function stakepPoolInfoResponseToConfig(response) {
 }
 
 export function stakePoolInfo(cb) {
-  axios.get("http://192.168.11.135:3001/?c=gsd")
+  axios.get("http://47.75.110.87:7788/api/pool/list")
     .then(function (response) {
       cb(stakepPoolInfoResponseToConfig(response));
     })
