@@ -277,26 +277,28 @@ export const homeHistoryTickets = createSelector(
     recentTransactions.map(tx => {if (tx.txType && tx.txType !== "Regular" && tx.txType !== "Coinbase") return tx; }).filter(tx => tx !== undefined)
 );
 
+const spendableAndLockedBalanceArray = []
+const currency = 10000000
 //fake data for balance chart
 export const spendableAndLockedBalance = createSelector(
-  [transactions],
-  () => {
-    return [
-      { name: "23.10", available: 4000, locked: 2400, legendName: "23.10.2017"},
-      { name: "24.10", available: 3000, locked: 1398, legendName: "24.10.2017"},
-      { name: "25.10", available: 2000, locked: 7004, legendName: "25.10.2017"},
-      { name: "26.10", available: 2780, locked: 3908, legendName: "26.10.2017"},
-      { name: "27.10", available: 1890, locked: 4800, legendName: "27.10.2017"},
-      { name: "28.10", available: 2390, locked: 3800, legendName: "28.10.2017"},
-      { name: "29.10", available: 3490, locked: 4300, legendName: "29.10.2017"},
-      { name: "30.10", available: 3490, locked: 4300, legendName: "30.10.2017"},
-      { name: "01.11", available: 3490, locked: 4300, legendName: "01.11.2017"},
-      { name: "02.11", available: 3490, locked: 4300, legendName: "02.11.2017"},
-      { name: "03.11", available: 3490, locked: 4300, legendName: "03.11.2017"},
-      { name: "04.11", available: 3490, locked: 4300, legendName: "04.11.2017"},
-      { name: "05.11", available: 3490, locked: 4300, legendName: "05.11.2017"},
-      { name: "06.11", available: 3490, locked: 4300, legendName: "06.11.2017"},
-    ];
+  [totalBalance,spendableTotalBalance],
+  (totalBalance,spendableTotalBalance) => {
+    var lockedBalance = totalBalance - spendableTotalBalance;
+    if(spendableAndLockedBalanceArray[0]
+      && numberEqual(spendableAndLockedBalanceArray[spendableAndLockedBalanceArray.length-1].locked , lockedBalance/currency) 
+      && numberEqual(spendableAndLockedBalanceArray[spendableAndLockedBalanceArray.length-1].available , spendableTotalBalance/currency)) {
+      return spendableAndLockedBalanceArray;
+    }
+    spendableAndLockedBalanceArray.push({ 
+      name: new Date().toTimeString(), 
+      available: spendableTotalBalance/currency, 
+      locked: (totalBalance-spendableTotalBalance)/currency, 
+      legendName: new Date().toDateString()
+    });
+    if(spendableAndLockedBalanceArray.length>15) {
+      spendableAndLockedBalanceArray.shift();
+    }
+    return spendableAndLockedBalanceArray;
   }
 );
 
@@ -311,25 +313,38 @@ export const balanceReceived = createSelector(
   () => 86454789521
 );
 
+const sentAndReceivedTransactionsArray = []
 export const sentAndReceivedTransactions = createSelector(
   [transactions],
-  () => {
-    return [
-      { name: "23.10", sent: -4000, received: 2400, legendName: "23.10.2017"},
-      { name: "24.10", sent: -3000, received: 1398, legendName: "24.10.2017"},
-      { name: "25.10", sent: -2000, received: 7004, legendName: "25.10.2017"},
-      { name: "26.10", sent: -2780, received: 3908, legendName: "26.10.2017"},
-      { name: "27.10", sent: -1890, received: 4800, legendName: "27.10.2017"},
-      { name: "28.10", sent: -2390, received: 3800, legendName: "28.10.2017"},
-      { name: "29.10", sent: -3490, received: 4300, legendName: "29.10.2017"},
-      { name: "30.10", sent: -3490, received: 4300, legendName: "30.10.2017"},
-      { name: "01.11", sent: -3490, received: 4300, legendName: "01.11.2017"},
-      { name: "02.11", sent: -3490, received: 4300, legendName: "02.11.2017"},
-      { name: "03.11", sent: -3490, received: 4300, legendName: "03.11.2017"},
-      { name: "04.11", sent: -3490, received: 4300, legendName: "04.11.2017"},
-      { name: "05.11", sent: -3490, received: 4300, legendName: "05.11.2017"},
-      { name: "06.11", sent: -3490, received: 4300, legendName: "06.11.2017"},
-    ];
+  (transactions) => {
+    var inAmmount = 0;
+    var outAmount = 0;
+
+    transactions.forEach(a=>{
+      if(a.txDirection === "in") {
+        inAmmount += a.txAmount;
+      } else if(a.txDirection === "out" || a.txDirection === "transfer") 
+      {
+        outAmount += a.txAmount;
+      } else {
+        //transer abort
+      }
+    });
+    if(sentAndReceivedTransactionsArray[0]
+      && numberEqual(sentAndReceivedTransactionsArray[sentAndReceivedTransactionsArray.length-1].received , inAmmount/currency)
+      && numberEqual(sentAndReceivedTransactionsArray[sentAndReceivedTransactionsArray.length-1].sent , outAmount/currency)) {
+      return sentAndReceivedTransactionsArray;
+    }
+    sentAndReceivedTransactionsArray.push({ 
+      name: new Date().toTimeString(), 
+      sent: outAmount/currency, 
+      received: inAmmount/currency, 
+      legendName: new Date().toDateString()
+    });
+    if(sentAndReceivedTransactionsArray.length>15) {
+      sentAndReceivedTransactionsArray.shift();
+    }
+    return sentAndReceivedTransactionsArray;
   }
 );
 
@@ -365,6 +380,7 @@ export const ticketDataChart = createSelector(
     ];
   }
 );
+
 
 export const viewableTransactions = createSelector(
   [transactions, homeHistoryTransactions],
@@ -763,3 +779,54 @@ export const shutdownRequested = get(["daemon", "shutdownRequested"]);
 export const daemonStopped = get(["daemon", "daemonStopped"]);
 
 export const chainParams = compose(isTestNet => isTestNet ? TestNetParams : MainNetParams, isTestNet);
+
+const numberEqual =  (left, right) =>{
+  return Math.abs(left - right) < Number.EPSILON * Math.pow(2, 2);
+}
+
+
+/*
+const ticketDataChartArray = []
+export const ticketDataChart = createSelector(
+  [transactions, network,requiredStakepoolAPIVersion],
+  (transactions, network,requiredStakepoolAPIVersion) => {
+    var immatureCount =0 ;
+    var liveCount =0 ;
+    var votedCount =0 ;
+    var currHeight = currentBlockHeightV;
+    var ticketMaturity = chainParams(network).TicketMaturity;
+    transactions.forEach(a=>{
+      if(a.txType === "Vote") {
+        votedCount++;
+      } else if(a.txType === "Ticket" ) 
+      {
+        if( a.txHeight+ ticketMaturity < currHeight){
+          liveCount++;
+        } else {
+          immatureCount++;
+        }
+      } else {
+        //others abort
+      }
+    });
+
+    if(ticketDataChartArray[0]
+      && numberEqual(ticketDataChartArray[0].immature , immatureCount)
+      && numberEqual(ticketDataChartArray[0].live , liveCount)
+      && numberEqual(ticketDataChartArray[0].voted , votedCount)) {
+      return spendableAndLockedBalanceArray;
+    }
+    ticketDataChartArray.push({
+        name: new Date().toTimeString(), 
+        immature: immatureCount, 
+        live: liveCount, 
+        voted: votedCount, 
+        legendName: new Date().toDateString()
+      });
+    if(ticketDataChartArray.length>15) {
+      ticketDataChartArray.shift();
+    }
+    return ticketDataChartArray;
+  }
+);
+*/
