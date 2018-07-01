@@ -162,14 +162,14 @@ const getTxTypeStr = type => (TRANSACTION_TYPES)[type];
 export const txURLBuilder= createSelector(
   [network],
   (network) =>
-    (txHash) => `http://explorer1.testnet.hybrid.network/tx/${txHash}`
+    (txHash) => `http://47.75.110.87:7788/tx/${txHash}`
     // (txHash) => `https://${network !== "testnet" ? "explorer" : network}.dcrdata.org/${network == "testnet" ? "explorer/" : ""}tx/${txHash}`
 );
 
 export const blockURLBuilder= createSelector(
   [network],
   (network) =>
-    (txHash) => `http://explorer1.testnet.hybrid.network/block/${txHash}`
+    (txHash) => `http://47.75.110.87:7788/block/${txHash}`
     // (txHash) => `https://${network !== "testnet" ? "explorer" : network}.dcrdata.org/${network == "testnet" ? "explorer/" : ""}block/${txHash}`
 );
 
