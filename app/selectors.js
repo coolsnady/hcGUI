@@ -278,7 +278,7 @@ export const homeHistoryTickets = createSelector(
 );
 
 const spendableAndLockedBalanceArray = []
-const currency = 10000000
+const currency = 100000000
 //fake data for balance chart
 export const spendableAndLockedBalance = createSelector(
   [totalBalance,spendableTotalBalance],
