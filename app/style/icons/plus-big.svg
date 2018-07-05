@@ -1,41 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generator: Adobe Illustrator 22.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="60px" height="60px" viewBox="0 0 60 60" enable-background="new 0 0 60 60" xml:space="preserve">
-<rect id="XMLID_69_" fill="none" width="60" height="60"/>
-<rect id="XMLID_68_" y="26.254" fill="#C6ECCB" width="48.752" height="26.242"/>
-<rect id="XMLID_67_" x="11.25" y="7.504" fill="#41BF53" width="48.75" height="26.242"/>
-<polygon fill="#C6ECCB" points="45,18.75 37.5,18.75 37.5,11.25 33.75,11.25 33.75,18.75 26.252,18.75 26.252,22.5 33.75,22.5 
-	33.75,30 37.5,30 37.5,22.5 45,22.5 "/>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
+	 viewBox="0 0 60 60" style="enable-background:new 0 0 60 60;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;}
+	.st1{fill:#D3CCFF;}
+	.st2{fill:#5C4D94;}
+</style>
+<rect id="XMLID_69_" class="st0" width="60" height="60"/>
+<rect id="XMLID_68_" x="-1" y="26.3" class="st1" width="48.8" height="26.2"/>
+<rect id="XMLID_67_" x="11.2" y="7.5" class="st2" width="48.8" height="26.2"/>
+<polygon class="st1" points="44,18.8 36.5,18.8 36.5,11.2 32.8,11.2 32.8,18.8 25.3,18.8 25.3,22.5 32.8,22.5 32.8,30 36.5,30 
+	36.5,22.5 44,22.5 "/>
 </svg>
