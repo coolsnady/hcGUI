@@ -25,14 +25,14 @@ install:
   - go get -u github.com/golang/dep/cmd/dep
   - cd %GOPATH%\\src\\github.com\\decred\\dcrd
   - glide i
-  - go install . ./cmd/dcrctl/
+  - go install . ./cmd/hcctl/
   - cd ../dcrwallet
   - dep ensure
   - go install
   - cd %APPVEYOR_BUILD_FOLDER%
   - mkdir bin
   - cp %GOPATH%\\bin\\dcrd.exe bin/
-  - cp %GOPATH%\\bin\\dcrctl.exe bin/
+  - cp %GOPATH%\\bin\\hcctl.exe bin/
   - cp %GOPATH%\\bin\\dcrwallet.exe bin/
   - npm install
 
