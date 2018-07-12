@@ -1,6 +1,6 @@
-# Decrediton i18n & l12n
+# HcGUI i18n & l12n
 
-This file explains the general layout of how internationalization (i18n) and localization (l12n) work in Decrediton.
+This file explains the general layout of how internationalization (i18n) and localization (l12n) work in HcGUI.
 
 ## During Coding
 
@@ -141,7 +141,7 @@ import Balance from "../../Balance";
 
 ## Libraries
 
-Decrediton implements i18n by using the tools provided by the [react-intl](https://github.com/yahoo/react-intl) ecosystem.
+HcGUI implements i18n by using the tools provided by the [react-intl](https://github.com/yahoo/react-intl) ecosystem.
 
 ## Filesystem Layout
 
