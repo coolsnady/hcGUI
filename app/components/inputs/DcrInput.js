@@ -5,7 +5,7 @@ import balanceConnector from "connectors/balance";
 
 /**
  * FixedDcrInput is a simple numeric input that is assumed to **always** hold
- * a floating point number representing a DCR amount (ie, an amount that
+ * a floating point number representing a HC amount (ie, an amount that
  * will be mutiplied by 1e8 to get to the actual atoms value).
  *
  * This is **not** affected by the global currencyDisplay state.
