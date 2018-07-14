@@ -46,8 +46,8 @@ const CreateWalletForm = ({
         </div>
         <div className="advanced-daemon-column advanced-daemon-column--70p">
           <NetworkSwitch
-              enabled={newWalletNetwork !== "mainnet"}
-              // onClick={onChangeCreateWalletNetwork}
+              //enabled={newWalletNetwork !== "mainnet"}
+               onClick={onChangeCreateWalletNetwork}
           />
         </div>
       </div>
