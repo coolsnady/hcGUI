@@ -359,9 +359,19 @@ export const earnedStakingReward = createSelector(
   () => 6525094298
 );
 
+/*
 export const ticketDataChart = createSelector(
-  [transactions],
-  () => {
+  [transactions,network],
+  (transactions,network) => {
+
+    console.log("getblockheight")
+    console.log(currentBlockHeight)
+
+    console.log("=========")
+    console.log("ticketMaturity"+chainParams(network).TicketMaturity)
+    console.log(transactions[0])
+
+
     return [
       { name: "23.10", immature: 4000, live: 2400, voted: 4000, legendName: "23.10.2017"},
       { name: "24.10", immature: 3000, live: 1398, voted: 4000, legendName: "24.10.2017"},
@@ -380,6 +390,7 @@ export const ticketDataChart = createSelector(
     ];
   }
 );
+*/
 
 
 export const viewableTransactions = createSelector(
@@ -784,23 +795,30 @@ const numberEqual =  (left, right) =>{
   return Math.abs(left - right) < Number.EPSILON * Math.pow(2, 2);
 }
 
+const getState = state=>state
 
-/*
 const ticketDataChartArray = []
 export const ticketDataChart = createSelector(
-  [transactions, network,requiredStakepoolAPIVersion],
-  (transactions, network,requiredStakepoolAPIVersion) => {
+  [transactions, getState,currentBlockHeight],
+  (transactions, state,currentBlockHeight) => {
     var immatureCount =0 ;
     var liveCount =0 ;
     var votedCount =0 ;
-    var currHeight = currentBlockHeightV;
-    var ticketMaturity = chainParams(network).TicketMaturity;
+    var currHeight = currentBlockHeight;
+    
+    var ticketMaturity = chainParams(state).TicketMaturity;
+
     transactions.forEach(a=>{
       if(a.txType === "Vote") {
         votedCount++;
       } else if(a.txType === "Ticket" ) 
       {
+       
+        if(a.txHeight < 0){
+          return
+        }
         if( a.txHeight+ ticketMaturity < currHeight){
+          
           liveCount++;
         } else {
           immatureCount++;
@@ -810,11 +828,14 @@ export const ticketDataChart = createSelector(
       }
     });
 
-    if(ticketDataChartArray[0]
-      && numberEqual(ticketDataChartArray[0].immature , immatureCount)
-      && numberEqual(ticketDataChartArray[0].live , liveCount)
-      && numberEqual(ticketDataChartArray[0].voted , votedCount)) {
-      return spendableAndLockedBalanceArray;
+    let lastIndex = ticketDataChartArray.length - 1 || 0
+
+    if(ticketDataChartArray[lastIndex]
+      && numberEqual(ticketDataChartArray[lastIndex].immature , immatureCount)
+      && numberEqual(ticketDataChartArray[lastIndex].live , liveCount)
+      && numberEqual(ticketDataChartArray[lastIndex].voted , votedCount)) {
+
+      return ticketDataChartArray;
     }
     ticketDataChartArray.push({
         name: new Date().toTimeString(), 
@@ -829,4 +850,3 @@ export const ticketDataChart = createSelector(
     return ticketDataChartArray;
   }
 );
-*/
