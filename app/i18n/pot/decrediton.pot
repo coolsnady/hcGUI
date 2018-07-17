@@ -819,9 +819,9 @@ msgstr ""
 #: app/i18n/extracted/app/components/views/Help.json
 #. [help.constitution.modal.title]
 #. defaultMessage is:
-#. Decred Constitution
+#. HC Constitution
 msgctxt "help.constitution.modal.title"
-msgid "Decred Constitution"
+msgid "HC Constitution"
 msgstr ""
 
 #: app/i18n/extracted/static/menus.json

@@ -847,7 +847,7 @@ msgstr "Data e Hora aparecerão assim que tivermos uma confirmação."
 #: app/i18n/extracted/app/components/views/Help.json
 msgctxt "help.constitution.modal.title"
 msgid "HC Constitution"
-msgstr "Constituição HC"
+msgstr "Constituição Decred"
 
 #. [appMenu.decrediton]
 #. defaultMessage is:

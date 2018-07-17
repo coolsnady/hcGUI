@@ -18,7 +18,7 @@ const Links = () => (
         <HelpLink className={"help-freenode-icon"} href="https://webchat.freenode.net/?channels=decred&uio=d4"><T id="help.freenode" m="Freenode" /></HelpLink>
         <HelpLink className={"help-forum-icon"} href="https://forum.decred.org"><T id="help.forum" m="Forum" /> </HelpLink>
         <HelpLinkInfoModal className={"help-constitution-icon"}
-          modalTitle={<h1><T id="help.constitution.modal.title" m="Decred Constitution" /></h1>}
+          modalTitle={<h1><T id="help.constitution.modal.title" m="HC Constitution" /></h1>}
           modalContent={<ConstitutionModalContent />}
           buttonLabel={<T id="help.constitution" m="Constitution" />}
         />
