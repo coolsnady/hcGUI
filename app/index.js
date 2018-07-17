@@ -216,7 +216,7 @@ var initialState = {
   },
   control: {
     // NextAddress
-    getNextAddressRequestAttempt: false,
+    getNextAddressRequestAttempt: true,
     getNextAddressResponse: null,
     getNextAddressError: null,
     // RenameAccount
