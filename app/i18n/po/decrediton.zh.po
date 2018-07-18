@@ -968,7 +968,7 @@ msgstr ""
 #: app/i18n/extracted/app/components/views/TicketsPage/PurchaseTab/StakePools/List.json
 msgctxt "stakepools.list.confirmRemove"
 msgid "Do you confirm removal of stakepool {stakepool}?"
-msgstr " 是否确认移除矿池{stakepool}?"
+msgstr " 是否确认移除权益池{stakepool}?"
 
 #. [stakepools.list.confirmRemove]
 #. defaultMessage is:
@@ -1618,7 +1618,7 @@ msgstr ""
 #: app/i18n/extracted/app/components/views/TicketsPage/PurchaseTab/PurchaseTickets/Form.json
 msgctxt "purchaseTickets.errors.insufficientBalance"
 msgid "Insufficient spendable account balance to purchase tickets."
-msgstr "购买票账户余额不足"
+msgstr "购票账户余额不足"
 
 #. [invalidRPCVersion.title]
 #. defaultMessage is:
@@ -2176,8 +2176,7 @@ msgid ""
 "account and to scan the blockchain for additional accounts you may have "
 "previously created with your wallet."
 msgstr ""
-"请输入刚才创建账号时输入的密码，并扫描区块信息，以便您以前用钱包创建的其他帐"
-"户。"
+"请输入创建账号时输入的密码，并扫描区块信息，以便您以前用钱包创建的其他帐户。"
 
 #. [getStarted.decrypt.info.private]
 #. defaultMessage is:
@@ -3282,7 +3281,7 @@ msgstr "创建新账户成功"
 #: app/i18n/extracted/app/reducers/snackbar.json
 msgctxt "stakepools.removedStakePoolConfig"
 msgid "Successfully removed StakePool config"
-msgstr "一处投票矿池配置成功"
+msgstr "移除权益池成功"
 
 #. [accounts.renameAccount]
 #. defaultMessage is:
@@ -3351,7 +3350,7 @@ msgstr "用于投票的hc地址"
 #: app/i18n/extracted/app/components/views/GetStartedPage/DaemonLoading/Form.json
 msgctxt "getStarted.chainLoading"
 msgid "The Hc chain is currently loading and may take a few minutes."
-msgstr "正在价值Hc区块数据，这可能需要等待几分钟。"
+msgstr "正在加载Hc区块数据，这可能需要等待几分钟。"
 
 #. [tickets.info.poolFeeAddress.message]
 #. defaultMessage is:
@@ -3444,7 +3443,7 @@ msgstr ""
 #: app/i18n/extracted/app/components/views/TransactionsPage/ReceiveTab/Page.json
 msgctxt "receive.accountLabel"
 msgid "This address is for"
-msgstr "地址的账户是"
+msgstr "地址账号"
 
 #. [balanceInfoModal.immatureStake.text]
 #. defaultMessage is:
@@ -4240,7 +4239,7 @@ msgstr "记下以下种子并将其保存在安全的位置。"
 #: app/i18n/extracted/app/reducers/snackbar.json
 msgctxt "tickets.purchaseTicketsHeader"
 msgid "You bought {numTickets, plural, one {# ticket } other {# tickets }}"
-msgstr "你购买的票数"
+msgstr "你买了 {numTickets, plural, one {# ticket } other {# tickets }}"
 
 #. [tickets.updateStakePoolConfigHeader]
 #. defaultMessage is:
@@ -4248,7 +4247,7 @@ msgstr "你购买的票数"
 #: app/i18n/extracted/app/reducers/snackbar.json
 msgctxt "tickets.updateStakePoolConfigHeader"
 msgid "You have successfully updated your stakepool settings."
-msgstr "您已成功更新您的票池设置。"
+msgstr "您已成功更新您的权益池设置。"
 
 #. [tickets.importScriptHeader]
 #. defaultMessage is:
@@ -4442,7 +4441,7 @@ msgctxt "transaction.confirmationHeight"
 msgid ""
 "{confirmations, plural, =0 {pending} one {# confirmation} other {# "
 "confirmations}}"
-msgstr "确认数、复数、等待中 1 确认 其他 确认数"
+msgstr "{confirmations, plural, =0 {等待} one {# confirmation} other {# 确认}}"
 
 #. [myTickets.statusCount]
 #. defaultMessage is:
@@ -4450,7 +4449,7 @@ msgstr "确认数、复数、等待中 1 确认 其他 确认数"
 #: app/i18n/extracted/app/components/views/TicketsPage/MyTicketsTab/TicketOverviewCard.json
 msgctxt "myTickets.statusCount"
 msgid "{count, plural, one {# ticket} other {# tickets}}"
-msgstr "数量、复数、一个{选票}其他{选票}"
+msgstr "{count, plural, one {# ticket} other {# tickets}}"
 
 #. [accounts.keys.counts]
 #. defaultMessage is:
@@ -4629,7 +4628,7 @@ msgstr "数量、复数、一个{选票}其他{选票}"
 #: app/i18n/extracted/app/components/TxHistory/TxHistoryRow/Status.json
 msgctxt "transaction.timestamp"
 msgid "{timestamp, date, medium} {timestamp, time, medium}"
-msgstr "{时间戳,日期,媒体} {时间戳,日期,媒体}"
+msgstr "{timestamp, date, medium} {timestamp, time, medium}"
 
 #. [ticket.timestamp]
 #. defaultMessage is:
@@ -4637,7 +4636,7 @@ msgstr "{时间戳,日期,媒体} {时间戳,日期,媒体}"
 #: app/i18n/extracted/app/components/views/TicketsPage/MyTicketsTab/TicketInfoCard.json
 msgctxt "ticket.timestamp"
 msgid "{timestamp, date, medium} {timestamp, time, medium}"
-msgstr "{时间戳,日期,媒体} {时间戳,日期,媒体}"
+msgstr "{timestamp, date, medium} {timestamp, time, medium}"
 
 #. [txDetails.timestamp]
 #. defaultMessage is:
@@ -4645,7 +4644,7 @@ msgstr "{时间戳,日期,媒体} {时间戳,日期,媒体}"
 #: app/i18n/extracted/app/components/views/TxDetails.json
 msgctxt "txDetails.timestamp"
 msgid "{timestamp, date, medium} {timestamp, time, medium}"
-msgstr "{时间戳,日期,媒体} {时间戳,日期,媒体}"
+msgstr "{timestamp, date, medium} {timestamp, time, medium}"
 
 #. [ticket.daysToLeave]
 #. defaultMessage is:
@@ -4653,4 +4652,11 @@ msgstr "{时间戳,日期,媒体} {时间戳,日期,媒体}"
 #: app/i18n/extracted/app/components/views/TicketsPage/MyTicketsTab/TicketInfoCard.json
 msgctxt "ticket.daysToLeave"
 msgid "~ {days, plural, one {# day} other {# days}} from buying until {status}"
-msgstr "天数、复数、一个（天）其他{天} 购买期限（状态）"
+msgstr ~ {days, plural, one {# day} other {# days}} from buying until {status}
+
+#. [getStarted.enterWallet]
+#. defaultMessage is:
+#. Enter Wallet Passphrase:
+msgctxt "getStarted.enterWallet"
+msgid "Enter Wallet Passphrase:"
+msgstr "输入钱包密码"

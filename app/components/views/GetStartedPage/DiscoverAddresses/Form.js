@@ -39,7 +39,9 @@ const DiscoverAddressesFormBodyBase = ({
         `}/>
       </div>
       <div className="get-started-content-new-seed-create-button">
-        <div className="get-started-content-confirm-wallet-create-input-left-padding">Enter Wallet Passphrase:</div>
+        <div className="get-started-content-confirm-wallet-create-input-left-padding">
+            <T id="getStarted.enterWallet" m={"Enter Wallet Passphrase:"}/>
+        </div>
         <div className="get-started-content-confirm-wallet-create-input-right-padding">
           <div className="get-started-input-form">
             <form className="get-started-input-form">
