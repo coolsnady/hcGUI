@@ -1259,7 +1259,7 @@ msgstr "费用"
 #: app/i18n/extracted/app/components/views/GetStartedPage/FetchBlockHeaders/Form.json
 msgctxt "getStarted.header.fetchingBlockHeaders.meta"
 msgid "Fetching block headers"
-msgstr "获取去块头"
+msgstr "获取区块头"
 
 #. [getStarted.header.finalizingSetup.meta]
 #. defaultMessage is:
@@ -3444,7 +3444,7 @@ msgstr ""
 #: app/i18n/extracted/app/components/views/TransactionsPage/ReceiveTab/Page.json
 msgctxt "receive.accountLabel"
 msgid "This address is for"
-msgstr "这个地址是为了"
+msgstr "地址的账户是"
 
 #. [balanceInfoModal.immatureStake.text]
 #. defaultMessage is:
@@ -4629,7 +4629,7 @@ msgstr "数量、复数、一个{选票}其他{选票}"
 #: app/i18n/extracted/app/components/TxHistory/TxHistoryRow/Status.json
 msgctxt "transaction.timestamp"
 msgid "{timestamp, date, medium} {timestamp, time, medium}"
-msgstr "时间戳、日期、媒体 时间戳、日期、媒体"
+msgstr "{时间戳,日期,媒体} {时间戳,日期,媒体}"
 
 #. [ticket.timestamp]
 #. defaultMessage is:
@@ -4637,7 +4637,7 @@ msgstr "时间戳、日期、媒体 时间戳、日期、媒体"
 #: app/i18n/extracted/app/components/views/TicketsPage/MyTicketsTab/TicketInfoCard.json
 msgctxt "ticket.timestamp"
 msgid "{timestamp, date, medium} {timestamp, time, medium}"
-msgstr "时间戳、日期、媒体 时间戳、日期、媒体"
+msgstr "{时间戳,日期,媒体} {时间戳,日期,媒体}"
 
 #. [txDetails.timestamp]
 #. defaultMessage is:
@@ -4645,7 +4645,7 @@ msgstr "时间戳、日期、媒体 时间戳、日期、媒体"
 #: app/i18n/extracted/app/components/views/TxDetails.json
 msgctxt "txDetails.timestamp"
 msgid "{timestamp, date, medium} {timestamp, time, medium}"
-msgstr "时间戳、日期、媒体 时间戳、日期、媒体"
+msgstr "{时间戳,日期,媒体} {时间戳,日期,媒体}"
 
 #. [ticket.daysToLeave]
 #. defaultMessage is:
