@@ -297,7 +297,6 @@ export function determineNeededBlocks() {
     axios.get(explorerInfoURL, {timeout: 5000})
       .then(function (response) {
         const neededBlocks = response.data.node_height;
-        console.log(response)
         wallet.log("info", `Determined needed block height as ${neededBlocks}`);
         dispatch({ neededBlocks, type: NEEDED_BLOCKS_DETERMINED});
       })
