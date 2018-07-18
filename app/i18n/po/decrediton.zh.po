@@ -3443,7 +3443,7 @@ msgstr ""
 #: app/i18n/extracted/app/components/views/TransactionsPage/ReceiveTab/Page.json
 msgctxt "receive.accountLabel"
 msgid "This address is for"
-msgstr "地址账号"
+msgstr "地址账户"
 
 #. [balanceInfoModal.immatureStake.text]
 #. defaultMessage is:
