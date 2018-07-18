@@ -159,6 +159,7 @@
   "getStarted.discoverAddresses.errors.noPassphrase": "*Entre com a senha",
   "getStarted.discoverAddresses.passphrasePlaceholder": "Senha privada",
   "getStarted.discoverAddresses.scanBtn": "Escanear",
+  "getStarted.enterWallet": "Enter Wallet Passphrase:",
   "getStarted.existingSeedTab": "Semente existente",
   "getStarted.firstTimeSyncDelayReminder": "Pode levar um tempo.",
   "getStarted.header.checkingWalletState.meta": "Checando estado da wallet",

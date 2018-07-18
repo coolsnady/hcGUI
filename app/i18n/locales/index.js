@@ -32,7 +32,7 @@ const pt_BR = {
 const zh_CN = {
   key: "zh-CN",
   language: "zh-CN",
-  description: "Chinese",
+  description: "简体中文",
   messages: require("../translations/zh.json"),
   formats: defaultFormats
 };

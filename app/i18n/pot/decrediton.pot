@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2018-07-18T01:37:52.098Z\n"
+"POT-Creation-Date: 2018-07-18T04:00:06.917Z\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "MIME-Version: 1.0\n"
@@ -1018,6 +1018,14 @@ msgstr ""
 #. Enter Passphrase to Revoke Tickets
 msgctxt "stake.revokeTicketsPassphrase"
 msgid "Enter Passphrase to Revoke Tickets"
+msgstr ""
+
+#: app/i18n/extracted/app/components/views/GetStartedPage/DiscoverAddresses/Form.json
+#. [getStarted.enterWallet]
+#. defaultMessage is:
+#. Enter Wallet Passphrase:
+msgctxt "getStarted.enterWallet"
+msgid "Enter Wallet Passphrase:"
 msgstr ""
 
 #: app/i18n/extracted/app/components/views/GetStartedPage/OpenWallet/CreateWalletForm/CreatePassPhrase/PassPhraseInputs.json
@@ -2827,7 +2835,7 @@ msgstr ""
 #. Show All
 msgctxt "appMenu.showAll"
 msgid "Show All"
-msgstr "aaaaaaaa"
+msgstr ""
 
 #: app/i18n/extracted/static/menus.json
 #. [appMenu.showDaemonLog]
