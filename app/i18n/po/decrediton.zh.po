@@ -2519,7 +2519,7 @@ msgstr "原始交易"
 #: app/i18n/extracted/app/components/Snackbar/Notification/Transaction.json
 msgctxt "notifications.type.receive"
 msgid "Receive"
-msgstr "接受"
+msgstr "接收"
 
 #. [transactions.tab.receive]
 #. defaultMessage is:
@@ -2527,7 +2527,7 @@ msgstr "接受"
 #: app/i18n/extracted/app/messages.json
 msgctxt "transactions.tab.receive"
 msgid "Receive"
-msgstr "接受"
+msgstr "接收"
 
 #. [home.currentTotalLockedBalanceLabel]
 #. defaultMessage is:
@@ -2535,7 +2535,7 @@ msgstr "接受"
 #: app/i18n/extracted/app/components/views/HomePage/Transactions.json
 msgctxt "home.currentTotalLockedBalanceLabel"
 msgid "Received"
-msgstr "已接受"
+msgstr "已接收"
 
 #. [transaction.type.received]
 #. defaultMessage is:
@@ -2543,7 +2543,7 @@ msgstr "已接受"
 #: app/i18n/extracted/app/components/views/TransactionsPage/HistoryTab/index.json
 msgctxt "transaction.type.received"
 msgid "Received"
-msgstr "已接受"
+msgstr "已接收"
 
 #. [home.ticketActivityTitle]
 #. defaultMessage is:

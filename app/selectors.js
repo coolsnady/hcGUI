@@ -283,7 +283,8 @@ const currency = 100000000
 export const spendableAndLockedBalance = createSelector(
   [totalBalance, spendableTotalBalance,lockedBalance],
   (totalBalance, spendableTotalBalance,lockedBalance) => {
-    //var lockedBalance = totalBalance - spendableTotalBalance;
+    
+    var lockedBalance = totalBalance - spendableTotalBalance;
     if (spendableAndLockedBalanceArray[0]
       && numberEqual(spendableAndLockedBalanceArray[spendableAndLockedBalanceArray.length - 1].locked, lockedBalance / currency)
       && numberEqual(spendableAndLockedBalanceArray[spendableAndLockedBalanceArray.length - 1].available, spendableTotalBalance / currency)) {
