@@ -905,17 +905,17 @@ app.on("ready", async () => {
       // {
       //   label: locale.messages["appMenu.documentation"],
       //   click() {
-      //     shell.openExternal("https://github.com/decred/hcgui");
+      //     shell.openExternal("https://github.com/HcashOrg/hcGUI");
       //   }
       // }, {
       //   label: locale.messages["appMenu.communityDiscussions"],
       //   click() {
-      //     shell.openExternal("https://forum.decred.org");
+      //     shell.openExternal("https://forum.h.cash");
       //   }
       // }, {
       //   label: locale.messages["appMenu.searchIssues"],
       //   click() {
-      //     shell.openExternal("https://github.com/decred/hcgui/issues");
+      //     shell.openExternal("https://github.com/HcashOrg/hcGUI/issues");
       //   }
       // }, {
       //   label: locale.messages["appMenu.about"],

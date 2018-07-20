@@ -28,7 +28,7 @@ export function restrictToStdDecimalNumber(s) {
 //
 // Due to floating point inacuracies, a rounding function compatible to hcutil
 // `round` is used (see:
-// https://github.com/decred/hcd/blob/v1.1.2/hcutil/amount.go#L77)
+// https://github.com/HcashOrg/hcutil/blob/master/amount.go#L77)
 //
 // Note that, since JS doesn't actually have an integer type (all numbers
 // are floating-point numbers), the Math.trunc function is used to simulate
