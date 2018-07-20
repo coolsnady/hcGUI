@@ -17,8 +17,8 @@ export const FixedHcInput = ({currencyDisplay, ...props}) =>
   <FloatInput {...{...props, unit: currencyDisplay, maxFracDigits: 8}} />;
 
 /**
- * HcInput provides a way to receive decred amount inputs. Instead of the usual
- * value/onChange pair, it uses amount/onChangeAmount to track values in decred
+ * HcInput provides a way to receive hc amount inputs. Instead of the usual
+ * value/onChange pair, it uses amount/onChangeAmount to track values in hc
  * atoms, correctly accounting for the currently used currencyDisplay, floating
  * convertions, etc.
  *

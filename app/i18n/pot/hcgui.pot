@@ -3776,14 +3776,6 @@ msgctxt "settings.updatePrivatePassphrase"
 msgid "Update Private Passphrase"
 msgstr ""
 
-#: app/i18n/extracted/app/components/views/HelpPage/LinksTab/index.json
-#. [help.matrix.info]
-#. defaultMessage is:
-#. Use matrix.decred.org as your custom server URL.
-msgctxt "help.matrix.info"
-msgid "Use matrix.decred.org as your custom server URL."
-msgstr ""
-
 #: app/i18n/extracted/app/components/views/SecurityPage/VerifyMessage/index.json
 #. [securitycenter.verify.result.valid]
 #. defaultMessage is:

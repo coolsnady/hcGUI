@@ -22,7 +22,7 @@ export function restrictToStdDecimalNumber(s) {
 }
 
 // Converts a string encoded as stdDecimalString (ie, a string protected by
-// restrictToStdDecimalNumber) into a decred atom amount. This performs a
+// restrictToStdDecimalNumber) into a hc atom amount. This performs a
 // conversion from a string into a JS number and then scales the number
 // according to unitDivisor so the value represents an atom amount.
 //
@@ -34,7 +34,7 @@ export function restrictToStdDecimalNumber(s) {
 // are floating-point numbers), the Math.trunc function is used to simulate
 // the float64 -> int64 conversion.
 //
-// This is fine for representing numbers within the range of the total decred
+// This is fine for representing numbers within the range of the total hc
 // supply (up to 21e14) but may not be arbitrarily applicable.
 export function strToHcAtoms(s, unitDivisor) {
   return Math.trunc(parseFloat(s) * unitDivisor + 0.5);

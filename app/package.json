@@ -2,11 +2,10 @@
   "name": "hcGUI",
   "productName": "HcGui",
   "version": "0.1.0",
-  "description": "Cross-platform decred gui based on Electron and React",
+  "description": "Cross-platform hc gui based on Electron and React",
   "main": "./main.js",
   "author": {
     "name": "HcashOrg Team",
-    "email": "info@decred.org",
     "url": "https://github.com/HcashOrg"
   },
   "license": "ISC",

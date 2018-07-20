@@ -19,11 +19,11 @@ install:
   - npm install npm -g
   - go version
   - go env
-  - go get -u -v github.com/decred/hcd
-  - go get -u -v github.com/decred/hcwallet
+  - go get -u -v github.com/HcashOrg/hcd
+  - go get -u -v github.com/HcashOrg/hcwallet
   - go get -u -v github.com/Masterminds/glide
   - go get -u github.com/golang/dep/cmd/dep
-  - cd %GOPATH%\\src\\github.com\\decred\\hcd
+  - cd %GOPATH%\\src\\github.com\\HcashOrg\\hcd
   - glide i
   - go install . ./cmd/hcctl/
   - cd ../hcwallet
