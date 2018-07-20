@@ -159,7 +159,7 @@ $ ./build-docker.sh <OS> <ARCH>
 
 If you have any further questions you can find us at:
 
-- hybrid.network
+- h.cash
 
 ## Issue Tracker
 
