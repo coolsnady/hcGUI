@@ -7,8 +7,9 @@ import * as wallet from "wallet";
 import { getWalletServiceAttempt, getTicketBuyerServiceAttempt, getAgendaServiceAttempt, getVotingServiceAttempt } from "./ClientActions";
 import { prepStartDaemon } from "./DaemonActions";
 import { getVersionServiceAttempt } from "./VersionActions";
-import { getWalletCfg, getWalletCfgPath, getDcrdCert } from "config";
+import { getWalletCfg, getWalletCfgPath, getHcdCert } from "config";
 import { isTestNet } from "selectors";
+import { MainNetParams, TestNetParams } from "wallet/constants";
 import axios from "axios";
 
 const MAX_RPC_RETRIES = 5;
@@ -168,7 +169,7 @@ export const startRpcRequestFunc = (isRetry) =>
 
     const loader = getState().walletLoader.loader;
 
-    const cert = getDcrdCert(rpccertPath);
+    const cert = getHcdCert(rpccertPath);
     if (!isRetry) dispatch({type: STARTRPC_ATTEMPT});
     return startRpc(loader, daemonhost, rpcport, rpcuser, rpcpass, cert)
       .then(() => {
@@ -293,7 +294,10 @@ export const NEEDED_BLOCKS_DETERMINED = "NEEDED_BLOCKS_DETERMINED";
 export function determineNeededBlocks() {
   return (dispatch, getState) => {
     const network = getState().daemon.network;
-    const explorerInfoURL = `http://47.75.110.87:7788/api/status`;
+    const TestNet = isTestNet(getState())
+    
+    //const explorerInfoURL = TestNet ? `${TestNetParams}api/status`:`${MainNetParams}api/status`
+    const explorerInfoURL =  `http://47.75.110.87:7788/api/status`;
     axios.get(explorerInfoURL, {timeout: 5000})
       .then(function (response) {
         const neededBlocks = response.data.node_height;

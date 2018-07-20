@@ -1,6 +1,6 @@
 // @flow
 import { home } from "connectors";
-import { DecredLoading } from "indicators";
+import { HcashOrgLoading } from "indicators";
 import TxHistory from "TxHistory";
 import { FormattedMessage as T } from "react-intl";
 import "style/Fonts.less";
@@ -12,7 +12,7 @@ const RecentTickets = ({
   getAccountsResponse,
 }) => {
   return (
-    getTransactionsRequestAttempt ? <DecredLoading /> :
+    getTransactionsRequestAttempt ? <HcashOrgLoading /> :
       <Aux>
         <div className="home-content-title">
           <T id="home.ticketActivityTitle" m="Recent Tickets" />

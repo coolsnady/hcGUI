@@ -143,6 +143,8 @@ export const currencies = () => [{ name: "Hc" }, { name: "atoms" }];
 export const currencyDisplay = get(["settings", "currentSettings", "currencyDisplay"]);
 export const unitDivisor = compose(disp => disp.toLowerCase() === "hc" ? 100000000 : 1, currencyDisplay);
 export const currentLocaleName = get(["settings", "currentSettings", "locale"]);
+export const chainParams = compose(isTestNet => isTestNet ? TestNetParams : MainNetParams, isTestNet);
+const getState = state => state
 
 export const sortedLocales = createSelector(
   [get(["locales"])],
@@ -161,16 +163,28 @@ const getTxTypeStr = type => (TRANSACTION_TYPES)[type];
 
 export const txURLBuilder = createSelector(
   [network],
-  (network) =>
-    (txHash) => `http://47.75.110.87:7788/explorer/tx/${txHash}`
-  // (txHash) => `https://${network !== "testnet" ? "explorer" : network}.dcrdata.org/${network == "testnet" ? "explorer/" : ""}tx/${txHash}`
+  (network) =>{
+    // if (network !== "testnet"){
+    //   return (txHash) => `${MainNetParams.Url}explorer/tx/${txHash}`
+    // }
+    // return (txHash) => `${TestNetParams.Url}explorer/tx/${txHash}`
+    return (txHash) => `http://47.75.110.87:7788/explorer/tx/${txHash}` 
+  }
+    //(txHash) => `http://47.75.110.87:7788/explorer/tx/${txHash}`
+  // (txHash) => `https://${network !== "testnet" ? "explorer" : network}.hcdata.org/${network == "testnet" ? "explorer/" : ""}tx/${txHash}`
 );
 
 export const blockURLBuilder = createSelector(
   [network],
-  (network) =>
-    (txHash) => `http://47.75.110.87:7788/explorer/block/${txHash}`
-  // (txHash) => `https://${network !== "testnet" ? "explorer" : network}.dcrdata.org/${network == "testnet" ? "explorer/" : ""}block/${txHash}`
+  (network) =>{
+    // if (network !== "testnet"){
+    //   return (txHash) => `${MainNetParams.Url}explorer/block/${txHash}`
+    // }
+    // return (txHash) => `${TestNetParams.Url}explorer/block/${txHash}`
+    return (txHash) => `http://47.75.110.87:7788/explorer/block/${txHash}`
+  }
+    //(txHash) => `http://47.75.110.87:7788/explorer/block/${txHash}`
+  // (txHash) => `https://${network !== "testnet" ? "explorer" : network}.hcdata.org/${network == "testnet" ? "explorer/" : ""}block/${txHash}`
 );
 
 const transactionNormalizer = createSelector(
@@ -449,7 +463,7 @@ const ticketNormalizer = createSelector(
       const spenderTxFee = hasSpender ? spenderTx.getFee() : 0;
 
       // ticket change is anything returned to the wallet on ticket purchase.
-      // double check after changes in splitFee flag (dcrwallet #933)
+      // double check after changes in splitFee flag (hcwallet #933)
       const ticketChange = decodedTicketTx
         ? decodedTicketTx.transaction.getOutputsList().slice(1).reduce((a, v) => a + v.getValue(), 0)
         : ticketTx.getCreditsList().slice(1).reduce((a, v) => a + v.getAmount(), 0);
@@ -825,13 +839,13 @@ export const mainWindow = () => window;
 export const shutdownRequested = get(["daemon", "shutdownRequested"]);
 export const daemonStopped = get(["daemon", "daemonStopped"]);
 
-export const chainParams = compose(isTestNet => isTestNet ? TestNetParams : MainNetParams, isTestNet);
+//export const chainParams = compose(isTestNet => isTestNet ? TestNetParams : MainNetParams, isTestNet);
 
 const numberEqual = (left, right) => {
   return Math.abs(left - right) < Number.EPSILON * Math.pow(2, 2);
 }
 
-const getState = state => state
+//const getState = state => state
 
 const ticketDataChartArray = []
 export const ticketDataChart = createSelector(

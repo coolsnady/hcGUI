@@ -33,11 +33,11 @@ export const removeWallet = log((walletPath, testnet) => Promise
 export const startWallet = log((walletPath, testnet) => new Promise((resolve, reject) => {
   let pid, port;
 
-  // resolveCheck must be done both on the dcrwallet-port event and on the
+  // resolveCheck must be done both on the hcwallet-port event and on the
   // return of the sendSync call because we can't be certain which will happen first
   const resolveCheck = () => pid && port ? resolve({pid, port}) : null;
 
-  ipcRenderer.once("dcrwallet-port", (e, p) => { port = p; resolveCheck(); });
+  ipcRenderer.once("hcwallet-port", (e, p) => { port = p; resolveCheck(); });
   pid = ipcRenderer.sendSync("start-wallet", walletPath, testnet);
   if (!pid) reject("Error starting wallet");
   resolveCheck();
@@ -48,22 +48,22 @@ export const getBlockCount = log((walletPath, rpcCreds, testnet) => Promise
   .then(block => isString(block) ? parseInt(block.trim()) : block)
   , "Get Block Count");
 
-export const getDcrdLogs = log(() => Promise
-  .resolve(ipcRenderer.sendSync("get-dcrd-logs"))
+export const getHcdLogs = log(() => Promise
+  .resolve(ipcRenderer.sendSync("get-hcd-logs"))
   .then(logs => {
     if (logs) return logs;
     throw "Error getting Hcd logs";
 }), "Get Hcd Logs", logOptionNoResponseData());
 
-export const getDcrwalletLogs = log(() => Promise
-  .resolve(ipcRenderer.sendSync("get-dcrwallet-logs"))
+export const getHcwalletLogs = log(() => Promise
+  .resolve(ipcRenderer.sendSync("get-hcwallet-logs"))
   .then(logs => {
     if (logs) return logs;
     throw "Error getting Hcwallet logs";
 }), "Get Hcwallet Logs", logOptionNoResponseData());
 
-export const getDecreditonLogs = log(() => Promise
-  .resolve(ipcRenderer.sendSync("get-decrediton-logs"))
+export const getHcguiLogs = log(() => Promise
+  .resolve(ipcRenderer.sendSync("get-hcgui-logs"))
   .then(logs => {
     if (logs) return logs;
     throw "Error getting HcGui logs";

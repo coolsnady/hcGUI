@@ -229,11 +229,11 @@ msgctxt "appMenu.about"
 msgid "About"
 msgstr "关于"
 
-#. [appMenu.aboutDecrediton]
+#. [appMenu.aboutHcgui]
 #. defaultMessage is:
 #. About HcGui
 #: app/i18n/extracted/static/menus.json
-msgctxt "appMenu.aboutDecrediton"
+msgctxt "appMenu.aboutHcgui"
 msgid "About HcGui"
 msgstr "关于HcGui"
 
@@ -1349,11 +1349,11 @@ msgctxt "accounts.hdPath"
 msgid "HD Path"
 msgstr "HD 路劲"
 
-#. [appMenu.decrediton]
+#. [appMenu.hcgui]
 #. defaultMessage is:
 #. HcGui
 #: app/i18n/extracted/static/menus.json
-msgctxt "appMenu.decrediton"
+msgctxt "appMenu.hcgui"
 msgid "HcGui"
 msgstr "HcGui"
 
@@ -1409,27 +1409,27 @@ msgctxt "appMenu.help"
 msgid "Help"
 msgstr "帮助"
 
-#. [appMenu.hideDecrediton]
+#. [appMenu.hideHcgui]
 #. defaultMessage is:
 #. Hide HcGui
 #: app/i18n/extracted/static/menus.json
-msgctxt "appMenu.hideDecrediton"
+msgctxt "appMenu.hideHcgui"
 msgid "Hide HcGui"
 msgstr "隐藏HcGui"
 
-#. [help.logs.hide.dcrd]
+#. [help.logs.hide.hcd]
 #. defaultMessage is:
 #. Hide Hcd logs
 #: app/i18n/extracted/app/components/views/HelpPage/LogsTab/Page.json
-msgctxt "help.logs.hide.dcrd"
+msgctxt "help.logs.hide.hcd"
 msgid "Hide Hcd logs"
 msgstr "隐藏hcd日志"
 
-#. [help.logs.hide.dcrwallet]
+#. [help.logs.hide.hcwallet]
 #. defaultMessage is:
 #. Hide Hcwallet logs
 #: app/i18n/extracted/app/components/views/HelpPage/LogsTab/Page.json
-msgctxt "help.logs.hide.dcrwallet"
+msgctxt "help.logs.hide.hcwallet"
 msgid "Hide Hcwallet logs"
 msgstr "隐藏Hcwallet日志"
 
@@ -2997,19 +2997,19 @@ msgctxt "appMenu.showDaemonLog"
 msgid "Show Daemon Log Files"
 msgstr "显示守护进程日志文件"
 
-#. [help.logs.show.dcrd]
+#. [help.logs.show.hcd]
 #. defaultMessage is:
 #. Show Hcd logs
 #: app/i18n/extracted/app/components/views/HelpPage/LogsTab/Page.json
-msgctxt "help.logs.show.dcrd"
+msgctxt "help.logs.show.hcd"
 msgid "Show Hcd logs"
 msgstr "显示hc日志"
 
-#. [help.logs.show.dcrwallet]
+#. [help.logs.show.hcwallet]
 #. defaultMessage is:
 #. Show Hcwallet logs
 #: app/i18n/extracted/app/components/views/HelpPage/LogsTab/Page.json
-msgctxt "help.logs.show.dcrwallet"
+msgctxt "help.logs.show.hcwallet"
 msgid "Show Hcwallet logs"
 msgstr "显示Hcwllet日志"
 

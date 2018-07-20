@@ -1,5 +1,5 @@
 import Logs from "./Page";
-import {getDcrdLogs, getDcrwalletLogs, getDecreditonLogs} from "wallet";
+import {getHcdLogs, getHcwalletLogs, getHcguiLogs} from "wallet";
 import {logging} from "connectors";
 
 @autobind
@@ -10,78 +10,78 @@ class LogsTab extends React.Component {
   }
 
   getInitialState() {
-    let remoteDcrd = false;
+    let remoteHcd = false;
     if (this.props.getCredentials && this.props.getCredentials.rpc_host) {
-      remoteDcrd = true;
+      remoteHcd = true;
     }
     return {
-      dcrdLogs: null,
-      dcrwalletLogs: null,
-      decreditonLogs: null,
-      remoteDcrd: remoteDcrd,
+      hcdLogs: null,
+      hcwalletLogs: null,
+      hcguiLogs: null,
+      remoteHcd: remoteHcd,
     };
   }
 
   render() {
-    const {showDecreditonLogs, showDcrdLogs, showDcrwalletLogs,
-      hideDecreditonLogs, hideDcrdLogs, hideDcrwalletLogs
+    const {showHcguiLogs, showHcdLogs, showHcwalletLogs,
+      hideHcguiLogs, hideHcdLogs, hideHcwalletLogs
     } = this;
     const {
-      dcrdLogs, dcrwalletLogs, decreditonLogs, remoteDcrd
+      hcdLogs, hcwalletLogs, hcguiLogs, remoteHcd
     } = this.state;
     return (
       <Logs
         {...{
           ...this.props, ...this.state }}
         {...{
-          showDecreditonLogs,
-          showDcrdLogs,
-          showDcrwalletLogs,
-          hideDecreditonLogs,
-          hideDcrdLogs,
-          hideDcrwalletLogs,
-          dcrdLogs,
-          dcrwalletLogs,
-          decreditonLogs,
-          remoteDcrd }}
+          showHcguiLogs,
+          showHcdLogs,
+          showHcwalletLogs,
+          hideHcguiLogs,
+          hideHcdLogs,
+          hideHcwalletLogs,
+          hcdLogs,
+          hcwalletLogs,
+          hcguiLogs,
+          remoteHcd }}
       />
     );
   }
 
-  showDecreditonLogs() {
-    getDecreditonLogs()
+  showHcguiLogs() {
+    getHcguiLogs()
       .then(logs => {
-        this.setState({decreditonLogs: Buffer.from(logs).toString("utf8")});
+        this.setState({hcguiLogs: Buffer.from(logs).toString("utf8")});
       })
       .catch(err => console.error(err));
   }
 
-  hideDecreditonLogs() {
-    this.setState({decreditonLogs: null});
+  hideHcguiLogs() {
+    this.setState({hcguiLogs: null});
   }
 
-  showDcrdLogs() {
-    getDcrdLogs()
+  showHcdLogs() {
+    getHcdLogs()
       .then(logs => {
-        this.setState({dcrdLogs: Buffer.from(logs).toString("utf8")});
+        this.setState({hcdLogs: Buffer.from(logs).toString("utf8")});
       })
       .catch(err => console.error(err));
   }
 
-  hideDcrdLogs() {
-    this.setState({dcrdLogs: null});
+  hideHcdLogs() {
+    this.setState({hcdLogs: null});
   }
 
-  showDcrwalletLogs() {
-    getDcrwalletLogs()
+  showHcwalletLogs() {
+    getHcwalletLogs()
       .then(logs => {
-        this.setState({dcrwalletLogs: Buffer.from(logs).toString("utf8")});
+        this.setState({hcwalletLogs: Buffer.from(logs).toString("utf8")});
       })
       .catch(err => console.error(err));
   }
 
-  hideDcrwalletLogs() {
-    this.setState({dcrwalletLogs: null});
+  hideHcwalletLogs() {
+    this.setState({hcwalletLogs: null});
   }
 }
 

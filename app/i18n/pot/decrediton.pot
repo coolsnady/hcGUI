@@ -224,10 +224,10 @@ msgid "About"
 msgstr ""
 
 #: app/i18n/extracted/static/menus.json
-#. [appMenu.aboutDecrediton]
+#. [appMenu.aboutHcgui]
 #. defaultMessage is:
 #. About HcGui
-msgctxt "appMenu.aboutDecrediton"
+msgctxt "appMenu.aboutHcgui"
 msgid "About HcGui"
 msgstr ""
 
@@ -1329,10 +1329,10 @@ msgid "HD Path"
 msgstr ""
 
 #: app/i18n/extracted/static/menus.json
-#. [appMenu.decrediton]
+#. [appMenu.hcgui]
 #. defaultMessage is:
 #. HcGui
-msgctxt "appMenu.decrediton"
+msgctxt "appMenu.hcgui"
 msgid "HcGui"
 msgstr ""
 
@@ -1377,26 +1377,26 @@ msgid "Help"
 msgstr ""
 
 #: app/i18n/extracted/static/menus.json
-#. [appMenu.hideDecrediton]
+#. [appMenu.hideHcgui]
 #. defaultMessage is:
 #. Hide HcGui
-msgctxt "appMenu.hideDecrediton"
+msgctxt "appMenu.hideHcgui"
 msgid "Hide HcGui"
 msgstr ""
 
 #: app/i18n/extracted/app/components/views/HelpPage/LogsTab/Page.json
-#. [help.logs.hide.dcrd]
+#. [help.logs.hide.hcd]
 #. defaultMessage is:
 #. Hide Hcd logs
-msgctxt "help.logs.hide.dcrd"
+msgctxt "help.logs.hide.hcd"
 msgid "Hide Hcd logs"
 msgstr ""
 
 #: app/i18n/extracted/app/components/views/HelpPage/LogsTab/Page.json
-#. [help.logs.hide.dcrwallet]
+#. [help.logs.hide.hcwallet]
 #. defaultMessage is:
 #. Hide Hcwallet logs
-msgctxt "help.logs.hide.dcrwallet"
+msgctxt "help.logs.hide.hcwallet"
 msgid "Hide Hcwallet logs"
 msgstr ""
 
@@ -2846,18 +2846,18 @@ msgid "Show Daemon Log Files"
 msgstr ""
 
 #: app/i18n/extracted/app/components/views/HelpPage/LogsTab/Page.json
-#. [help.logs.show.dcrd]
+#. [help.logs.show.hcd]
 #. defaultMessage is:
 #. Show Hcd logs
-msgctxt "help.logs.show.dcrd"
+msgctxt "help.logs.show.hcd"
 msgid "Show Hcd logs"
 msgstr ""
 
 #: app/i18n/extracted/app/components/views/HelpPage/LogsTab/Page.json
-#. [help.logs.show.dcrwallet]
+#. [help.logs.show.hcwallet]
 #. defaultMessage is:
 #. Show Hcwallet logs
-msgctxt "help.logs.show.dcrwallet"
+msgctxt "help.logs.show.hcwallet"
 msgid "Show Hcwallet logs"
 msgstr ""
 

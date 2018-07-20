@@ -1,9 +1,9 @@
 import "style/Loading.less";
 
-const DecredLoading = ({ hidden }) => (
+const HcashOrgLoading = ({ hidden }) => (
   <div
     className={"new-logo-animation"}
     style={{display: hidden ? "none" : "block"}}/>
 );
 
-export default DecredLoading;
+export default HcashOrgLoading;
