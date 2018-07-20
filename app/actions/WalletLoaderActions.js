@@ -295,9 +295,10 @@ export function determineNeededBlocks() {
   return (dispatch, getState) => {
     const network = getState().daemon.network;
     const TestNet = isTestNet(getState())
+
     
-    //const explorerInfoURL = TestNet ? `${TestNetParams}api/status`:`${MainNetParams}api/status`
-    const explorerInfoURL =  `http://47.75.110.87:7788/api/status`;
+    const explorerInfoURL = TestNet ? `${TestNetParams.Url}api/status`:`${MainNetParams.Url}api/status`
+    //const explorerInfoURL =  `http://47.75.110.87:7788/api/status`;
     axios.get(explorerInfoURL, {timeout: 5000})
       .then(function (response) {
         const neededBlocks = response.data.node_height;

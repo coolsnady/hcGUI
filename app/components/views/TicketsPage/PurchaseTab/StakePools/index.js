@@ -4,6 +4,7 @@ import { shell } from "electron";
 import StakePoolsList from "./List";
 import StakePoolsAddForm from "./AddForm";
 import stakePools from "connectors/stakePools";
+import { MainNetParams, TestNetParams } from "wallet/constants";
 
 @autobind
 class StakePools extends React.Component {
@@ -31,7 +32,13 @@ class StakePools extends React.Component {
         id="stake.noAvailableStakepools"
         m="No stakepool found. Check your internet connection or {link} to see if the StakePool API is down."
         values={{
-          link: (<a className="stakepool-link" onClick={() => shell.openExternal("http://47.75.110.87:7788/api/pool/list")}><T id="stake.discoverStakeOoolsAPILink" m="this link" /></a>)
+          link: (<a className="stakepool-link" onClick={() => {
+            if (this.props.isTestNet){
+              return shell.openExternal(`${TestNetParams.Url}api/pool/list`)
+             // shell.openExternal("http://47.75.110.87:7788/api/pool/list")
+            }
+            return shell.openExternal(`${MainNetParams.Url}api/pool/list`)  
+          }}><T id="stake.discoverStakeOoolsAPILink" m="this link" /></a>)
         }} />
     ) : this.getIsAdding() ? (
       <StakePoolsAddForm
