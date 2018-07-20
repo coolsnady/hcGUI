@@ -9,7 +9,7 @@ const pad = (s, n) => {
 };
 
 // logTimestamp is a function to format current time as a string using a
-// format compatible to dcrd/dcrwallet logs. This function is meant to be
+// format compatible to hcd/hcwallet logs. This function is meant to be
 // installed in the winston loggers.
 const logTimestamp = () => {
   let date = new Date();
@@ -24,7 +24,7 @@ const logTimestamp = () => {
 };
 
 // logLevelsPrintable are the printable strings for each log level, compatible
-// with the dcrd/dcrwallet logs.
+// with the hcd/hcwallet logs.
 const logLevelsPrintable = {
   "error": "ERR",
   "warn": "WRN",
@@ -49,7 +49,7 @@ const logFormatterColorized = (opts) => {
 };
 
 // createLogger creates the main app logger. This stores all logs into the
-// decrediton app data dir and sends to the console when debug == true.
+// hcgui app data dir and sends to the console when debug == true.
 // This is meant to be called from the ipcMain thread.
 export function createLogger(debug) {
   const logger = new (winston.Logger)({

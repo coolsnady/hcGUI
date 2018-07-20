@@ -26,7 +26,7 @@
     "package-dev-linux": "npm run build && build --linux tar.gz",
     "cleanup": "mop -v",
     "flow": "flow",
-    "i18n-prepare-untranslated": "node ./scripts/prepareUntranslated.js && ./node_modules/.bin/rip json2pot 'app/i18n/extracted/**/*.json' -c id -o app/i18n/pot/decrediton.pot",
+    "i18n-prepare-untranslated": "node ./scripts/prepareUntranslated.js && ./node_modules/.bin/rip json2pot 'app/i18n/extracted/**/*.json' -c id -o app/i18n/pot/hcgui.pot",
     "i18n-assemble-translated": "node ./scripts/assembleTranslated.js && ./node_modules/.bin/rip po2json 'app/i18n/po/*.po' -m 'app/i18n/extracted/**/*.json' -c id -o app/i18n/translations"
   },
   "jest": {
@@ -89,16 +89,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/decred/decrediton.git"
+    "url": "git+https://github.com/HcashOrg/hcGUI.git"
   },
   "author": {
-    "name": "The Decred developers",
-    "email": "info@decred.org",
-    "url": "https://github.com/decred"
+    "name": "The Hc developers",
+    "email": "",
+    "url": "https://github.com/HcashOrg"
   },
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/decred/decrediton/issues"
+    "url": "https://github.com/HcashOrg/hcGUI/issues"
   },
   "keywords": [
     "hc",
@@ -111,7 +111,7 @@
     "react-hot",
     "material-ui"
   ],
-  "homepage": "https://github.com/decred/decrediton#readme",
+  "homepage": "https://github.com/HcashOrg/hcGUI#readme",
   "devDependencies": {
     "asar": "^0.12.3",
     "babel-cli": "^6.24.1",

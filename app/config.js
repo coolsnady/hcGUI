@@ -125,7 +125,7 @@ export function appDataDirectory() {
   }
 }
 
-export function getDcrdPath() {
+export function getHcdPath() {
   if (os.platform() == "win32") {
     return path.join(os.homedir(), "AppData", "Local", "Hcd");
   } else if (process.platform === "darwin") {
@@ -157,10 +157,10 @@ export function getWalletCert(certPath) {
   return(cert);
 }
 
-export function readDcrdConfig(configPath, testnet) {
+export function readHcdConfig(configPath, testnet) {
   try {
-    if (!fs.existsSync(dcrdCfg(configPath))) return;
-    const readCfg = ini.parse(Buffer.from(fs.readFileSync(dcrdCfg(configPath))).toString());
+    if (!fs.existsSync(hcdCfg(configPath))) return;
+    const readCfg = ini.parse(Buffer.from(fs.readFileSync(hcdCfg(configPath))).toString());
     let newCfg = {};
     newCfg.rpc_host = "127.0.0.1";
     if (testnet) {
@@ -214,10 +214,10 @@ export function readDcrdConfig(configPath, testnet) {
   }
 }
 
-export function getDcrdCert(dcrdCertPath) {
-  if(dcrdCertPath)
-    if(fs.existsSync(dcrdCertPath))
-      return fs.readFileSync(dcrdCertPath);
+export function getHcdCert(hcdCertPath) {
+  if(hcdCertPath)
+    if(fs.existsSync(hcdCertPath))
+      return fs.readFileSync(hcdCertPath);
 
   var certPath = "";
   if (os.platform() == "win32") {
@@ -298,7 +298,7 @@ export function clearPreviousWallet() {
 
 export function newWalletConfigCreation(testnet, walletPath) {
   // TODO: set random user/password
-  var dcrdConf = {
+  var hcdConf = {
     "Application Options":
     {
       rpcuser: "USER",
@@ -307,8 +307,8 @@ export function newWalletConfigCreation(testnet, walletPath) {
       testnet: testnet ? "1" : "0"
     }
   };
-  fs.writeFileSync(dcrdCfg(getWalletPath(testnet, walletPath)), ini.stringify(dcrdConf));
-  var dcrctlConf = {
+  fs.writeFileSync(hcdCfg(getWalletPath(testnet, walletPath)), ini.stringify(hcdConf));
+  var hcctlConf = {
     "Application Options":
     {
       rpcuser: "USER",
@@ -317,8 +317,8 @@ export function newWalletConfigCreation(testnet, walletPath) {
       testnet: testnet ? "1" : "0"
     }
   };
-  fs.writeFileSync(dcrctlCfg(getWalletPath(testnet, walletPath)), ini.stringify(dcrctlConf));
-  var dcrwConf = {
+  fs.writeFileSync(hcctlCfg(getWalletPath(testnet, walletPath)), ini.stringify(hcctlConf));
+  var hcwConf = {
     "Application Options":
     {
       tlscurve: "P-256",
@@ -330,16 +330,16 @@ export function newWalletConfigCreation(testnet, walletPath) {
       nolegacyrpc: "1",
     },
   };
-  fs.writeFileSync(dcrwalletCfg(getWalletPath(testnet, walletPath)), ini.stringify(dcrwConf));
+  fs.writeFileSync(hcwalletCfg(getWalletPath(testnet, walletPath)), ini.stringify(hcwConf));
 }
-export function dcrctlCfg(configPath) {
+export function hcctlCfg(configPath) {
   return path.resolve(configPath, "hcctl.conf");
 }
 
-export function dcrdCfg(configPath) {
+export function hcdCfg(configPath) {
   return path.resolve(configPath, "hcd.conf");
 }
 
-export function dcrwalletCfg(configPath) {
+export function hcwalletCfg(configPath) {
   return path.resolve(configPath, "hcwallet.conf");
 }

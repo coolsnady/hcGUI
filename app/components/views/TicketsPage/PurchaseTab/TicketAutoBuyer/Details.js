@@ -1,4 +1,4 @@
-import { FeeInput, FixedDcrInput, PercentInput, BlocksInput } from "inputs";
+import { FeeInput, FixedHcInput, PercentInput, BlocksInput } from "inputs";
 import { KeyBlueButton } from "buttons";
 import { FormattedMessage as T, defineMessages } from "react-intl";
 
@@ -58,7 +58,7 @@ const Details = ({
         </div></div>
         <div className="stakepool-purchase-ticket-num-input">
           <div className="stakepool-input-form-purchase-ticket">
-            <FixedDcrInput
+            <FixedHcInput
               placeholder={formatMessage(messages.balanceToMaintain)}
               value={balanceToMaintain}
               onChange={onChangeBalanceToMaintain}
@@ -97,7 +97,7 @@ const Details = ({
         </div></div>
         <div className="stakepool-purchase-ticket-num-input">
           <div className="stakepool-input-form-purchase-ticket">
-            <FixedDcrInput
+            <FixedHcInput
               placeholder={formatMessage(messages.maxPriceAbsolute)}
               value={maxPriceAbsolute}
               onChange={onChangeMaxPriceAbsolute}

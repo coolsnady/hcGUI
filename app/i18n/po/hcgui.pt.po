@@ -4,7 +4,6 @@ msgid ""
 msgstr ""
 "POT-Creation-Date: 2017-12-12T11:04:08.293Z\n"
 "Last-Translator: Matheus Degiovani <mathdegiovani@gmail.com>, 2017\n"
-"Language-Team: Portuguese (https://www.transifex.com/decred/teams/79156/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -224,11 +223,11 @@ msgctxt "appMenu.about"
 msgid "About"
 msgstr "Sobre"
 
-#. [appMenu.aboutDecrediton]
+#. [appMenu.aboutHcgui]
 #. defaultMessage is:
 #. About HcGui
 #: app/i18n/extracted/static/menus.json
-msgctxt "appMenu.aboutDecrediton"
+msgctxt "appMenu.aboutHcgui"
 msgid "About HcGui"
 msgstr "Sobre HcGui"
 
@@ -843,17 +842,17 @@ msgstr "Data e Hora aparecerão assim que tivermos uma confirmação."
 
 #. [help.constitution.modal.title]
 #. defaultMessage is:
-#. Decred Constitution
+#. HC Constitution
 #: app/i18n/extracted/app/components/views/Help.json
 msgctxt "help.constitution.modal.title"
-msgid "Decred Constitution"
-msgstr "Constituição Decred"
+msgid "HC Constitution"
+msgstr "Constituição HC"
 
-#. [appMenu.decrediton]
+#. [appMenu.hcgui]
 #. defaultMessage is:
 #. HcGUI
 #: app/i18n/extracted/static/menus.json
-msgctxt "appMenu.decrediton"
+msgctxt "appMenu.hcgui"
 msgid "HcGUI"
 msgstr "HcGui"
 
@@ -1320,11 +1319,11 @@ msgctxt "accounts.hide.tip"
 msgid "Hide"
 msgstr "Ajuda"
 
-#. [appMenu.hideDecrediton]
+#. [appMenu.hideHcgui]
 #. defaultMessage is:
 #. Hide HcGUI
 #: app/i18n/extracted/static/menus.json
-msgctxt "appMenu.hideDecrediton"
+msgctxt "appMenu.hideHcgui"
 msgid "Hide HcGUI"
 msgstr "Esconder HcGUI"
 
@@ -1359,11 +1358,11 @@ msgstr ""
 
 #. [getStarted.chainLoadingDelayReminder]
 #. defaultMessage is:
-#. If you are starting decrediton for the first time, this may take a while.
+#. If you are starting hcgui for the first time, this may take a while.
 #: app/i18n/extracted/app/components/views/GetStartedPage/DaemonLoading/Form.json
 msgctxt "getStarted.chainLoadingDelayReminder"
 msgid ""
-"If you are starting decrediton for the first time, this may take a while."
+"If you are starting hcgui for the first time, this may take a while."
 msgstr ""
 "Se está iniciando o HcGUI pela primeira vez isso pode demorar um tempo."
 
@@ -1381,15 +1380,15 @@ msgstr ""
 
 #. [help.description]
 #. defaultMessage is:
-#. If you have any difficulty with decrediton, please use the following links
+#. If you have any difficulty with hcgui, please use the following links
 #. to help find a solution.
 #: app/i18n/extracted/app/messages.json
 msgctxt "help.description"
 msgid ""
-"If you have any difficulty with decrediton, please use the following links "
+"If you have any difficulty with hcgui, please use the following links "
 "to help find a solution."
 msgstr ""
-"Se você tiver qualquer dificuldade ao utilizar o decrediton, por favor "
+"Se você tiver qualquer dificuldade ao utilizar o hcgui, por favor "
 "utilize os links abaixo para tentar encontrar uma solução."
 
 #. [ticketAutoBuyer.info.balanceToMaintain.message]
@@ -1637,13 +1636,13 @@ msgstr "Bloqueado por Tickets"
 
 #. [transactions.description.send.mainnet]
 #. defaultMessage is:
-#. Mainnet Decred addresses always begin with letter D and contain 26-35
+#. Mainnet HcashOrg addresses always begin with letter D and contain 26-35
 #. alphanumeric characters
 #. (e.g. DxxXXXXXxXXXxXXXXxxx0XxXXXxxXxXxX0X).
 #: app/i18n/extracted/app/messages.json
 msgctxt "transactions.description.send.mainnet"
 msgid ""
-"Mainnet Decred addresses always begin with letter D and contain 26-35 alphanumeric characters\n"
+"Mainnet HcashOrg addresses always begin with letter D and contain 26-35 alphanumeric characters\n"
 "(e.g. DxxXXXXXxXXXxXXXXxxx0XxXXXxxXxXxX0X)."
 msgstr ""
 "Endereços da mainnet sempre começam com a letra D e contém 26-35 caracteres alfanuméricos\n"
@@ -2978,16 +2977,16 @@ msgstr "Sincronizado até o bloco"
 
 #. [transactions.description.send.testnet]
 #. defaultMessage is:
-#. Testnet Decred addresses always begin with letter T and contain 26-35
+#. Testnet HcashOrg addresses always begin with letter T and contain 26-35
 #. alphanumeric characters
 #. (e.g. TxxXXXXXxXXXxXXXXxxx0XxXXXxxXxXxX0).
 #: app/i18n/extracted/app/messages.json
 msgctxt "transactions.description.send.testnet"
 msgid ""
-"Testnet Decred addresses always begin with letter T and contain 26-35 alphanumeric characters\n"
+"Testnet HcashOrg addresses always begin with letter T and contain 26-35 alphanumeric characters\n"
 "(e.g. TxxXXXXXxXXXxXXXXxxx0XxXXXxxXxXxX0)."
 msgstr ""
-"Endereços Decred da testnet sempre começam com a letra T e contém 26-35 caracteres alfanuméricos\n"
+"Endereços HcashOrg da testnet sempre começam com a letra T e contém 26-35 caracteres alfanuméricos\n"
 "(ex. TxxXXXXXxXXXxXXXXxxx0XxXXXxxXxXxX0)."
 
 #. [invalidRPCVersion.info]
@@ -3015,19 +3014,19 @@ msgstr ""
 
 #. [tickets.info.votingAddress.message]
 #. defaultMessage is:
-#. The Decred address that will do the voting.
+#. The HcashOrg address that will do the voting.
 #: app/i18n/extracted/app/components/modals/PurchaseTicketsInfoModalContent.json
 msgctxt "tickets.info.votingAddress.message"
-msgid "The Decred address that will do the voting."
-msgstr "O endereço Decred que irá realizar a votação"
+msgid "The HcashOrg address that will do the voting."
+msgstr "O endereço HcashOrg que irá realizar a votação"
 
 #. [getStarted.chainLoading]
 #. defaultMessage is:
-#. The Decred chain is currently loading and may take a few minutes.
+#. The HcashOrg chain is currently loading and may take a few minutes.
 #: app/i18n/extracted/app/components/views/GetStartedPage/DaemonLoading/Form.json
 msgctxt "getStarted.chainLoading"
-msgid "The Decred chain is currently loading and may take a few minutes."
-msgstr "A cadeia Decred está sendo carregada. Isso pode levar alguns minutos."
+msgid "The HcashOrg chain is currently loading and may take a few minutes."
+msgstr "A cadeia HcashOrg está sendo carregada. Isso pode levar alguns minutos."
 
 #. [tickets.info.poolFeeAddress.message]
 #. defaultMessage is:
@@ -3718,14 +3717,6 @@ msgstr "Atualizar Preferências"
 msgctxt "settings.updatePrivatePassphrase"
 msgid "Update Private Passphrase"
 msgstr "Atualizar Chave Particular"
-
-#. [help.matrix.info]
-#. defaultMessage is:
-#. Use matrix.decred.org as your custom server URL.
-#: app/i18n/extracted/app/components/views/Help.json
-msgctxt "help.matrix.info"
-msgid "Use matrix.decred.org as your custom server URL."
-msgstr "Use matrix.decred.org como URL de servidor personalizada"
 
 #. [securitycenter.verify.result.valid]
 #. defaultMessage is:

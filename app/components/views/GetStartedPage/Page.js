@@ -1,4 +1,4 @@
-import { DecredLoading } from "indicators";
+import { HcashOrgLoading } from "indicators";
 import "style/GetStarted.less";
 import "style/Layout.less";
 
@@ -15,7 +15,7 @@ const Page = ({ Header, Body, ...props }) => {
     <div className="page-view inverted-colors">
       <Header {...props} />
       <div className="page-content-fixed">
-        <DecredLoading
+        <HcashOrgLoading
           hidden={hideLogo}
           className="get-started-loading"
         />

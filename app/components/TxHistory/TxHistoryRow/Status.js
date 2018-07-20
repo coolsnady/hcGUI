@@ -4,7 +4,7 @@ import "style/TxHistory.less";
 
 // TODO: use a global component for these indicators
 const indicators = {
-  [true]: <span className="indicator pending"><T id="transaction.indicatorPending" m="Failed" /></span>,
+  [true]: <span className="indicator pending"><T id="transaction.indicatorPending" m="Pending" /></span>,
   [false]: <span className="indicator confirmed"><T id="transaction.indicatorConfirmed" m="Confirmed" /></span>
 };
 

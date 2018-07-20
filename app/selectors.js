@@ -3,7 +3,7 @@ import {
   createSelectorEager as createSelector
 } from "./fp";
 import { reverseHash } from "./helpers/byteActions";
-import { TRANSACTION_TYPES }  from "wallet/service";
+import { TRANSACTION_TYPES } from "wallet/service";
 import { MainNetParams, TestNetParams } from "wallet/constants";
 import { TicketTypes, decodeVoteScript } from "./helpers/tickets";
 
@@ -76,7 +76,7 @@ export const availableWalletsSelect = createSelector(
   [availableWallets],
   (wallets) => map(
     wallet => ({
-      label: wallet.wallet + " (" +  wallet.network + ")",
+      label: wallet.wallet + " (" + wallet.network + ")",
       value: wallet,
       network: wallet.network,
     }),
@@ -135,14 +135,16 @@ export const lockedBalance = createSelector(
   reduce((atoms, { lockedByTickets }) => atoms + lockedByTickets, 0)
 );
 
-export const networks = () => [{name: "testnet"}, {name: "mainnet"}];
+export const networks = () => [{ name: "testnet" }, { name: "mainnet" }];
 export const network = get(["daemon", "network"]);
 export const isTestNet = compose(eq("testnet"), network);
 export const isMainNet = not(isTestNet);
-export const currencies = () => [{name: "Hc"}, {name: "atoms"}];
+export const currencies = () => [{ name: "Hc" }, { name: "atoms" }];
 export const currencyDisplay = get(["settings", "currentSettings", "currencyDisplay"]);
 export const unitDivisor = compose(disp => disp.toLowerCase() === "hc" ? 100000000 : 1, currencyDisplay);
 export const currentLocaleName = get(["settings", "currentSettings", "locale"]);
+export const chainParams = compose(isTestNet => isTestNet ? TestNetParams : MainNetParams, isTestNet);
+const getState = state => state
 
 export const sortedLocales = createSelector(
   [get(["locales"])],
@@ -159,18 +161,28 @@ export const locale = createSelector(
 
 const getTxTypeStr = type => (TRANSACTION_TYPES)[type];
 
-export const txURLBuilder= createSelector(
+export const txURLBuilder = createSelector(
   [network],
-  (network) =>
-    (txHash) => `http://47.75.110.87:7788/tx/${txHash}`
-    // (txHash) => `https://${network !== "testnet" ? "explorer" : network}.dcrdata.org/${network == "testnet" ? "explorer/" : ""}tx/${txHash}`
+  (network) =>{
+    if (network !== "testnet"){
+      return (txHash) => `${MainNetParams.Url}explorer/tx/${txHash}`
+    }
+    return (txHash) => `${TestNetParams.Url}explorer/tx/${txHash}`
+    //return (txHash) => `http://47.75.110.87:7788/explorer/tx/${txHash}` 
+  }
+  // (txHash) => `https://${network !== "testnet" ? "explorer" : network}.hcdata.org/${network == "testnet" ? "explorer/" : ""}tx/${txHash}`
 );
 
-export const blockURLBuilder= createSelector(
+export const blockURLBuilder = createSelector(
   [network],
-  (network) =>
-    (txHash) => `http://47.75.110.87:7788/block/${txHash}`
-    // (txHash) => `https://${network !== "testnet" ? "explorer" : network}.dcrdata.org/${network == "testnet" ? "explorer/" : ""}block/${txHash}`
+  (network) =>{
+    if (network !== "testnet"){
+      return (txHash) => `${MainNetParams.Url}explorer/block/${txHash}`
+    }
+    return (txHash) => `${TestNetParams.Url}explorer/block/${txHash}`
+    //return (txHash) => `http://47.75.110.87:7788/explorer/block/${txHash}`
+  }
+  // (txHash) => `https://${network !== "testnet" ? "explorer" : network}.hcdata.org/${network == "testnet" ? "explorer/" : ""}block/${txHash}`
 );
 
 const transactionNormalizer = createSelector(
@@ -268,34 +280,36 @@ const recentTransactions = createSelector(
 export const homeHistoryTransactions = createSelector(
   [recentTransactions],
   (recentTransactions) =>
-    recentTransactions.map(tx => {if (!tx.txType || tx.txType == "Regular" || tx.txType == "Coinbase") return tx; }).filter(tx => tx !== undefined)
+    recentTransactions.map(tx => { if (!tx.txType || tx.txType == "Regular" || tx.txType == "Coinbase") return tx; }).filter(tx => tx !== undefined)
 );
 
 export const homeHistoryTickets = createSelector(
   [recentTransactions],
   (recentTransactions) =>
-    recentTransactions.map(tx => {if (tx.txType && tx.txType !== "Regular" && tx.txType !== "Coinbase") return tx; }).filter(tx => tx !== undefined)
+    recentTransactions.map(tx => { if (tx.txType && tx.txType !== "Regular" && tx.txType !== "Coinbase") return tx; }).filter(tx => tx !== undefined)
 );
 
 const spendableAndLockedBalanceArray = []
 const currency = 100000000
 //fake data for balance chart
 export const spendableAndLockedBalance = createSelector(
-  [totalBalance,spendableTotalBalance],
-  (totalBalance,spendableTotalBalance) => {
+  [totalBalance, spendableTotalBalance,lockedBalance],
+  (totalBalance, spendableTotalBalance,lockedBalance) => {
+    
     var lockedBalance = totalBalance - spendableTotalBalance;
-    if(spendableAndLockedBalanceArray[0]
-      && numberEqual(spendableAndLockedBalanceArray[spendableAndLockedBalanceArray.length-1].locked , lockedBalance/currency) 
-      && numberEqual(spendableAndLockedBalanceArray[spendableAndLockedBalanceArray.length-1].available , spendableTotalBalance/currency)) {
+    if (spendableAndLockedBalanceArray[0]
+      && numberEqual(spendableAndLockedBalanceArray[spendableAndLockedBalanceArray.length - 1].locked, lockedBalance / currency)
+      && numberEqual(spendableAndLockedBalanceArray[spendableAndLockedBalanceArray.length - 1].available, spendableTotalBalance / currency)) {
       return spendableAndLockedBalanceArray;
     }
-    spendableAndLockedBalanceArray.push({ 
-      name: new Date().toTimeString(), 
-      available: spendableTotalBalance/currency, 
-      locked: (totalBalance-spendableTotalBalance)/currency, 
+    spendableAndLockedBalanceArray.push({
+      name: new Date().toTimeString(),
+      available: spendableTotalBalance / currency,
+      locked: (totalBalance - spendableTotalBalance) / currency,
+      //locked:lockedBalance/currency,
       legendName: new Date().toDateString()
     });
-    if(spendableAndLockedBalanceArray.length>15) {
+    if (spendableAndLockedBalanceArray.length > 15) {
       spendableAndLockedBalanceArray.shift();
     }
     return spendableAndLockedBalanceArray;
@@ -304,13 +318,35 @@ export const spendableAndLockedBalance = createSelector(
 
 //fake data for transactions tab on overview Page
 export const balanceSent = createSelector(
-  [],
-  () => 65554789521
+  [transactions],
+  (transactions) => {
+    var inAmmount = 0;
+
+    transactions.forEach(a => {
+      if (a.txDirection === "in") {
+        inAmmount += a.txAmount;
+      } 
+       else {
+        //transer abort
+      }
+    });
+    return inAmmount
+  }
 );
 
 export const balanceReceived = createSelector(
-  [],
-  () => 86454789521
+  [transactions],
+  (transactions) => {
+    var outAmount = 0;
+    transactions.forEach(a => {
+      if (a.txDirection === "out" || a.txDirection === "transfer") {
+        outAmount += a.txAmount;
+      } else {
+        //transer abort
+      }
+    });
+    return outAmount
+  }
 );
 
 const sentAndReceivedTransactionsArray = []
@@ -320,44 +356,34 @@ export const sentAndReceivedTransactions = createSelector(
     var inAmmount = 0;
     var outAmount = 0;
 
-    transactions.forEach(a=>{
-      if(a.txDirection === "in") {
+    transactions.forEach(a => {
+      if (a.txDirection === "in") {
         inAmmount += a.txAmount;
-      } else if(a.txDirection === "out" || a.txDirection === "transfer") 
-      {
+      } else if (a.txDirection === "out" || a.txDirection === "transfer") {
         outAmount += a.txAmount;
       } else {
         //transer abort
       }
     });
-    if(sentAndReceivedTransactionsArray[0]
-      && numberEqual(sentAndReceivedTransactionsArray[sentAndReceivedTransactionsArray.length-1].received , inAmmount/currency)
-      && numberEqual(sentAndReceivedTransactionsArray[sentAndReceivedTransactionsArray.length-1].sent , outAmount/currency)) {
+    if (sentAndReceivedTransactionsArray[0]
+      && numberEqual(sentAndReceivedTransactionsArray[sentAndReceivedTransactionsArray.length - 1].received, inAmmount / currency)
+      && numberEqual(sentAndReceivedTransactionsArray[sentAndReceivedTransactionsArray.length - 1].sent, outAmount / currency)) {
       return sentAndReceivedTransactionsArray;
     }
-    sentAndReceivedTransactionsArray.push({ 
-      name: new Date().toTimeString(), 
-      sent: outAmount/currency, 
-      received: inAmmount/currency, 
+    sentAndReceivedTransactionsArray.push({
+      name: new Date().toTimeString(),
+      sent: outAmount / currency,
+      received: inAmmount / currency,
       legendName: new Date().toDateString()
     });
-    if(sentAndReceivedTransactionsArray.length>15) {
+    if (sentAndReceivedTransactionsArray.length > 15) {
       sentAndReceivedTransactionsArray.shift();
     }
     return sentAndReceivedTransactionsArray;
   }
 );
 
-//fake data for ticket tab on overview Page
-export const totalValueOfLiveTickets = createSelector(
-  [],
-  () => 237031094298
-);
 
-export const earnedStakingReward = createSelector(
-  [],
-  () => 6525094298
-);
 
 /*
 export const ticketDataChart = createSelector(
@@ -398,13 +424,13 @@ export const viewableTransactions = createSelector(
   (transactions, homeHistoryTransactions) => [...transactions, ...homeHistoryTransactions]
 );
 export const viewedTransaction = createSelector(
-  [viewableTransactions, (state, { params: { txHash }}) => txHash],
+  [viewableTransactions, (state, { params: { txHash } }) => txHash],
   (transactions, txHash) => find({ txHash }, transactions)
 );
 export const decodedTransactions = get(["grpc", "decodedTransactions"]);
 
 export const viewedDecodedTransaction = createSelector(
-  [transactions, (state, { params: { txHash }}) => txHash, decodedTransactions],
+  [transactions, (state, { params: { txHash } }) => txHash, decodedTransactions],
   (transactions, txHash, decodedTransactions) => decodedTransactions[txHash]
 );
 
@@ -435,19 +461,19 @@ const ticketNormalizer = createSelector(
       const spenderTxFee = hasSpender ? spenderTx.getFee() : 0;
 
       // ticket change is anything returned to the wallet on ticket purchase.
-      // double check after changes in splitFee flag (dcrwallet #933)
+      // double check after changes in splitFee flag (hcwallet #933)
       const ticketChange = decodedTicketTx
-        ? decodedTicketTx.transaction.getOutputsList().slice(1).reduce((a, v) => a+v.getValue(), 0)
-        : ticketTx.getCreditsList().slice(1).reduce((a, v) => a+v.getAmount(), 0);
+        ? decodedTicketTx.transaction.getOutputsList().slice(1).reduce((a, v) => a + v.getValue(), 0)
+        : ticketTx.getCreditsList().slice(1).reduce((a, v) => a + v.getAmount(), 0);
 
       // ticket investment is the full amount paid by the wallet on the ticket purchase
-      const ticketInvestment = ticketTx.getDebitsList().reduce((a, v) => a+v.getPreviousAmount(), 0)
+      const ticketInvestment = ticketTx.getDebitsList().reduce((a, v) => a + v.getPreviousAmount(), 0)
         - ticketChange + ticketTxFee;
 
       let ticketReward, ticketROI, ticketReturnAmount;
       if (hasSpender) {
         // everything returned to the wallet after voting/revoking
-        ticketReturnAmount = spenderTx.getCreditsList().reduce((a, v) => a+v.getAmount(), 0);
+        ticketReturnAmount = spenderTx.getCreditsList().reduce((a, v) => a + v.getAmount(), 0);
 
         // this is liquid from applicable fees (i.e, what the wallet actually made)
         ticketReward = ticketReturnAmount - ticketInvestment;
@@ -500,7 +526,7 @@ const ticketNormalizer = createSelector(
     };
   }
 );
-const ticketSorter = (a, b) => (b.leaveTimestamp||b.enterTimestamp) - (a.leaveTimestamp||a.enterTimestamp);
+const ticketSorter = (a, b) => (b.leaveTimestamp || b.enterTimestamp) - (a.leaveTimestamp || a.enterTimestamp);
 
 const allTickets = createSelector(
   [ticketNormalizer, get(["grpc", "tickets"])],
@@ -517,8 +543,30 @@ export const ticketsPerStatus = createSelector(
   )
 );
 
+//fake data for ticket tab on overview Page
+export const totalValueOfLiveTickets = createSelector(
+  [ticketNormalizer, get(["grpc", "tickets"])],
+  (normalizer, tickets) => tickets.map(normalizer).reduce((total,cur)=>{
+    if (cur && cur.status === "live"){
+        return total += cur.ticketPrice
+    }
+    return total
+  },0)
+);
+
+
+export const earnedStakingReward = createSelector(
+  [ticketNormalizer, get(["grpc", "tickets"])],
+  (normalizer, tickets) => tickets.map(normalizer).reduce((total,cur)=>{
+    if (cur && cur.status === "voted"){
+        return total += cur.ticketReward
+    }
+    return total
+  },0)
+);
+
 export const viewedTicketListing = createSelector(
-  [ticketsPerStatus, (state, { params: { status }}) => status],
+  [ticketsPerStatus, (state, { params: { status } }) => status],
   (tickets, status) => tickets[status]
 );
 
@@ -789,62 +837,50 @@ export const mainWindow = () => window;
 export const shutdownRequested = get(["daemon", "shutdownRequested"]);
 export const daemonStopped = get(["daemon", "daemonStopped"]);
 
-export const chainParams = compose(isTestNet => isTestNet ? TestNetParams : MainNetParams, isTestNet);
+//export const chainParams = compose(isTestNet => isTestNet ? TestNetParams : MainNetParams, isTestNet);
 
-const numberEqual =  (left, right) =>{
+const numberEqual = (left, right) => {
   return Math.abs(left - right) < Number.EPSILON * Math.pow(2, 2);
 }
 
-const getState = state=>state
+//const getState = state => state
 
 const ticketDataChartArray = []
 export const ticketDataChart = createSelector(
-  [transactions, getState,currentBlockHeight],
-  (transactions, state,currentBlockHeight) => {
-    var immatureCount =0 ;
-    var liveCount =0 ;
-    var votedCount =0 ;
+  [transactions, getState, currentBlockHeight,getStakeInfoResponse],
+  (transactions, state, currentBlockHeight,stakeInfoResponse) => {
+    var immatureCount = 0;
+    var liveCount = 0;
+    var votedCount = 0;
     var currHeight = currentBlockHeight;
-    
-    var ticketMaturity = chainParams(state).TicketMaturity;
 
-    transactions.forEach(a=>{
-      if(a.txType === "Vote") {
+    var ticketMaturity = chainParams(state).TicketMaturity;
+    liveCount = stakeInfoResponse ? stakeInfoResponse.getLive() : 0
+    immatureCount = stakeInfoResponse ? stakeInfoResponse.getImmature():0
+
+    transactions.forEach(a => {
+      if (a.txType === "Vote") {
         votedCount++;
-      } else if(a.txType === "Ticket" ) 
-      {
-       
-        if(a.txHeight < 0){
-          return
-        }
-        if( a.txHeight+ ticketMaturity < currHeight){
-          
-          liveCount++;
-        } else {
-          immatureCount++;
-        }
-      } else {
-        //others abort
-      }
+      } 
     });
 
     let lastIndex = ticketDataChartArray.length - 1 || 0
 
-    if(ticketDataChartArray[lastIndex]
-      && numberEqual(ticketDataChartArray[lastIndex].immature , immatureCount)
-      && numberEqual(ticketDataChartArray[lastIndex].live , liveCount)
-      && numberEqual(ticketDataChartArray[lastIndex].voted , votedCount)) {
+    if (ticketDataChartArray[lastIndex]
+      && numberEqual(ticketDataChartArray[lastIndex].immature, immatureCount)
+      && numberEqual(ticketDataChartArray[lastIndex].live, liveCount)
+      && numberEqual(ticketDataChartArray[lastIndex].voted, votedCount)) {
 
       return ticketDataChartArray;
     }
     ticketDataChartArray.push({
-        name: new Date().toTimeString(), 
-        immature: immatureCount, 
-        live: liveCount, 
-        voted: votedCount, 
-        legendName: new Date().toDateString()
-      });
-    if(ticketDataChartArray.length>15) {
+      name: new Date().toTimeString(),
+      immature: immatureCount,
+      live: liveCount,
+      voted: votedCount,
+      legendName: new Date().toDateString()
+    });
+    if (ticketDataChartArray.length > 15) {
       ticketDataChartArray.shift();
     }
     return ticketDataChartArray;

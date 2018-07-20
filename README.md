@@ -66,8 +66,8 @@ done with electron 1.4.15.
 
 You need to install hcd, hcwallet and hcctl.  
 
-- [hcd/cmd/hcctl installation instructions](https://github.com/coolsnady/hcd#updating)
-- [hcwallet installation instructions](https://github.com/coolsnady/hcwallet#installation-and-updating)
+- [hcd/cmd/hcctl installation instructions](https://github.com/HcashOrg/hcd#updating)
+- [hcwallet installation instructions](https://github.com/HcashOrg/hcwallet#installation-and-updating)
 
 This has been tested on Linux and OSX.
 
@@ -76,7 +76,7 @@ Adjust the following steps for the paths you want to use.
 ``` bash
 mkdir code
 cd code
-git clone https://github.com/coolsnady/hcGUI.git
+git clone https://github.com/HcashOrg/hcGUI.git
 cd hcGUI
 yarn
 mkdir bin/
@@ -115,12 +115,12 @@ Then build grpc as described above.
 
 You need to install hcd, hcwallet and hcctl.  
 
-- [hcd/cmd/hcctl installation instructions](https://github.com/coolsnady/hcd#updating)
-- [hcwallet installation instructions](https://github.com/coolsnady/hcwallet#installation-and-updating)
+- [hcd/cmd/hcctl installation instructions](https://github.com/HcashOrg/hcd#updating)
+- [hcwallet installation instructions](https://github.com/HcashOrg/hcwallet#installation-and-updating)
 
 To build a packaged version of hcGUI (including a dmg on OSX and
 exe on Windows), follow the development steps above.  Then build the
-dcr command line tools:
+hc command line tools:
 
 ```bash
 cd code/hcGUI
@@ -164,7 +164,7 @@ If you have any further questions you can find us at:
 ## Issue Tracker
 
 The
-[integrated github issue tracker](https://github.com/coolsnady/hcGUI/issues)
+[integrated github issue tracker](https://github.com/HcashOrg/hcGUI/issues)
 is used for this project.
 
 ## License

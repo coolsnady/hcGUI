@@ -1,43 +1,43 @@
 import { FormattedMessage as T } from "react-intl";
 
 const Logs = ({
-  showDcrdLogs,
-  showDcrwalletLogs,
-  hideDcrdLogs,
-  hideDcrwalletLogs,
-  dcrdLogs,
-  dcrwalletLogs,
-  remoteDcrd,
+  showHcdLogs,
+  showHcwalletLogs,
+  hideHcdLogs,
+  hideHcwalletLogs,
+  hcdLogs,
+  hcwalletLogs,
+  remoteHcd,
   walletReady,
 }
 ) => (
   <Aux>
     <div className="tab-card">
-      {!remoteDcrd ?
-        !dcrdLogs ?
-          <div className="log-area-hidden" onClick={showDcrdLogs}>
-            <T id="help.logs.show.dcrd" m="Show Hcd logs" />
+      {!remoteHcd ?
+        !hcdLogs ?
+          <div className="log-area-hidden" onClick={showHcdLogs}>
+            <T id="help.logs.show.hcd" m="Show Hcd logs" />
           </div>:
           <div className="log-area-expanded">
-            <div className="log-area-expanded-hide"  onClick={hideDcrdLogs}>
-              <T id="help.logs.hide.dcrd" m="Hide Hcd logs" />
+            <div className="log-area-expanded-hide"  onClick={hideHcdLogs}>
+              <T id="help.logs.hide.hcd" m="Hide Hcd logs" />
             </div>
             <div className="log-area-logs">
-              <textarea rows="30" cols="95" value={dcrdLogs} disabled />
+              <textarea rows="30" cols="95" value={hcdLogs} disabled />
             </div>
           </div> :
         <div/>
       }
-      {!walletReady ? null : !dcrwalletLogs ?
-        <div className="log-area-hidden" onClick={showDcrwalletLogs}>
-          <T id="help.logs.show.dcrwallet" m="Show Hcwallet logs" />
+      {!walletReady ? null : !hcwalletLogs ?
+        <div className="log-area-hidden" onClick={showHcwalletLogs}>
+          <T id="help.logs.show.hcwallet" m="Show Hcwallet logs" />
         </div>:
         <div className="log-area-expanded">
-          <div className="log-area-expanded-hide"  onClick={hideDcrwalletLogs}>
-            <T id="help.logs.hide.dcrwallet" m="Hide Hcwallet logs" />
+          <div className="log-area-expanded-hide"  onClick={hideHcwalletLogs}>
+            <T id="help.logs.hide.hcwallet" m="Hide Hcwallet logs" />
           </div>
           <div className="log-area-logs">
-            <textarea rows="30" cols="95" value={dcrwalletLogs} disabled />
+            <textarea rows="30" cols="95" value={hcwalletLogs} disabled />
           </div>
         </div>
       }

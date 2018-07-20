@@ -76,7 +76,7 @@ export const TRANSACTION_DIR_RECEIVED = "received";
 export const TRANSACTION_DIR_TRANSFERED = "transfer";
 
 // formatTransaction converts a transaction from the structure of a grpc reply
-// into a structure more amenable to use within decrediton. It stores the block
+// into a structure more amenable to use within hcgui. It stores the block
 // information of when the transaction was mined into the transaction.
 // Index is the index of the transaction within the block.
 export function formatTransaction(block, transaction, index) {

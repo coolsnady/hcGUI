@@ -204,8 +204,8 @@ export const syncDaemon = () =>
     updateBlockCount();
   };
 
-export const getDcrdLogs = () => {
-  wallet.getDcrdLogs()
+export const getHcdLogs = () => {
+  wallet.getHcdLogs()
     .then(logs => {
       return(logs);
     }).catch(
@@ -215,8 +215,8 @@ export const getDcrdLogs = () => {
       });
 };
 
-export const getDcrwalletLogs = () => {
-  wallet.getDcrwalletLogs()
+export const getHcwalletLogs = () => {
+  wallet.getHcwalletLogs()
     .then(logs => {
       return(logs);
     }).catch(
@@ -226,8 +226,8 @@ export const getDcrwalletLogs = () => {
       });
 };
 
-export const getDecreditonLogs = () => {
-  wallet.getDecreditonLogs()
+export const getHcguiLogs = () => {
+  wallet.getHcguiLogs()
     .then(logs => {
       return(logs);
     }).catch(

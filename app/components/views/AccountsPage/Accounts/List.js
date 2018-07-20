@@ -1,7 +1,7 @@
 import { FormattedMessage as T } from "react-intl";
 import { TabbedHeader } from "shared";
 import AccountRow from "./AccountRow";
-import { DecredLoading } from "indicators";
+import { HcashOrgLoading } from "indicators";
 import { InfoModalButton, PassphraseModalButton } from "buttons";
 import { BalanceOverviewModalContent, AddAccountModal } from "modals";
 
@@ -29,7 +29,7 @@ const AccountsList = ({
     </TabbedHeader>
     <div className="tabbed-page">
       <div className="tab-content">
-        { isLoading ? <DecredLoading/> :
+        { isLoading ? <HcashOrgLoading/> :
           <div className="tab-card">
             <div className="account-content-title-buttons-area">
               <InfoModalButton

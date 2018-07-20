@@ -1,7 +1,7 @@
 import { app, BrowserWindow, Menu, shell, dialog } from "electron";
 import { concat, isString } from "lodash";
-import { initGlobalCfg, appDataDirectory, getDcrdPath, validateGlobalCfgFile, setMustOpenForm, clearPreviousWallet} from "./config.js";
-import { dcrctlCfg, dcrdCfg, dcrwalletCfg, initWalletCfg, getWalletCfg, newWalletConfigCreation, readDcrdConfig, getWalletPath} from "./config.js";
+import { initGlobalCfg, appDataDirectory, getHcdPath, validateGlobalCfgFile, setMustOpenForm, clearPreviousWallet} from "./config.js";
+import { hcctlCfg, hcdCfg, hcwalletCfg, initWalletCfg, getWalletCfg, newWalletConfigCreation, readHcdConfig, getWalletPath} from "./config.js";
 import path from "path";
 import fs from "fs-extra";
 import os from "os";
@@ -17,14 +17,14 @@ let mainWindow = null;
 let versionWin = null;
 let grpcVersions = {requiredVersion: null, walletVersion: null};
 let debug = false;
-let dcrdPID;
-let dcrwPID;
-let dcrwPort;
-let dcrdConfig = {};
+let hcdPID;
+let hcwPID;
+let hcwPort;
+let hcdConfig = {};
 let currentBlockCount;
 
-let dcrdLogs = Buffer.from("");
-let dcrwalletLogs = Buffer.from("");
+let hcdLogs = Buffer.from("");
+let hcwalletLogs = Buffer.from("");
 
 let MAX_LOG_LENGTH = 50000;
 
@@ -177,27 +177,27 @@ if (argv.testnet && argv.mainnet) {
 
 let daemonIsAdvanced = globalCfg.get("daemon_start_advanced");
 
-function closeDCRW() {
-  if (require("is-running")(dcrwPID) && os.platform() != "win32") {
-    logger.log("info", "Sending SIGINT to hcwallet at pid:" + dcrwPID);
-    process.kill(dcrwPID, "SIGINT");
+function closeHCW() {
+  if (require("is-running")(hcwPID) && os.platform() != "win32") {
+    logger.log("info", "Sending SIGINT to hcwallet at pid:" + hcwPID);
+    process.kill(hcwPID, "SIGINT");
   }
 }
 
-function closeDCRD() {
-  if (require("is-running")(dcrdPID) && os.platform() != "win32") {
-    logger.log("info", "Sending SIGINT to hcd at pid:" + dcrdPID);
-    process.kill(dcrdPID, "SIGINT");
+function closeHCD() {
+  if (require("is-running")(hcdPID) && os.platform() != "win32") {
+    logger.log("info", "Sending SIGINT to hcd at pid:" + hcdPID);
+    process.kill(hcdPID, "SIGINT");
   }
 }
 
 function closeClis() {
   // shutdown daemon and wallet.
   // Don't try to close if not running.
-  if(dcrdPID && dcrdPID !== -1)
-    closeDCRD();
-  if(dcrwPID && dcrwPID !== -1)
-    closeDCRW();
+  if(hcdPID && hcdPID !== -1)
+    closeHCD();
+  if(hcwPID && hcwPID !== -1)
+    closeHCW();
 }
 
 function cleanShutdown() {
@@ -211,7 +211,7 @@ function cleanShutdown() {
   logger.log("info", "Closing HcGui.");
 
   let shutdownTimer = setInterval(function(){
-    const stillRunning = (require("is-running")(dcrdPID) && os.platform() != "win32");
+    const stillRunning = (require("is-running")(hcdPID) && os.platform() != "win32");
 
     if (!stillRunning) {
       logger.log("info", "Final shutdown pause. Quitting app.");
@@ -268,26 +268,26 @@ ipcMain.on("get-available-wallets", (event) => {// Attempt to find all currently
 });
 
 ipcMain.on("start-daemon", (event, walletPath, appData, testnet) => {
-  if (dcrdPID && dcrdConfig && !daemonIsAdvanced) {
+  if (hcdPID && hcdConfig && !daemonIsAdvanced) {
     logger.log("info", "Skipping restart of daemon as it is already running");
-    event.returnValue = dcrdConfig;
+    event.returnValue = hcdConfig;
     return;
   }
   if(appData){
     logger.log("info", "launching hcd with different appdata directory");
   }
-  if (dcrdPID && dcrdConfig) {
-    logger.log("info", "hcd already started " + dcrdPID);
-    event.returnValue = dcrdConfig;
+  if (hcdPID && hcdConfig) {
+    logger.log("info", "hcd already started " + hcdPID);
+    event.returnValue = hcdConfig;
     return;
   }
   try {
-    dcrdConfig = launchDCRD(walletPath, appData, testnet);
-    dcrdPID = dcrdConfig.pid;
+    hcdConfig = launchHCD(walletPath, appData, testnet);
+    hcdPID = hcdConfig.pid;
   } catch (e) {
     logger.log("error", "error launching hcd: " + e);
   }
-  event.returnValue = dcrdConfig;
+  event.returnValue = hcdConfig;
 });
 
 ipcMain.on("create-wallet", (event, walletPath, testnet) => {
@@ -311,14 +311,14 @@ ipcMain.on("remove-wallet", (event, walletPath, testnet) => {
 });
 
 ipcMain.on("start-wallet", (event, walletPath, testnet) => {
-  if (dcrwPID) {
-    logger.log("info", "hcwallet already started " + dcrwPID +dcrwPort);
-    mainWindow.webContents.send("dcrwallet-port", dcrwPort);
-    event.returnValue = dcrwPID;
+  if (hcwPID) {
+    logger.log("info", "hcwallet already started " + hcwPID +hcwPort);
+    mainWindow.webContents.send("hcwallet-port", hcwPort);
+    event.returnValue = hcwPID;
     return;
   }
   try {
-    dcrwPID = launchDCRWallet(walletPath, testnet);
+    hcwPID = launchHCWallet(walletPath, testnet);
   } catch (e) {
     logger.log("error", "error launching hcwallet: " + e);
   }
@@ -329,7 +329,7 @@ ipcMain.on("check-daemon", (event, walletPath, rpcCreds, testnet) => {
   let args = ["getblockcount"];
   let host, port;
   if (!rpcCreds){
-    args.push(`--configfile=${dcrctlCfg(getWalletPath(testnet, walletPath))}`);
+    args.push(`--configfile=${hcctlCfg(getWalletPath(testnet, walletPath))}`);
   } else if (rpcCreds) {
     if (rpcCreds.rpc_user) {
       args.push(`--rpcuser=${rpcCreds.rpc_user}`);
@@ -353,23 +353,23 @@ ipcMain.on("check-daemon", (event, walletPath, rpcCreds, testnet) => {
     args.push("--testnet");
   }
 
-  var dcrctlExe = getExecutablePath("hcctl");
-  if (!fs.existsSync(dcrctlExe)) {
+  var hcctlExe = getExecutablePath("hcctl");
+  if (!fs.existsSync(hcctlExe)) {
     logger.log("error", "The hcctl file does not exists");
   }
 
-  logger.log("info", `checking if daemon is ready  with dcrctl ${args}`);
+  logger.log("info", `checking if daemon is ready  with hcctl ${args}`);
 
   var spawn = require("child_process").spawn;
-  logger.log("info", `Starting ${dcrctlExe} with ${args}`);
-  var dcrctl = spawn(dcrctlExe, args, { detached: false, stdio: ["ignore", "pipe", "pipe", "pipe"] });
+  logger.log("info", `Starting ${hcctlExe} with ${args}`);
+  var hcctl = spawn(hcctlExe, args, { detached: false, stdio: ["ignore", "pipe", "pipe", "pipe"] });
 
-  dcrctl.stdout.on("data", (data) => {
+  hcctl.stdout.on("data", (data) => {
     currentBlockCount = data.toString();
     logger.log("info", data.toString());
     event.returnValue = currentBlockCount;
   });
-  dcrctl.stderr.on("data", (data) => {
+  hcctl.stderr.on("data", (data) => {
     logger.log("error", data.toString());
     event.returnValue = 0;
   });
@@ -391,15 +391,15 @@ ipcMain.on("main-log", (event, ...args) => {
   logger.log(...args);
 });
 
-ipcMain.on("get-dcrd-logs", (event) => {
-  event.returnValue = dcrdLogs;
+ipcMain.on("get-hcd-logs", (event) => {
+  event.returnValue = hcdLogs;
 });
 
-ipcMain.on("get-dcrwallet-logs", (event) => {
-  event.returnValue = dcrwalletLogs;
+ipcMain.on("get-hcwallet-logs", (event) => {
+  event.returnValue = hcwalletLogs;
 });
 
-ipcMain.on("get-decrediton-logs", (event) => {
+ipcMain.on("get-hcgui-logs", (event) => {
   event.returnValue = "HcGui logs!";
 });
 
@@ -412,8 +412,8 @@ const AddToLog = (destIO, destLogBuffer, data) => {
   return Buffer.concat([destLogBuffer, dataBuffer]);
 };
 
-// DecodeDaemonIPCData decodes messages from an IPC message received from dcrd/
-// dcrwallet using their internal IPC protocol.
+// DecodeDaemonIPCData decodes messages from an IPC message received from hcd/
+// hcwallet using their internal IPC protocol.
 // NOTE: very simple impl for the moment, will break if messages get split
 // between data calls.
 const DecodeDaemonIPCData = (data, cb) => {
@@ -432,33 +432,33 @@ const DecodeDaemonIPCData = (data, cb) => {
   }
 };
 
-const launchDCRD = (walletPath, appdata, testnet) => {
+const launchHCD = (walletPath, appdata, testnet) => {
   var spawn = require("child_process").spawn;
   let args = [];
   let newConfig = {};
   if(appdata){
     args = [`--appdata=${appdata}`];
-    newConfig = readDcrdConfig(appdata, testnet);
+    newConfig = readHcdConfig(appdata, testnet);
     newConfig.rpc_cert = path.resolve(appdata, "rpc.cert");
     if (testnet) {
       args.push("--testnet");
     }
   } else {
-    args = [`--configfile=${dcrdCfg(getWalletPath(testnet, walletPath))}`];
-    newConfig = readDcrdConfig(getWalletPath(testnet, walletPath), testnet);
-    newConfig.rpc_cert = path.resolve(getDcrdPath(), "rpc.cert");
+    args = [`--configfile=${hcdCfg(getWalletPath(testnet, walletPath))}`];
+    newConfig = readHcdConfig(getWalletPath(testnet, walletPath), testnet);
+    newConfig.rpc_cert = path.resolve(getHcdPath(), "rpc.cert");
   }
 
   // Check to make sure that the rpcuser and rpcpass were set in the config
   if (!newConfig.rpc_user || !newConfig.rpc_password) {
-    const errorMessage =  "No " + `${!newConfig.rpc_user ? "rpcuser " : "" }` + `${!newConfig.rpc_user && !newConfig.rpc_password ? "and " : "" }` + `${!newConfig.rpc_password ? "rpcpass " : "" }` + "set in " + `${appdata ? appdata : getWalletPath(testnet, walletPath)}` + "/dcrd.conf.  Please set them and restart.";
+    const errorMessage =  "No " + `${!newConfig.rpc_user ? "rpcuser " : "" }` + `${!newConfig.rpc_user && !newConfig.rpc_password ? "and " : "" }` + `${!newConfig.rpc_password ? "rpcpass " : "" }` + "set in " + `${appdata ? appdata : getWalletPath(testnet, walletPath)}` + "/hcd.conf.  Please set them and restart.";
     logger.log("error", errorMessage);
     mainWindow.webContents.executeJavaScript("alert(\"" + `${errorMessage}` + "\");");
     mainWindow.webContents.executeJavaScript("window.close();");
   }
 
-  var dcrdExe = getExecutablePath("hcd");
-  if (!fs.existsSync(dcrdExe)) {
+  var hcdExe = getExecutablePath("hcd");
+  if (!fs.existsSync(hcdExe)) {
     logger.log("error", "The hcd file does not exists");
     return;
   }
@@ -474,20 +474,20 @@ const launchDCRD = (walletPath, appdata, testnet) => {
     }
   }
 
-  logger.log("info", `Starting ${dcrdExe} with ${args}`);
+  logger.log("info", `Starting ${hcdExe} with ${args}`);
 
-  var dcrd = spawn(dcrdExe, args, {
+  var hcd = spawn(hcdExe, args, {
     detached: os.platform() == "win32",
     stdio: ["ignore", "pipe", "pipe"]
   });
 
-  dcrd.on("error", function (err) {
+  hcd.on("error", function (err) {
     logger.log("error", "Error running hcd.  Check logs and restart! " + err);
     mainWindow.webContents.executeJavaScript("alert(\"Error running hcd.  Check logs and restart! " + err + "\");");
     mainWindow.webContents.executeJavaScript("window.close();");
   });
 
-  dcrd.on("close", (code) => {
+  hcd.on("close", (code) => {
     if (daemonIsAdvanced)
       return;
     if (code !== 0) {
@@ -499,19 +499,19 @@ const launchDCRD = (walletPath, appdata, testnet) => {
     }
   });
 
-  dcrd.stdout.on("data", (data) => dcrdLogs = AddToLog(process.stdout, dcrdLogs, data));
-  dcrd.stderr.on("data", (data) => dcrdLogs = AddToLog(process.stderr, dcrdLogs, data));
+  hcd.stdout.on("data", (data) => hcdLogs = AddToLog(process.stdout, hcdLogs, data));
+  hcd.stderr.on("data", (data) => hcdLogs = AddToLog(process.stderr, hcdLogs, data));
 
-  newConfig.pid = dcrd.pid;
+  newConfig.pid = hcd.pid;
   logger.log("info", "hcd started with pid:" + newConfig.pid);
 
-  dcrd.unref();
+  hcd.unref();
   return newConfig;
 };
 
-const launchDCRWallet = (walletPath, testnet) => {
+const launchHCWallet = (walletPath, testnet) => {
   var spawn = require("child_process").spawn;
-  var args = ["--configfile=" + dcrwalletCfg(getWalletPath(testnet, walletPath))];
+  var args = ["--configfile=" + hcwalletCfg(getWalletPath(testnet, walletPath))];
   logger.log("info", args);
   const cfg = getWalletCfg(testnet, walletPath);
 
@@ -521,8 +521,8 @@ const launchDCRWallet = (walletPath, testnet) => {
   args.push("--ticketbuyer.maxpriceabsolute=" + cfg.get("maxpriceabsolute"));
   args.push("--ticketbuyer.maxperblock=" + cfg.get("maxperblock"));
 
-  var dcrwExe = getExecutablePath("hcwallet");
-  if (!fs.existsSync(dcrwExe)) {
+  var hcwExe = getExecutablePath("hcwallet");
+  if (!fs.existsSync(hcwExe)) {
     logger.log("error", "The hcwallet file does not exists");
     return;
   }
@@ -547,22 +547,22 @@ const launchDCRWallet = (walletPath, testnet) => {
     args = concat(args, stringArgv(argv.extrawalletargs));
   }
 
-  logger.log("info", `Starting ${dcrwExe} with ${args}`);
+  logger.log("info", `Starting ${hcwExe} with ${args}`);
 
-  var dcrwallet = spawn(dcrwExe, args, {
+  var hcwallet = spawn(hcwExe, args, {
     detached: os.platform() == "win32",
     stdio: ["ignore", "pipe", "pipe", "ignore", "pipe"]
   });
 
   const notifyGrpcPort = (port) => {
-    dcrwPort = port;
+    hcwPort = port;
     logger.log("info", "wallet grpc running on port", port);
-    mainWindow.webContents.send("dcrwallet-port", port);
+    mainWindow.webContents.send("hcwallet-port", port);
   };
 
-  console.log(dcrwallet)
+  console.log(hcwallet)
 
-  dcrwallet.stdio[4].on("data", (data) => DecodeDaemonIPCData(data, (mtype, payload) => {
+  hcwallet.stdio[4].on("data", (data) => DecodeDaemonIPCData(data, (mtype, payload) => {
     if (mtype === "grpclistener") {
       const intf = payload.toString("utf-8");
       const matches = intf.match(/^.+:(\d+)$/);
@@ -574,13 +574,13 @@ const launchDCRWallet = (walletPath, testnet) => {
     }
   }));
 
-  dcrwallet.on("error", function (err) {
+  hcwallet.on("error", function (err) {
     logger.log("error", "Error running hcwallet.  Check logs and restart! " + err);
     mainWindow.webContents.executeJavaScript("alert(\"Error running hcwallet.  Check logs and restart! " + err + "\");");
     mainWindow.webContents.executeJavaScript("window.close();");
   });
 
-  dcrwallet.on("close", (code) => {
+  hcwallet.on("close", (code) => {
     if(daemonIsAdvanced)
       return;
     if (code !== 0) {
@@ -592,32 +592,32 @@ const launchDCRWallet = (walletPath, testnet) => {
     }
   });
 
-  const addStdoutToLogListener = (data) => dcrwalletLogs = AddToLog(process.stdout, dcrwalletLogs, data);
+  const addStdoutToLogListener = (data) => hcwalletLogs = AddToLog(process.stdout, hcwalletLogs, data);
 
   // waitForGrpcPortListener is added as a stdout on("data") listener only on
   // win32 because so far that's the only way we found to get back the grpc port
   // on that platform. For linux/macOS users, the --pipetx argument is used to
-  // provide a pipe back to decrediton, which reads the grpc port in a secure and
+  // provide a pipe back to hcgui, which reads the grpc port in a secure and
   // reliable way.
   const waitForGrpcPortListener = (data) => {
     const matches = /HCW: gRPC server listening on [^ ]+:(\d+)/.exec(data);
     if (matches) {
       notifyGrpcPort(matches[1]);
       // swap the listener since we don't need to keep looking for the port
-      dcrwallet.stdout.removeListener("data", waitForGrpcPortListener);
-      dcrwallet.stdout.on("data", addStdoutToLogListener);
+      hcwallet.stdout.removeListener("data", waitForGrpcPortListener);
+      hcwallet.stdout.on("data", addStdoutToLogListener);
     }
-    dcrwalletLogs = AddToLog(process.stdout, dcrwalletLogs, data);
+    hcwalletLogs = AddToLog(process.stdout, hcwalletLogs, data);
   };
 
-  dcrwallet.stdout.on("data", os.platform() == "win32" ? waitForGrpcPortListener : addStdoutToLogListener);
-  dcrwallet.stderr.on("data", (data) => dcrwalletLogs = AddToLog(process.stderr, dcrwalletLogs, data));
+  hcwallet.stdout.on("data", os.platform() == "win32" ? waitForGrpcPortListener : addStdoutToLogListener);
+  hcwallet.stderr.on("data", (data) => hcwalletLogs = AddToLog(process.stderr, hcwalletLogs, data));
 
-  dcrwPID = dcrwallet.pid;
-  logger.log("info", "hcwallet started with pid:" + dcrwPID);
+  hcwPID = hcwallet.pid;
+  logger.log("info", "hcwallet started with pid:" + hcwPID);
 
-  dcrwallet.unref();
-  return dcrwPID;
+  hcwallet.unref();
+  return hcwPID;
 };
 
 const readExesVersion = () => {
@@ -672,7 +672,7 @@ if (!primaryInstance) {
 app.on("ready", async () => {
 
   // when installing (on first run) locale will be empty. Determine the user's
-  // OS locale and set that as decrediton's locale.
+  // OS locale and set that as hcgui's locale.
   let cfgLocale = globalCfg.get("locale", "");
   let locale = locales.find(value => value.key === cfgLocale);
   if (!locale) {
@@ -761,9 +761,9 @@ app.on("ready", async () => {
 
   if (process.platform === "darwin") {
     template = [{
-      label: locale.messages["appMenu.decrediton"],
+      label: locale.messages["appMenu.hcgui"],
       submenu: [{
-        label: locale.messages["appMenu.aboutDecrediton"],
+        label: locale.messages["appMenu.aboutHcgui"],
         selector: "orderFrontStandardAboutPanel:"
       }, {
         type: "separator"
@@ -773,7 +773,7 @@ app.on("ready", async () => {
       }, {
         type: "separator"
       }, {
-        label: locale.messages["appMenu.hideDecrediton"],
+        label: locale.messages["appMenu.hideHcgui"],
         accelerator: "Command+H",
         selector: "hide:"
       }, {
@@ -891,7 +891,7 @@ app.on("ready", async () => {
       }, {
         label: locale.messages["appMenu.showDaemonLog"],
         click() {
-          shell.openItem(path.join(getDcrdPath(), "logs"));
+          shell.openItem(path.join(getHcdPath(), "logs"));
         }
       }]
     }, {
@@ -899,23 +899,23 @@ app.on("ready", async () => {
       submenu: [{
         label: locale.messages["appMenu.learnMore"],
         click() {
-          shell.openExternal("http://coolsnady.network/");
+          shell.openExternal("http://HcashOrg.network/");
         }
       },
       // {
       //   label: locale.messages["appMenu.documentation"],
       //   click() {
-      //     shell.openExternal("https://github.com/decred/decrediton");
+      //     shell.openExternal("https://github.com/HcashOrg/hcGUI");
       //   }
       // }, {
       //   label: locale.messages["appMenu.communityDiscussions"],
       //   click() {
-      //     shell.openExternal("https://forum.decred.org");
+      //     shell.openExternal("https://forum.h.cash");
       //   }
       // }, {
       //   label: locale.messages["appMenu.searchIssues"],
       //   click() {
-      //     shell.openExternal("https://github.com/decred/decrediton/issues");
+      //     shell.openExternal("https://github.com/HcashOrg/hcGUI/issues");
       //   }
       // }, {
       //   label: locale.messages["appMenu.about"],

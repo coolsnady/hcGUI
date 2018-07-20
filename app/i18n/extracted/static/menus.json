@@ -96,11 +96,11 @@
     "defaultMessage": "Select All"
   },
   {
-    "id": "appMenu.decrediton",
+    "id": "appMenu.hcgui",
     "defaultMessage": "HcGui"
   },
   {
-    "id": "appMenu.aboutDecrediton",
+    "id": "appMenu.aboutHcgui",
     "defaultMessage": "About HcGui"
   },
   {
@@ -108,7 +108,7 @@
     "defaultMessage": "Services"
   },
   {
-    "id": "appMenu.hideDecrediton",
+    "id": "appMenu.hideHcgui",
     "defaultMessage": "Hide HcGui"
   },
   {

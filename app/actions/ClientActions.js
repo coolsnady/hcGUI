@@ -487,7 +487,7 @@ export const getTransactions = () => async (dispatch, getState) => {
   // List of transactions found after filtering
   let filtered = [];
 
-  // first, request unmined transactions. They always come first in decrediton.
+  // first, request unmined transactions. They always come first in hcgui.
   let { unmined } = await walletGetTransactions(walletService, -1, -1, 0);
   let unminedTransactions = filterTransactions(unmined, transactionsFilter);
 
