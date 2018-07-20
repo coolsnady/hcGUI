@@ -4612,7 +4612,7 @@ msgstr ""
 #: app/i18n/extracted/app/components/views/GetStartedPage/OpenWallet/CreateWalletForm/ConfirmSeed/Form.json
 msgctxt "confirmSeed.wordsRemaining"
 msgid "{remaining, plural, one {one word remaining} other {# words remaining}}"
-msgstr "数量、复数、一个{选票}其他{选票}"
+msgstr "{remaining, plural, one {one word remaining} other {# words remaining}}"
 
 #. [transaction.timestamp]
 #. defaultMessage is:
