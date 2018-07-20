@@ -18,7 +18,7 @@ export const TicketTypes = new Map([
 // Testing whether the provided script is a vote script is really basic right
 // now.
 // Reference for what a voting script looks like (as of this writing):
-// https://github.com/decred/dcrd/blob/3f3174c987091b03bb34f1fdf4614d10ce6fbfc5/blockchain/stake/staketx.go#L458
+// https://github.com/HcashOrg/hcd/blob/master/blockchain/stake/staketx.go#L458
 export function decodeVoteScript(network, outputScript) {
   if ((outputScript.length < 4) || (outputScript[0] !== 0x6a)) { // 0x6a == OP_RETURN
     return null;
