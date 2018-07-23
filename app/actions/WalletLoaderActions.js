@@ -279,7 +279,7 @@ export function clearStakePoolConfigNewWallet() {
     let config = getWalletCfg(isTestNet(getState()), walletName);
     config.delete("stakepools");
 
-    getStakePoolInfo()
+    getStakePoolInfo(isTestNet(getState()))
       .then(foundStakePoolConfigs => {
         if (foundStakePoolConfigs) {
           let config = getWalletCfg(isTestNet(getState()), walletName);
